@@ -61,25 +61,6 @@
   
   
   <entry>
-    <title>matlabnotes_1</title>
-    <link href="/2020/08/29/matlabnotes-1/"/>
-    <url>/2020/08/29/matlabnotes-1/</url>
-    
-    <content type="html"><![CDATA[<h1 id="matlab-notes-1"><a href="#matlab-notes-1" class="headerlink" title="matlab notes_1"></a>matlab notes_1</h1><h2 id="符号对象"><a href="#符号对象" class="headerlink" title="符号对象"></a>符号对象</h2><ul><li><p>符号对象(Symbolic Objects 不同于普通的数值计算)是Matlab中的一种特殊数据类型，<br>它可以用来表示符号变量、表达式以及矩阵，<br>利用符号对象能够在不考虑符号所对应的具体数值的情况下能够进行代数分析和符号计算(symbolic math operations)，<br>例如因式分解、化简、解代数方程、解常微分方程、积分、矩阵运算等。符号对象需要通过sym或syms函数来指定。</p><p>  syms a;<br>  b = sym(c, ‘f’);<br>  d = sym(3);<br>  e = sym(1/2);</p></li></ul><blockquote><p>d + e = 7 /2</p></blockquote><pre><code>syms xg = (sqrt(1 + x * sin(tan(x))) - 1) / (1 - sqrt(cos(x)))limit(g, x, 0)</code></pre><blockquote><p>ans = 2</p></blockquote><ul><li>普通的数字转换成符号类型后也可以被作为符号对象来处理，<br>得到符号数依旧具有数字值的含义，但无浮点运算。</li></ul><h2 id="函数句柄"><a href="#函数句柄" class="headerlink" title="函数句柄"></a>函数句柄</h2><p>f=@(x)acos(x)<br>表示f为函数句柄，@是定义句柄的运算符。<br>f=@(x)acos(x) 相当于建立了一个函数文件：</p><ul><li>% f.m<br>function y=f(x)<br>y=acos(x);</li></ul>]]></content>
-    
-    
-    
-    <tags>
-      
-      <tag>matlab notes</tag>
-      
-    </tags>
-    
-  </entry>
-  
-  
-  
-  <entry>
     <title>阅读随笔</title>
     <link href="/2020/08/26/book-8/"/>
     <url>/2020/08/26/book-8/</url>
