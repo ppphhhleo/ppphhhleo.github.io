@@ -19,7 +19,7 @@
   <meta name="description" content="">
   <meta name="author" content="PH">
   <meta name="keywords" content="">
-  <title>hexo +github + vercel - PH ’s Lounge</title>
+  <title>阅读随笔 - PH ’s Lounge</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -179,8 +179,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2020-08-09 16:14" pubdate>
-        August 9, 2020 pm
+      <time datetime="2020-08-26 01:18" pubdate>
+        August 26, 2020 am
       </time>
     </span>
   
@@ -191,7 +191,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      829 字
+      1k 字
     </span>
   
 
@@ -235,132 +235,18 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto" id="post">
             <!-- SEO header -->
-            <h1 style="display: none">hexo +github + vercel</h1>
+            <h1 style="display: none">阅读随笔</h1>
             
             <div class="markdown-body" id="post-body">
-              <h1 id="hexo框架-部署github-快速搭建个人blog-Windows"><a href="#hexo框架-部署github-快速搭建个人blog-Windows" class="headerlink" title="hexo框架 部署github 快速搭建个人blog   Windows"></a>hexo框架 部署github 快速搭建个人blog   <em>Windows</em></h1><p>博客搭建笔记<br>这里搞一下那里再搞一下<br>折腾就好了</p>
-<h2 id="0-环境"><a href="#0-环境" class="headerlink" title="0 环境"></a><strong>0 环境</strong></h2><h3 id="Node"><a href="#Node" class="headerlink" title="Node"></a><strong>Node</strong></h3><p>官网链接 <a href="Nodejs.org">Node.js</a></p>
-<h3 id="Download-for-windows"><a href="#Download-for-windows" class="headerlink" title="Download for windows"></a>Download for windows</h3><h3 id="Recommended-For-Most-Users"><a href="#Recommended-For-Most-Users" class="headerlink" title="Recommended For Most Users"></a>Recommended For Most Users</h3><hr>
-<h3 id="Git"><a href="#Git" class="headerlink" title="Git"></a><strong>Git</strong></h3><p>官网链接 <a target="_blank" rel="noopener" href="https://git-scm.com/downloads">Git</a></p>
-<h3 id="download-for-Windows"><a href="#download-for-Windows" class="headerlink" title="download for Windows"></a>download for Windows</h3><hr>
-<p>安装并不复杂 next -&gt; next -&gt; next…<br>检测安装成功：  </p>
-<ul>
-<li>打开命令行 Windows + R， 打开CMD  </li>
-</ul>
-<p><strong>所有命令，都在这里输入</strong></p>
-<ul>
-<li><p>输入命令， 查看当前 node 版本。可查到版本号，nodejs安装成功  </p>
-<pre><code>  npm -version </code></pre>
-</li>
-</ul>
-<hr>
-<hr>
-<h2 id="1-借力"><a href="#1-借力" class="headerlink" title="1 借力"></a><strong>1 借力</strong></h2><ul>
-<li><p><strong>利用 npm， 安装cnpm， 借用淘宝镜像.</strong>     </p>
-<p>稍微等待。<br>安装成功，下一步。<br>安装失败，重来。</p>
-<p>  npm install -g cnpm –registry=<a target="_blank" rel="noopener" href="http://registry.npm.taobao.org/">http://registry.npm.taobao.org</a><br>查看安装版本</p>
-<p>  cnpm -v</p>
-</li>
-</ul>
-<hr>
-<hr>
-<h2 id="2-框架"><a href="#2-框架" class="headerlink" title="2 框架"></a><strong>2 框架</strong></h2><ul>
-<li><strong>安装 hexo 框架</strong>  </li>
-</ul>
-<p>稍微等待。<br>安装成功，下一步。<br>安装失败，重来。</p>
-<pre><code>cnpm install -g hexo-cli</code></pre>
-<p>查看安装版本  </p>
-<pre><code>hexo -v</code></pre>
-<hr>
-<hr>
-<h2 id="3-地基"><a href="#3-地基" class="headerlink" title="3 地基"></a><strong>3 地基</strong></h2><ul>
-<li><strong>新建博客文件</strong>    </li>
-</ul>
-<p>查看当前目录</p>
-<pre><code>chdir</code></pre>
-<blockquote>
-<p>C：\ Users\ yourname  </p>
-</blockquote>
-<p>在该目录下，新建文件夹 blog。<br>此后，博客相关的文件，都会保存在 blog 文件夹里。<br><strong>如果后续步骤出错，难以解决，可直接删除 blog 文件夹， 从此步骤重新开始。</strong></p>
-<pre><code>mkdir blog
-cd blog</code></pre>
-<p>初始化博客。<br>hexo 为你的博客，自动 clone 初始文件。  </p>
-<pre><code>hexo init</code></pre>
-<p>等待。 祈祷无error  </p>
-<blockquote>
-<p>Start blogging with Hexo!  </p>
-</blockquote>
-<p>初始化成功</p>
-<pre><code>hexo server</code></pre>
-<blockquote>
-<p>Hexo is ruuning at http： // localhost:4000  . Press Ctrl + C to stop  </p>
-</blockquote>
-<p>打开地址</p>
-<hr>
-<hr>
-<h2 id="4-工具"><a href="#4-工具" class="headerlink" title="4 工具"></a><strong>4 工具</strong></h2><p>初始化博客后，有一篇 hello-world.md 初始教学post</p>
-<blockquote>
-<p>C : \Users\yourname\blog\source_posts  </p>
-</blockquote>
-<p>如何编辑。Linux 系统下 vim 编辑器， 命令行简洁方便。Windows 系统， 也有使用舒适的编辑器，个人惯用VS code ， coding blogging 一条龙。</p>
-<ul>
-<li><strong>一篇博客，一个 markdown。</strong><br>markdown 编辑器有很多。<br>惯用  VS Code， 可直接打开. 安装相应插件， 可导出 PDF 。<br>此外 还可用<br>Typora， 下载地址：<br><a target="_blank" rel="noopener" href="https://www.typora.io/">Typora</a><br>Makepad， 下载地址：<br><a target="_blank" rel="noopener" href="http://code52.org/DownmarkerWPF/">Makepad</a> </li>
-</ul>
-<p><strong>写博客时，可直接在 blog 文件夹新建 .md， 编辑完成，再通过命令行更新到博客。</strong></p>
-<p><strong>选好了工具，看看怎么用</strong> <a target="_blank" rel="noopener" href="https://www.runoob.com/markdown/md-tutorial.html">markdown</a></p>
-<hr>
-<hr>
-<h2 id="5-部署"><a href="#5-部署" class="headerlink" title="5 部署"></a><strong>5 部署</strong></h2><ul>
-<li><strong>把博客部署到Github！</strong></li>
-</ul>
-<p><strong>（1）在 github 上 create a new repository  。 命名仓库，要这样(yourname 是 你的 github 账号名！）：</strong>  </p>
-<blockquote>
-<p>yourname.github.io  </p>
-</blockquote>
-<p><strong>（2） 打开cmd， 命令行：</strong></p>
-<pre><code>cnpm install --save hexo-deployer-git</code></pre>
-<p><strong>（3） 打开 blog 文件夹，找到 _config.yml , 打开编辑（VS Code ！）</strong></p>
-<blockquote>
-<p>_config.yml 找到 <strong>#Deployment</strong> ，并添加以下内容 </p>
-</blockquote>
-<pre><code>repo：https://github.com/yourname/yourname.github.io.git       // 新建的仓库地址 
-branch： master
-type： &#39;git&#39;
-message: blog</code></pre>
-<blockquote>
-<p>修改完成，保存。回到命令行：</p>
-</blockquote>
-<pre><code>hexo d</code></pre>
-<p>按照提示，输入 github 账号密码<br>成功后，刷新 github 仓库，可见本地 blog 文件夹在仓库里！<br><strong>在本地编辑好博文后， 依次输入以下命令行，即可更新博客！</strong></p>
-<pre><code>hexo clean
-hexo g      
-hexo d
-
-done，通过博客地址可看到更新：https://yourname.github.io/ </code></pre>
-<hr>
-<hr>
-<h2 id="6-主题"><a href="#6-主题" class="headerlink" title="6 主题"></a><strong>6 主题</strong></h2><ul>
-<li><p><strong>hexo 框架初始化主题为 landscape， 修改流程为：<br>clone 主题  -&gt;  修改 _config.yml  -&gt;  更新</strong></p>
-<hr>
-</li>
-</ul>
-<blockquote>
-<p>clone </p>
-</blockquote>
-<pre><code>git clone https://github.com/theme-next/hexo-theme-next themes/next             //next 主题</code></pre>
-<blockquote>
-<p>blog 文件夹， 打开 _config.yml<br>找到 <strong>theme：</strong><br>修改要使用的主题名为  <strong>next</strong> </p>
-</blockquote>
-<pre><code>theme: next</code></pre>
-<blockquote>
-<p>update: </p>
-</blockquote>
-<pre><code>hexo clean
-hexo g
-hexo d
-
-done，通过博客地址可看到更新：https://yourname.github.io/ </code></pre>
-<h2 id="7-个性"><a href="#7-个性" class="headerlink" title="7 个性"></a><strong>7 个性</strong></h2><p>博客页面设置，全可通过 blog 文件夹， _config.yml 设置完成。<br>官网有很多开发者提供并维护的主题：<br><a target="_blank" rel="noopener" href="https://hexo.io/">hexo主题</a></p>
+              <h2 id="春宵苦短"><a href="#春宵苦短" class="headerlink" title="春宵苦短"></a>春宵苦短</h2><p>非常中二的书名 有同名动漫  </p>
+<p><strong>春宵苦短 少女前进吧</strong></p>
+<p>  也很贴切我对日本动漫<strong>中二 热血 随性 的”刻板”印象</strong>  ，字里行间都透露中二气息，读起来很愉快。<br>  还有极具特色的元素：<strong>清酒，锦鲤旗，不倒翁，校园祭，旧书店，樱花雨</strong>…<br>  “刻板”之上，还有欢快广阔的想象，<br>  “神的随心所欲主义”<br>  “旧书店之神”<br>  “苹果雨” “极致的辣火锅”，<br>  自然小狂野，校园青春的中二感更为天马行空。  </p>
+<p>  <img src="https://ph-whuer.vercel.app/img/cxkd.jpeg" srcset="/img/loading.gif" alt="品清酒"><br>  四个故事小心翼翼地推进他们相见 相识，男女主双视角轮换各自讲述见闻，我像见证奇遇的旁观者，有欣慰而美妙的参与感：**”读者诸贤，你们还好吗？”**<br>   虽然没有很细腻，但懵懵懂懂的文笔也很像女主初入大学时的状态，一股不知者无畏的气势：喜欢就去追寻，爱就去表达。  </p>
+<p>   校园青春题材，没有因嫉妒而起的明争暗斗 没有无意义的虚荣攀比 没有消极堕落阴暗，积极 乐观 感恩，一扫过去所看日本文学的刻板。<br>  读起来很温柔，品一壶”白兰地电气”,<br>  肚子开了花海，春宵苦短，无暇顾及丧的羁绊了，放手前进吧</p>
+<h2 id="面纱"><a href="#面纱" class="headerlink" title="面纱"></a>面纱</h2><p>  ？<br>面纱的文字把女主心路历程解构得很透彻。<br>迷惑感叹：他为什么会爱？<br>他理智、冷静、隐忍、细腻，<strong>他不把爱当做权力</strong>，而当做恩惠。舔得够高级了吧，没有价值互取，不是臭味相投：但他把凯蒂看得很清楚，她浅薄轻浮没头脑，可以轻易被控制和维系情感。后来她有了独立的思考与真诚，他死前遗言是”死的那个是狗”。<br>他报复她，轻视她，但没想到她在瘟疫中成长为独立自信的人，他又无法原谅爱上她的自己是阴暗且卑微的，临死还背负怨念，才发现自己从想报复的狗，到发现她出轨后的道德博弈的善人，最后到折磨不休的狗。卒<br>？  </p>
+<h2 id="信条"><a href="#信条" class="headerlink" title="信条"></a>信条</h2><p>诺兰  新作<br>凭着星际穿越的期待，看了信条，着实不是我当初期待的模样：<strong>设定要硬核、人物塑造要饱满、科幻要落地在情感上。</strong><br>然，信条的感觉更像谍战片（？） 友谊线、母子线都不如星际穿越的父女线，星际那句”<strong>我的一次呼吸，划过了你的无数岁月</strong>“，也比尼尔告别时所言”<strong>我在起点等你</strong>“，更丰满触动。<br>时间斑驳变化，看他们人生浮沉，也不够深刻，或许是还品不到光怪陆离下的细节。<br>不过，走出影厅，我对与我逆行而来的人群的观察，有了微妙变化，我对身边事物的感知，有了<strong>奇妙的体验</strong>。我才意识到：整场电影，诺兰给了视觉、设定冲击的同时，也在解构、重建我的现实时空观。<br>我之前一直说科幻作品，不该只是空洞的设定，未来无论如何地赛博朋克，核心都要有饱满真实的人类情感，优秀作品如降临 火星编年史 星际穿越 PKD系列科幻… 信条的观影体验，确实落空当初的期待，但我也收获了新体验。影院里在听到男主问”那自由意志呢？”，我还暗自发笑，出了影院才发觉自己的潜在观念有解构。<br>这一新的体验，来得惊喜，也稍微有改变我之前的科幻标准，虽然无法改变 信条 人物情感深挖不够的事实。</p>
+<h2 id="恶之花"><a href="#恶之花" class="headerlink" title="恶之花"></a>恶之花</h2><h2 id="莫失莫忘"><a href="#莫失莫忘" class="headerlink" title="莫失莫忘"></a>莫失莫忘</h2><p>9月最惊喜的一本日本文学，石黑一雄<br>“日本文学居然也可以有反乌托邦？！”<br>挖坑之后来填</p>
+<h2 id="离别之音"><a href="#离别之音" class="headerlink" title="离别之音"></a>离别之音</h2><h2 id="温柔的叹息"><a href="#温柔的叹息" class="headerlink" title="温柔的叹息"></a>温柔的叹息</h2><h2 id="风之影"><a href="#风之影" class="headerlink" title="风之影"></a>风之影</h2><p>西班牙文学  </p>
 
             </div>
             <hr>
@@ -371,7 +257,7 @@ done，通过博客地址可看到更新：https://yourname.github.io/ </code></
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/hard-try/">hard try</a>
+                      <a class="hover-with-bg" href="/tags/reading/">reading</a>
                     
                   </div>
                 
@@ -384,15 +270,21 @@ done，通过博客地址可看到更新：https://yourname.github.io/ </code></
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2020/08/26/book-8/">
+                      <a href="/2020/08/29/matlabnotes-1/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">阅读随笔</span>
+                        <span class="hidden-mobile">matlabnotes_1</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
                   </article>
                   <article class="post-next col-6">
                     
+                    
+                      <a href="/2020/08/09/1/">
+                        <span class="hidden-mobile">hexo +github + vercel</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </article>
                 </div>
@@ -408,8 +300,8 @@ done，通过博客地址可看到更新：https://yourname.github.io/ </code></
     <div id="disqus_thread"></div>
     <script type="text/javascript">
       var disqus_config = function () {
-        this.page.url = 'http://example.com/2020/08/09/1/';
-        this.page.identifier = '/2020/08/09/1/';
+        this.page.url = 'http://example.com/2020/08/26/book-8/';
+        this.page.identifier = '/2020/08/26/book-8/';
       };
       function loadDisqus() {
         (function () {
@@ -585,7 +477,7 @@ done，通过博客地址可看到更新：https://yourname.github.io/ </code></
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "hexo +github + vercel&nbsp;",
+        "阅读随笔&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

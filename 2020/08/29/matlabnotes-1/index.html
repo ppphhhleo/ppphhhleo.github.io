@@ -19,7 +19,7 @@
   <meta name="description" content="">
   <meta name="author" content="PH">
   <meta name="keywords" content="">
-  <title>序列化 反序列化 - PH ’s Lounge</title>
+  <title>matlabnotes_1 - PH ’s Lounge</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -167,7 +167,7 @@
          style="background: url('/img/fg.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
-        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.4)">
           <div class="container page-header text-center fade-in-up">
             <span class="h2" id="subtitle">
               
@@ -179,8 +179,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2020-09-07 00:03" pubdate>
-        September 7, 2020 am
+      <time datetime="2020-08-29 00:51" pubdate>
+        August 29, 2020 am
       </time>
     </span>
   
@@ -191,7 +191,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      550 字
+      268 字
     </span>
   
 
@@ -201,7 +201,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      7
+      3
        分钟
     </span>
   
@@ -235,55 +235,30 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto" id="post">
             <!-- SEO header -->
-            <h1 style="display: none">序列化 反序列化</h1>
+            <h1 style="display: none">matlabnotes_1</h1>
             
             <div class="markdown-body" id="post-body">
-              <h1 id="web学习笔记-序列化-反序列化"><a href="#web学习笔记-序列化-反序列化" class="headerlink" title="web学习笔记 序列化 反序列化"></a>web学习笔记 序列化 反序列化</h1><p>题目为unserialize，</p>
-<pre><code>class xctf&#123;
-public $flag = &#39;111&#39;;
-public function __wakeup()&#123;
-exit(&#39;bad requests&#39;);
-&#125;
-?code=</code></pre>
-<h2 id="题目暗示，试将对象xctf-序列化："><a href="#题目暗示，试将对象xctf-序列化：" class="headerlink" title="题目暗示，试将对象xctf 序列化："></a>题目暗示，试将对象xctf 序列化：</h2><pre><code>&lt;?php
-class xctf &#123;
-    public $flag = &#39;111&#39;;
-    public funciton_wakeup() &#123;
-        exit(&#39;bad request&#39;);
-    &#125;
-&#125;
-$c = new xctf();
-echo(serialize($c));
-?&gt;</code></pre>
-<p>得到序列化字符串：</p>
+              <h1 id="matlab-notes-1"><a href="#matlab-notes-1" class="headerlink" title="matlab notes_1"></a>matlab notes_1</h1><h2 id="符号对象"><a href="#符号对象" class="headerlink" title="符号对象"></a>符号对象</h2><ul>
+<li><p>符号对象(Symbolic Objects 不同于普通的数值计算)是Matlab中的一种特殊数据类型，<br>它可以用来表示符号变量、表达式以及矩阵，<br>利用符号对象能够在不考虑符号所对应的具体数值的情况下能够进行代数分析和符号计算(symbolic math operations)，<br>例如因式分解、化简、解代数方程、解常微分方程、积分、矩阵运算等。符号对象需要通过sym或syms函数来指定。</p>
+<p>  syms a;<br>  b = sym(c, ‘f’);<br>  d = sym(3);<br>  e = sym(1/2);</p>
+</li>
+</ul>
 <blockquote>
-<p>O:4:”xctf”:1:{s:4:”flag”;s:3:”111”;}</p>
+<p>d + e = 7 /2</p>
 </blockquote>
-<p>含义为：  </p>
+<pre><code>syms x
+g = (sqrt(1 + x * sin(tan(x))) - 1) / (1 - sqrt(cos(x)))
+limit(g, x, 0)</code></pre>
 <blockquote>
-<p>Object : length: “class name” : n : { String : name1 : value1 ; String : name2 : value2; ……}</p>
+<p>ans = 2</p>
 </blockquote>
-<p>length: 被序列化对象的名称长度；<br>n：被序列化对象的属性个数；</p>
-<h2 id="绕过"><a href="#绕过" class="headerlink" title="绕过"></a>绕过</h2><p>为了不要’bad request’，需绕过_wakeup() 函数<br>如何绕过：<strong>当序列化字符串中的属性个数值大于实际的属性个数时，就会导致反序列化异常，从而跳过_wakeup()</strong><br>针对此题修改 n &gt; 1 即可<br>用 POST 提交，得flag</p>
-<h2 id=""><a href="#" class="headerlink" title=""></a></h2><p>1、serialize()函数：用于序列化对象或数组，并返回一个字符串。序列化对象后，可以很方便的将它传递给其他需要它的地方，且其类型和结构<strong>不会改变</strong>。</p>
-<p>2、unserialize()函数：用于将通过serialize()函数序列化后的对象或数组进行反序列化，并返回原始的对象结构。</p>
-<p>总之，序列化和反序列化，<strong>是对象的保存和重建。</strong></p>
-<p>3、<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.oop5.magic.php">魔术方法</a>：PHP 将所有以 __（两个下划线）开头的类方法保留为魔术方法。所以在定义类方法时，除了上述魔术方法，建议不要以 __ 为前缀。</p>
-<p>4、serialize()和unserialize()函数对魔术方法的处理：serialize()函数会检查类中是否存在一个魔术方法__sleep()。  如果存在，该方法会先被调用，然后才执行序列化操作。</p>
-<p>5、__wakeup()执行漏洞：一个字符串或对象被序列化后，如果其属性被修改，则不会执行__wakeup()函数，这也是一个绕过点。</p>
-<p>BTW <strong>三个不同类型的字符串</strong>，但值相同，<br>序列化后输出的值也不相同  </p>
-<pre><code>&lt;?php
-class test&#123;
-    private $test1=&quot;hello&quot;;
-    public $test2=&quot;hello&quot;;
-    protected $test3=&quot;hello&quot;;
-&#125;
-$test = new test();
-echo serialize($test); 
-?&gt;</code></pre>
-<blockquote>
-<p> O:4:”test”:3:{s:11:”test test1”;s:5:”hello”;s:5:”test2”;s:5:”hello”;s:8:” * test3”;s:5:”hello”;}</p>
-</blockquote>
+<ul>
+<li>普通的数字转换成符号类型后也可以被作为符号对象来处理，<br>得到符号数依旧具有数字值的含义，但无浮点运算。</li>
+</ul>
+<h2 id="函数句柄"><a href="#函数句柄" class="headerlink" title="函数句柄"></a>函数句柄</h2><p>f=@(x)acos(x)<br>表示f为函数句柄，@是定义句柄的运算符。<br>f=@(x)acos(x) 相当于建立了一个函数文件：</p>
+<ul>
+<li>% f.m<br>function y=f(x)<br>y=acos(x);</li>
+</ul>
 
             </div>
             <hr>
@@ -294,7 +269,7 @@ echo serialize($test);
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/web/">web</a>
+                      <a class="hover-with-bg" href="/tags/matlab-notes/">matlab notes</a>
                     
                   </div>
                 
@@ -307,12 +282,18 @@ echo serialize($test);
                   <article class="post-prev col-6">
                     
                     
+                      <a href="/2020/09/02/web-easy/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">web_easy</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2020/09/03/burpsuite/">
-                        <span class="hidden-mobile">burpsuite</span>
+                      <a href="/2020/08/26/book-8/">
+                        <span class="hidden-mobile">阅读随笔</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -331,8 +312,8 @@ echo serialize($test);
     <div id="disqus_thread"></div>
     <script type="text/javascript">
       var disqus_config = function () {
-        this.page.url = 'http://example.com/2020/09/07/wakeupup/';
-        this.page.identifier = '/2020/09/07/wakeupup/';
+        this.page.url = 'http://example.com/2020/08/29/matlabnotes-1/';
+        this.page.identifier = '/2020/08/29/matlabnotes-1/';
       };
       function loadDisqus() {
         (function () {
@@ -508,7 +489,7 @@ echo serialize($test);
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "序列化 反序列化&nbsp;",
+        "matlabnotes_1&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,

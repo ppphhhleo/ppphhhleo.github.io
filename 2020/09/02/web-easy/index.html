@@ -19,10 +19,23 @@
   <meta name="description" content="">
   <meta name="author" content="PH">
   <meta name="keywords" content="">
-  <title>PH ’s Lounge</title>
+  <title>web_easy - PH ’s Lounge</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+    
+  
+
+  
 
 
 <!-- 主题依赖的图标库，不要自行修改 -->
@@ -45,7 +58,7 @@
 
 
 <body>
-  <header style="height: 75vh;">
+  <header style="height: 100vh;">
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
@@ -151,7 +164,7 @@
 </nav>
 
     <div class="banner intro-2" id="background" parallax=true
-         style="background: url('/img/v2.jpg') no-repeat center center;
+         style="background: url('/img/fg.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.4)">
@@ -161,8 +174,49 @@
             </span>
 
             
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-09-02 00:54" pubdate>
+        September 2, 2020 am
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      244 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      2
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
           </div>
 
+          
+            <div class="scroll-down-bar">
+              <i class="iconfont icon-arrowdown"></i>
+            </div>
           
         </div>
       </div>
@@ -171,286 +225,121 @@
 
   <main>
     
-      <div class="container nopadding-md">
-        <div class="py-5" id="board"
-          >
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
-                
+      
 
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        <a href="/2020/09/11/wakeupup/">序列化 反序列化</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2020/09/11/wakeupup/">
-          
-          
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto" id="post">
+            <!-- SEO header -->
+            <h1 style="display: none">web_easy</h1>
             
-          
-          web学习笔记 序列化 反序列化题目为unserialize，
-class xctf&#123;
-public $flag = &#39;111&#39;;
-public function __wakeup()&#123;
-exit(&#39;bad requests&#39;);
-&#125;
-?code=
-题目暗示，试将对象xctf 序列化：&lt;?php
-class xctf &#123;
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2020-09-11 00:03" pubdate>
-              2020-09-11
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/web/">web</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        <a href="/2020/09/09/burpsuite/">burpsuite</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2020/09/09/burpsuite/">
-          
-          
-            
-          
-          burpsuite 曲折破解记在写攻防世界Web_weak_auth，问题在于：破解账户名和密码  
-“login as admin” 提示了用户名为 admin，题目描述的孩子，呆呆地，“随手设置了密码”这份呆呆，容易联想到弱口令，反手一试123456，flag正面来迎  
-但复盘再看大佬的Write up， 不少用的暴力求解有python写脚本，有burpsuite抓包攻击秉持着“亲自多试试”
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2020-09-09 20:27" pubdate>
-              2020-09-09
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/notes/">notes</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        <a href="/2020/09/02/web-easy/">web_easy</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2020/09/02/web-easy/">
-          
-          
-            
-          
-          随意记录web题 歪比歪比
-GET POSTrobot协议/robot.txt 莫名其妙的“保护口令”此地无银三百两的博弈
-Referer XFFreferer浏览器向web服务器发送请求时，会有referer告诉服务器从哪个页面链接来。比如我只允许我自己的网站访问我自己的图片服务器，那我的域名是 google.com，那 么图片服务器每次 取到 Referer来判断一下是不是我自己的域名 goo
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2020-09-02 00:54" pubdate>
-              2020-09-02
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/web/">web</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        <a href="/2020/08/29/matlabnotes-1/">matlabnotes_1</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2020/08/29/matlabnotes-1/">
-          
-          
-            
-          
-          matlab notes_1符号对象
-符号对象(Symbolic Objects 不同于普通的数值计算)是Matlab中的一种特殊数据类型，它可以用来表示符号变量、表达式以及矩阵，利用符号对象能够在不考虑符号所对应的具体数值的情况下能够进行代数分析和符号计算(symbolic math operations)，例如因式分解、化简、解代数方程、解常微分方程、积分、矩阵运算等。符号对象需要通过sym或
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2020-08-29 00:51" pubdate>
-              2020-08-29
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/matlab-notes/">matlab notes</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        <a href="/2020/08/26/book-8/">阅读随笔</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2020/08/26/book-8/">
-          
-          
-            
-          
-          春宵苦短非常中二的书名 有同名动漫  
-春宵苦短 少女前进吧
-  也很贴切我对日本动漫中二 热血 随性 的”刻板”印象  ，字里行间都透露中二气息，读起来很愉快。  还有极具特色的元素：清酒，锦鲤旗，不倒翁，校园祭，旧书店，樱花雨…  “刻板”之上，还有欢快广阔的想象，  “神的随心所欲主义”  “旧书店之神”  “苹果雨” “极致的辣火锅”，  自然小狂野，校园青春的中二感更为天马行空。  
- 
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2020-08-26 01:18" pubdate>
-              2020-08-26
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/reading/">reading</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        <a href="/2020/08/09/1/">hexo +github + vercel</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2020/08/09/1/">
-          
-          
-            
-          
-          hexo框架 部署github 快速搭建个人blog   Windows博客搭建笔记这里搞一下那里再搞一下折腾就好了
-0 环境Node官网链接 Node.js
-Download for windowsRecommended For Most Users
-Git官网链接 Git
-download for Windows
-安装并不复杂 next -&gt; next -&gt; next…检测安装成功
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2020-08-09 16:14" pubdate>
-              2020-08-09
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/hard-try/">hard try</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-
-
-
-
-              </div>
+            <div class="markdown-body" id="post-body">
+              <p>随意记录web题 歪比歪比</p>
+<h2 id="GET-POST"><a href="#GET-POST" class="headerlink" title="GET POST"></a>GET POST</h2><h2 id="robot协议"><a href="#robot协议" class="headerlink" title="robot协议"></a>robot协议</h2><p>/robot.txt 莫名其妙的“保护口令”<br>此地无银三百两的博弈</p>
+<h2 id="Referer-XFF"><a href="#Referer-XFF" class="headerlink" title="Referer XFF"></a>Referer XFF</h2><h3 id="referer"><a href="#referer" class="headerlink" title="referer"></a>referer</h3><p>浏览器向web服务器发送请求时，会有referer告诉服务器从哪个页面链接来。<br>比如我只允许我自己的网站访问我自己的图片服务器，那我的域名是 google.com，那 么图片服务器每次 取到 Referer来判断一下是不是我自己的域名 google.com，如果是就继续访问，不是就拦截。还可以防恶意请求。  </p>
+<h3 id="xff"><a href="#xff" class="headerlink" title="xff"></a>xff</h3><p>xff ： X-Forwarded-For<br>告诉服务器当前请求，最终ip的http的请求头字段</p>
+<p>题目： xff 和 referer 是可以伪造的。<br>用burpsuite抓一下，send to repeater， 把 xff 和 referer 修改即可。难点在于之前不理解TCP/IP协议等。</p>
+<h2 id="find-linux指令"><a href="#find-linux指令" class="headerlink" title="find linux指令"></a>find linux指令</h2><blockquote>
+<p>find / -name “.txt”<br>搜索全部txt文件，熟悉这个指令，可以不用 ls 一层一层找了，hhh</p>
+</blockquote>
+<h2 id="url编码"><a href="#url编码" class="headerlink" title="url编码"></a>url编码</h2>
             </div>
-          </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/web/">web</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/09/09/burpsuite/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">burpsuite</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/08/29/matlabnotes-1/">
+                        <span class="hidden-mobile">matlabnotes_1</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div class="disqus" style="width:100%">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+      var disqus_config = function () {
+        this.page.url = 'http://example.com/2020/09/02/web-easy/';
+        this.page.identifier = '/2020/09/02/web-easy/';
+      };
+      function loadDisqus() {
+        (function () {
+          var d = document,
+            s = d.createElement('script');
+          s.src = '//' + '' + '.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      }
+      waitElementVisible('disqus_thread', loadDisqus);
+    </script>
+    <noscript>Please enable JavaScript to view the
+      <a target="_blank" href="https://disqus.com/?ref_noscript" rel="nofollow noopener noopener">comments powered by Disqus.</a>
+    </noscript>
+  </div>
+
+
+              </article>
+            
+          </article>
         </div>
       </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
     
   </main>
 
@@ -555,6 +444,31 @@ download for Windows
 
 
 
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '#post-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
 
 
   <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
@@ -562,7 +476,7 @@ download for Windows
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "八千里路云和月&nbsp;",
+        "web_easy&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
@@ -577,6 +491,21 @@ download for Windows
 
 
 
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
 
 
   <script  src="/js/local-search.js" ></script>
@@ -590,6 +519,20 @@ download for Windows
   </script>
 
 
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
 
 
 

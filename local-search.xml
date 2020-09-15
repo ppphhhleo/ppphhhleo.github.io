@@ -5,8 +5,8 @@
   
   <entry>
     <title>序列化 反序列化</title>
-    <link href="/2020/09/07/wakeupup/"/>
-    <url>/2020/09/07/wakeupup/</url>
+    <link href="/2020/09/11/wakeupup/"/>
+    <url>/2020/09/11/wakeupup/</url>
     
     <content type="html"><![CDATA[<h1 id="web学习笔记-序列化-反序列化"><a href="#web学习笔记-序列化-反序列化" class="headerlink" title="web学习笔记 序列化 反序列化"></a>web学习笔记 序列化 反序列化</h1><p>题目为unserialize，</p><pre><code>class xctf&#123;public $flag = &#39;111&#39;;public function __wakeup()&#123;exit(&#39;bad requests&#39;);&#125;?code=</code></pre><h2 id="题目暗示，试将对象xctf-序列化："><a href="#题目暗示，试将对象xctf-序列化：" class="headerlink" title="题目暗示，试将对象xctf 序列化："></a>题目暗示，试将对象xctf 序列化：</h2><pre><code>&lt;?phpclass xctf &#123;    public $flag = &#39;111&#39;;    public funciton_wakeup() &#123;        exit(&#39;bad request&#39;);    &#125;&#125;$c = new xctf();echo(serialize($c));?&gt;</code></pre><p>得到序列化字符串：</p><blockquote><p>O:4:”xctf”:1:{s:4:”flag”;s:3:”111”;}</p></blockquote><p>含义为：  </p><blockquote><p>Object : length: “class name” : n : { String : name1 : value1 ; String : name2 : value2; ……}</p></blockquote><p>length: 被序列化对象的名称长度；<br>n：被序列化对象的属性个数；</p><h2 id="绕过"><a href="#绕过" class="headerlink" title="绕过"></a>绕过</h2><p>为了不要’bad request’，需绕过_wakeup() 函数<br>如何绕过：<strong>当序列化字符串中的属性个数值大于实际的属性个数时，就会导致反序列化异常，从而跳过_wakeup()</strong><br>针对此题修改 n &gt; 1 即可<br>用 POST 提交，得flag</p><h2 id=""><a href="#" class="headerlink" title=""></a></h2><p>1、serialize()函数：用于序列化对象或数组，并返回一个字符串。序列化对象后，可以很方便的将它传递给其他需要它的地方，且其类型和结构<strong>不会改变</strong>。</p><p>2、unserialize()函数：用于将通过serialize()函数序列化后的对象或数组进行反序列化，并返回原始的对象结构。</p><p>总之，序列化和反序列化，<strong>是对象的保存和重建。</strong></p><p>3、<a href="https://www.php.net/manual/zh/language.oop5.magic.php">魔术方法</a>：PHP 将所有以 __（两个下划线）开头的类方法保留为魔术方法。所以在定义类方法时，除了上述魔术方法，建议不要以 __ 为前缀。</p><p>4、serialize()和unserialize()函数对魔术方法的处理：serialize()函数会检查类中是否存在一个魔术方法__sleep()。  如果存在，该方法会先被调用，然后才执行序列化操作。</p><p>5、__wakeup()执行漏洞：一个字符串或对象被序列化后，如果其属性被修改，则不会执行__wakeup()函数，这也是一个绕过点。</p><p>BTW <strong>三个不同类型的字符串</strong>，但值相同，<br>序列化后输出的值也不相同  </p><pre><code>&lt;?phpclass test&#123;    private $test1=&quot;hello&quot;;    public $test2=&quot;hello&quot;;    protected $test3=&quot;hello&quot;;&#125;$test = new test();echo serialize($test); ?&gt;</code></pre><blockquote><p> O:4:”test”:3:{s:11:”test test1”;s:5:”hello”;s:5:”test2”;s:5:”hello”;s:8:” * test3”;s:5:”hello”;}</p></blockquote>]]></content>
     
@@ -24,8 +24,8 @@
   
   <entry>
     <title>burpsuite</title>
-    <link href="/2020/09/03/burpsuite/"/>
-    <url>/2020/09/03/burpsuite/</url>
+    <link href="/2020/09/09/burpsuite/"/>
+    <url>/2020/09/09/burpsuite/</url>
     
     <content type="html"><![CDATA[<h1 id="burpsuite-曲折破解记"><a href="#burpsuite-曲折破解记" class="headerlink" title="burpsuite 曲折破解记"></a>burpsuite 曲折破解记</h1><p>在写攻防世界Web_weak_auth，<br>问题在于：<strong>破解账户名和密码</strong>  </p><p>“login as admin” 提示了用户名为 admin，<br>题目描述的孩子，呆呆地，“随手设置了密码”<br>这份呆呆，容易联想到弱口令，<br>反手一试123456，flag正面来迎  </p><p>但复盘再看大佬的Write up， 不少用的<strong>暴力求解</strong><br><strong>有python写脚本，有burpsuite抓包攻击</strong><br>秉持着“亲自多试试”，“拓展思路”的想法<br>我也要试试爆破密码!    </p><hr><h1 id="工欲善其事必先利其器"><a href="#工欲善其事必先利其器" class="headerlink" title="工欲善其事必先利其器"></a>工欲善其事必先利其器</h1><blockquote><p>（当时并没意识到：工具准备两小时，解题夺旗十分钟）</p></blockquote><p>这个工具，burpsuite的安装配备，  </p><p>走了太多多多多弯路<br>为避免再次踩坑、规避非技术的费心、整合安装资源，记录这篇曲折blog</p><blockquote><p>burpsuite 可在官网上下载， professional 要收费，399刀一年。<br>我偏要破解，**<em>走弯路的时间成本或许抵得上官网的收费吧。**</em><br>以下将介绍通过<strong>burp-loader-keygen，来破解burpsuite</strong>。</p></blockquote><h2 id="0-环境配备"><a href="#0-环境配备" class="headerlink" title="0 环境配备"></a>0 环境配备</h2><ul><li>运行burpsuite，要安装java运行环境，推荐<br><a href="https://pan.waitalone.cn/%E7%A5%9E%E5%85%B5%E5%88%A9%E5%99%A8/BurpSuite/jdk-8u181-windows-x64.exe">直接点击下载 JAVA</a></li></ul><p>安装时，点击点击点击下一步，<br>系统默认创建了新路径C:\Program Files\Java，存储JDK 和 JRE 文件。  </p><h2 id="1-破解工具"><a href="#1-破解工具" class="headerlink" title="1 破解工具"></a>1 破解工具</h2><ul><li>下载burpsuite及burp-loader，推荐<br><a href="https://pan.waitalone.cn/%E7%A5%9E%E5%85%B5%E5%88%A9%E5%99%A8/BurpSuite/burpsuite_pro_v2.1.06/">直接点击下载破解工具</a>  </li></ul><p>推荐下载的java和burpsuite，版本都相适应使用。<br>如版本不适配，影响安装。</p><hr><h3 id="坑-a"><a href="#坑-a" class="headerlink" title="坑_a"></a><strong>坑_a</strong></h3><p>在第一遍安装java环境时，并没完全成功，一开始没意识到，<br>到破解时点击“run”丝毫没有响应，才怀疑可能是环境的问题。<br>当时的检查：在CMD 中敲 java ，出现java指令的用法，<br>但敲javac，出现：*’javac’ 不是内部或外部命令，也不是可运行的程序或批处理文件。*<br>google 后，知道要添加环境变量，按着前人的脚步搞好了。</p><hr><h2 id="2-破解过程"><a href="#2-破解过程" class="headerlink" title="2 破解过程"></a>2 破解过程</h2><ul><li><p>配置好java环境，可选择java打开方式burp-loader-keygen-2_1_06.jar，<br>（正常来说，双击即可打开）<br>点击run，会打开burpsuite界面</p></li><li><p>复制license中的一大串东西，粘贴到burpsuite界面<br>点击选择手动激活（就是点击manual ××× ），<br>然后点击next按钮<br>再复制burpsuite页面下边出现的一大串东西，<br>粘贴到license第二个框框<br>（这些破解步骤easy，Google it when faced difficulties)</p></li></ul><hr><h3 id="坑-b"><a href="#坑-b" class="headerlink" title="坑_b"></a><strong>坑_b</strong></h3><p>填了第一个坑，环境变量弄好，<br>CMD中java、javac指令都有响应了<br>然而破解时点击“run”还是打不开<br>就试着用CMD打开 ：  </p><pre><code>javaw -jar burp-loader-keygen-2_1_06.jar  </code></pre><p>“run” 就有响应了！</p><hr><h2 id="3-快捷方式"><a href="#3-快捷方式" class="headerlink" title="3 快捷方式"></a>3 快捷方式</h2><p>每次要打开burpsuite，总不能复制来复制去的<br>就在路径 C:\Program Files\Java 中新建了burp.bat<br>输入  </p><pre><code>javaw -jar burp-loader-keygen-2_1_06.jar </code></pre><p>保存后，发送到桌面快捷方式。<br>搞定</p>]]></content>
     
@@ -34,6 +34,63 @@
     <tags>
       
       <tag>notes</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>web_easy</title>
+    <link href="/2020/09/02/web-easy/"/>
+    <url>/2020/09/02/web-easy/</url>
+    
+    <content type="html"><![CDATA[<p>随意记录web题 歪比歪比</p><h2 id="GET-POST"><a href="#GET-POST" class="headerlink" title="GET POST"></a>GET POST</h2><h2 id="robot协议"><a href="#robot协议" class="headerlink" title="robot协议"></a>robot协议</h2><p>/robot.txt 莫名其妙的“保护口令”<br>此地无银三百两的博弈</p><h2 id="Referer-XFF"><a href="#Referer-XFF" class="headerlink" title="Referer XFF"></a>Referer XFF</h2><h3 id="referer"><a href="#referer" class="headerlink" title="referer"></a>referer</h3><p>浏览器向web服务器发送请求时，会有referer告诉服务器从哪个页面链接来。<br>比如我只允许我自己的网站访问我自己的图片服务器，那我的域名是 google.com，那 么图片服务器每次 取到 Referer来判断一下是不是我自己的域名 google.com，如果是就继续访问，不是就拦截。还可以防恶意请求。  </p><h3 id="xff"><a href="#xff" class="headerlink" title="xff"></a>xff</h3><p>xff ： X-Forwarded-For<br>告诉服务器当前请求，最终ip的http的请求头字段</p><p>题目： xff 和 referer 是可以伪造的。<br>用burpsuite抓一下，send to repeater， 把 xff 和 referer 修改即可。难点在于之前不理解TCP/IP协议等。</p><h2 id="find-linux指令"><a href="#find-linux指令" class="headerlink" title="find linux指令"></a>find linux指令</h2><blockquote><p>find / -name “.txt”<br>搜索全部txt文件，熟悉这个指令，可以不用 ls 一层一层找了，hhh</p></blockquote><h2 id="url编码"><a href="#url编码" class="headerlink" title="url编码"></a>url编码</h2>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>web</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>matlabnotes_1</title>
+    <link href="/2020/08/29/matlabnotes-1/"/>
+    <url>/2020/08/29/matlabnotes-1/</url>
+    
+    <content type="html"><![CDATA[<h1 id="matlab-notes-1"><a href="#matlab-notes-1" class="headerlink" title="matlab notes_1"></a>matlab notes_1</h1><h2 id="符号对象"><a href="#符号对象" class="headerlink" title="符号对象"></a>符号对象</h2><ul><li><p>符号对象(Symbolic Objects 不同于普通的数值计算)是Matlab中的一种特殊数据类型，<br>它可以用来表示符号变量、表达式以及矩阵，<br>利用符号对象能够在不考虑符号所对应的具体数值的情况下能够进行代数分析和符号计算(symbolic math operations)，<br>例如因式分解、化简、解代数方程、解常微分方程、积分、矩阵运算等。符号对象需要通过sym或syms函数来指定。</p><p>  syms a;<br>  b = sym(c, ‘f’);<br>  d = sym(3);<br>  e = sym(1/2);</p></li></ul><blockquote><p>d + e = 7 /2</p></blockquote><pre><code>syms xg = (sqrt(1 + x * sin(tan(x))) - 1) / (1 - sqrt(cos(x)))limit(g, x, 0)</code></pre><blockquote><p>ans = 2</p></blockquote><ul><li>普通的数字转换成符号类型后也可以被作为符号对象来处理，<br>得到符号数依旧具有数字值的含义，但无浮点运算。</li></ul><h2 id="函数句柄"><a href="#函数句柄" class="headerlink" title="函数句柄"></a>函数句柄</h2><p>f=@(x)acos(x)<br>表示f为函数句柄，@是定义句柄的运算符。<br>f=@(x)acos(x) 相当于建立了一个函数文件：</p><ul><li>% f.m<br>function y=f(x)<br>y=acos(x);</li></ul>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>matlab notes</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>阅读随笔</title>
+    <link href="/2020/08/26/book-8/"/>
+    <url>/2020/08/26/book-8/</url>
+    
+    <content type="html"><![CDATA[<h2 id="春宵苦短"><a href="#春宵苦短" class="headerlink" title="春宵苦短"></a>春宵苦短</h2><p>非常中二的书名 有同名动漫  </p><p><strong>春宵苦短 少女前进吧</strong></p><p>  也很贴切我对日本动漫<strong>中二 热血 随性 的”刻板”印象</strong>  ，字里行间都透露中二气息，读起来很愉快。<br>  还有极具特色的元素：<strong>清酒，锦鲤旗，不倒翁，校园祭，旧书店，樱花雨</strong>…<br>  “刻板”之上，还有欢快广阔的想象，<br>  “神的随心所欲主义”<br>  “旧书店之神”<br>  “苹果雨” “极致的辣火锅”，<br>  自然小狂野，校园青春的中二感更为天马行空。  </p><p>  <img src="https://ph-whuer.vercel.app/img/cxkd.jpeg" alt="品清酒"><br>  四个故事小心翼翼地推进他们相见 相识，男女主双视角轮换各自讲述见闻，我像见证奇遇的旁观者，有欣慰而美妙的参与感：**”读者诸贤，你们还好吗？”**<br>   虽然没有很细腻，但懵懵懂懂的文笔也很像女主初入大学时的状态，一股不知者无畏的气势：喜欢就去追寻，爱就去表达。  </p><p>   校园青春题材，没有因嫉妒而起的明争暗斗 没有无意义的虚荣攀比 没有消极堕落阴暗，积极 乐观 感恩，一扫过去所看日本文学的刻板。<br>  读起来很温柔，品一壶”白兰地电气”,<br>  肚子开了花海，春宵苦短，无暇顾及丧的羁绊了，放手前进吧</p><h2 id="面纱"><a href="#面纱" class="headerlink" title="面纱"></a>面纱</h2><p>  ？<br>面纱的文字把女主心路历程解构得很透彻。<br>迷惑感叹：他为什么会爱？<br>他理智、冷静、隐忍、细腻，<strong>他不把爱当做权力</strong>，而当做恩惠。舔得够高级了吧，没有价值互取，不是臭味相投：但他把凯蒂看得很清楚，她浅薄轻浮没头脑，可以轻易被控制和维系情感。后来她有了独立的思考与真诚，他死前遗言是”死的那个是狗”。<br>他报复她，轻视她，但没想到她在瘟疫中成长为独立自信的人，他又无法原谅爱上她的自己是阴暗且卑微的，临死还背负怨念，才发现自己从想报复的狗，到发现她出轨后的道德博弈的善人，最后到折磨不休的狗。卒<br>？  </p><h2 id="信条"><a href="#信条" class="headerlink" title="信条"></a>信条</h2><p>诺兰  新作<br>凭着星际穿越的期待，看了信条，着实不是我当初期待的模样：<strong>设定要硬核、人物塑造要饱满、科幻要落地在情感上。</strong><br>然，信条的感觉更像谍战片（？） 友谊线、母子线都不如星际穿越的父女线，星际那句”<strong>我的一次呼吸，划过了你的无数岁月</strong>“，也比尼尔告别时所言”<strong>我在起点等你</strong>“，更丰满触动。<br>时间斑驳变化，看他们人生浮沉，也不够深刻，或许是还品不到光怪陆离下的细节。<br>不过，走出影厅，我对与我逆行而来的人群的观察，有了微妙变化，我对身边事物的感知，有了<strong>奇妙的体验</strong>。我才意识到：整场电影，诺兰给了视觉、设定冲击的同时，也在解构、重建我的现实时空观。<br>我之前一直说科幻作品，不该只是空洞的设定，未来无论如何地赛博朋克，核心都要有饱满真实的人类情感，优秀作品如降临 火星编年史 星际穿越 PKD系列科幻… 信条的观影体验，确实落空当初的期待，但我也收获了新体验。影院里在听到男主问”那自由意志呢？”，我还暗自发笑，出了影院才发觉自己的潜在观念有解构。<br>这一新的体验，来得惊喜，也稍微有改变我之前的科幻标准，虽然无法改变 信条 人物情感深挖不够的事实。</p><h2 id="恶之花"><a href="#恶之花" class="headerlink" title="恶之花"></a>恶之花</h2><h2 id="莫失莫忘"><a href="#莫失莫忘" class="headerlink" title="莫失莫忘"></a>莫失莫忘</h2><p>9月最惊喜的一本日本文学，石黑一雄<br>“日本文学居然也可以有反乌托邦？！”<br>挖坑之后来填</p><h2 id="离别之音"><a href="#离别之音" class="headerlink" title="离别之音"></a>离别之音</h2><h2 id="温柔的叹息"><a href="#温柔的叹息" class="headerlink" title="温柔的叹息"></a>温柔的叹息</h2><h2 id="风之影"><a href="#风之影" class="headerlink" title="风之影"></a>风之影</h2><p>西班牙文学  </p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>reading</tag>
       
     </tags>
     

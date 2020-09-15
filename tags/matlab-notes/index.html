@@ -19,7 +19,7 @@
   <meta name="description" content="">
   <meta name="author" content="PH">
   <meta name="keywords" content="">
-  <title>PH ’s Lounge</title>
+  <title>Tags - matlab notes - PH ’s Lounge</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -151,10 +151,10 @@
 </nav>
 
     <div class="banner intro-2" id="background" parallax=true
-         style="background: url('/img/v2.jpg') no-repeat center center;
+         style="background: url('/img/fg.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
-        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.4)">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="container page-header text-center fade-in-up">
             <span class="h2" id="subtitle">
               
@@ -180,269 +180,20 @@
               <div class="col-12 col-md-10 m-auto">
                 
 
-
-  <div class="row mx-auto index-card">
+<div class="list-group">
+  <p class="h4">1 posts in total.</p>
+  <hr>
+  
     
+      
+      <p class="h5">2020</p>
     
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        <a href="/2020/09/11/wakeupup/">序列化 反序列化</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2020/09/11/wakeupup/">
-          
-          
-            
-          
-          web学习笔记 序列化 反序列化题目为unserialize，
-class xctf&#123;
-public $flag = &#39;111&#39;;
-public function __wakeup()&#123;
-exit(&#39;bad requests&#39;);
-&#125;
-?code=
-题目暗示，试将对象xctf 序列化：&lt;?php
-class xctf &#123;
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2020-09-11 00:03" pubdate>
-              2020-09-11
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/web/">web</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        <a href="/2020/09/09/burpsuite/">burpsuite</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2020/09/09/burpsuite/">
-          
-          
-            
-          
-          burpsuite 曲折破解记在写攻防世界Web_weak_auth，问题在于：破解账户名和密码  
-“login as admin” 提示了用户名为 admin，题目描述的孩子，呆呆地，“随手设置了密码”这份呆呆，容易联想到弱口令，反手一试123456，flag正面来迎  
-但复盘再看大佬的Write up， 不少用的暴力求解有python写脚本，有burpsuite抓包攻击秉持着“亲自多试试”
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2020-09-09 20:27" pubdate>
-              2020-09-09
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/notes/">notes</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        <a href="/2020/09/02/web-easy/">web_easy</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2020/09/02/web-easy/">
-          
-          
-            
-          
-          随意记录web题 歪比歪比
-GET POSTrobot协议/robot.txt 莫名其妙的“保护口令”此地无银三百两的博弈
-Referer XFFreferer浏览器向web服务器发送请求时，会有referer告诉服务器从哪个页面链接来。比如我只允许我自己的网站访问我自己的图片服务器，那我的域名是 google.com，那 么图片服务器每次 取到 Referer来判断一下是不是我自己的域名 goo
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2020-09-02 00:54" pubdate>
-              2020-09-02
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/web/">web</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        <a href="/2020/08/29/matlabnotes-1/">matlabnotes_1</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2020/08/29/matlabnotes-1/">
-          
-          
-            
-          
-          matlab notes_1符号对象
-符号对象(Symbolic Objects 不同于普通的数值计算)是Matlab中的一种特殊数据类型，它可以用来表示符号变量、表达式以及矩阵，利用符号对象能够在不考虑符号所对应的具体数值的情况下能够进行代数分析和符号计算(symbolic math operations)，例如因式分解、化简、解代数方程、解常微分方程、积分、矩阵运算等。符号对象需要通过sym或
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2020-08-29 00:51" pubdate>
-              2020-08-29
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/matlab-notes/">matlab notes</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        <a href="/2020/08/26/book-8/">阅读随笔</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2020/08/26/book-8/">
-          
-          
-            
-          
-          春宵苦短非常中二的书名 有同名动漫  
-春宵苦短 少女前进吧
-  也很贴切我对日本动漫中二 热血 随性 的”刻板”印象  ，字里行间都透露中二气息，读起来很愉快。  还有极具特色的元素：清酒，锦鲤旗，不倒翁，校园祭，旧书店，樱花雨…  “刻板”之上，还有欢快广阔的想象，  “神的随心所欲主义”  “旧书店之神”  “苹果雨” “极致的辣火锅”，  自然小狂野，校园青春的中二感更为天马行空。  
- 
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2020-08-26 01:18" pubdate>
-              2020-08-26
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/reading/">reading</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        <a href="/2020/08/09/1/">hexo +github + vercel</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2020/08/09/1/">
-          
-          
-            
-          
-          hexo框架 部署github 快速搭建个人blog   Windows博客搭建笔记这里搞一下那里再搞一下折腾就好了
-0 环境Node官网链接 Node.js
-Download for windowsRecommended For Most Users
-Git官网链接 Git
-download for Windows
-安装并不复杂 next -&gt; next -&gt; next…检测安装成功
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2020-08-09 16:14" pubdate>
-              2020-08-09
-            </time>
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/hard-try/">hard try</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-
+    <a href="/2020/08/29/matlabnotes-1/" class="list-group-item list-group-item-action">
+      <span class="archive-post-title">matlabnotes_1</span>
+      <time style="float: right;">08-29</time>
+    </a>
+  
+</div>
 
 
 
@@ -562,7 +313,7 @@ download for Windows
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "八千里路云和月&nbsp;",
+        "Tag - matlab notes&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
