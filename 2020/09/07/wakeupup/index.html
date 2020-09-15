@@ -19,7 +19,7 @@
   <meta name="description" content="">
   <meta name="author" content="PH">
   <meta name="keywords" content="">
-  <title>Hello World - PH ’s Lounge</title>
+  <title>序列化 反序列化 - PH ’s Lounge</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -179,8 +179,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2020-09-14 16:11" pubdate>
-        September 14, 2020 pm
+      <time datetime="2020-09-07 00:03" pubdate>
+        September 7, 2020 am
       </time>
     </span>
   
@@ -191,7 +191,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      75 字
+      550 字
     </span>
   
 
@@ -201,7 +201,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      1
+      7
        分钟
     </span>
   
@@ -235,28 +235,68 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto" id="post">
             <!-- SEO header -->
-            <h1 style="display: none">Hello World</h1>
+            <h1 style="display: none">序列化 反序列化</h1>
             
             <div class="markdown-body" id="post-body">
-              <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><pre><code class="hljs bash">$ hexo new <span class="hljs-string">&quot;My New Post&quot;</span></code></pre>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><pre><code class="hljs bash">$ hexo server</code></pre>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><pre><code class="hljs bash">$ hexo generate</code></pre>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><pre><code class="hljs bash">$ hexo deploy</code></pre>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+              <h1 id="web学习笔记-序列化-反序列化"><a href="#web学习笔记-序列化-反序列化" class="headerlink" title="web学习笔记 序列化 反序列化"></a>web学习笔记 序列化 反序列化</h1><p>题目为unserialize，</p>
+<pre><code>class xctf&#123;
+public $flag = &#39;111&#39;;
+public function __wakeup()&#123;
+exit(&#39;bad requests&#39;);
+&#125;
+?code=</code></pre>
+<h2 id="题目暗示，试将对象xctf-序列化："><a href="#题目暗示，试将对象xctf-序列化：" class="headerlink" title="题目暗示，试将对象xctf 序列化："></a>题目暗示，试将对象xctf 序列化：</h2><pre><code>&lt;?php
+class xctf &#123;
+    public $flag = &#39;111&#39;;
+    public funciton_wakeup() &#123;
+        exit(&#39;bad request&#39;);
+    &#125;
+&#125;
+$c = new xctf();
+echo(serialize($c));
+?&gt;</code></pre>
+<p>得到序列化字符串：</p>
+<blockquote>
+<p>O:4:”xctf”:1:{s:4:”flag”;s:3:”111”;}</p>
+</blockquote>
+<p>含义为：  </p>
+<blockquote>
+<p>Object : length: “class name” : n : { String : name1 : value1 ; String : name2 : value2; ……}</p>
+</blockquote>
+<p>length: 被序列化对象的名称长度；<br>n：被序列化对象的属性个数；</p>
+<h2 id="绕过"><a href="#绕过" class="headerlink" title="绕过"></a>绕过</h2><p>为了不要’bad request’，需绕过_wakeup() 函数<br>如何绕过：<strong>当序列化字符串中的属性个数值大于实际的属性个数时，就会导致反序列化异常，从而跳过_wakeup()</strong><br>针对此题修改 n &gt; 1 即可<br>用 POST 提交，得flag</p>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><p>1、serialize()函数：用于序列化对象或数组，并返回一个字符串。序列化对象后，可以很方便的将它传递给其他需要它的地方，且其类型和结构<strong>不会改变</strong>。</p>
+<p>2、unserialize()函数：用于将通过serialize()函数序列化后的对象或数组进行反序列化，并返回原始的对象结构。</p>
+<p>总之，序列化和反序列化，<strong>是对象的保存和重建。</strong></p>
+<p>3、<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.oop5.magic.php">魔术方法</a>：PHP 将所有以 __（两个下划线）开头的类方法保留为魔术方法。所以在定义类方法时，除了上述魔术方法，建议不要以 __ 为前缀。</p>
+<p>4、serialize()和unserialize()函数对魔术方法的处理：serialize()函数会检查类中是否存在一个魔术方法__sleep()。  如果存在，该方法会先被调用，然后才执行序列化操作。</p>
+<p>5、__wakeup()执行漏洞：一个字符串或对象被序列化后，如果其属性被修改，则不会执行__wakeup()函数，这也是一个绕过点。</p>
+<p>BTW <strong>三个不同类型的字符串</strong>，但值相同，<br>序列化后输出的值也不相同  </p>
+<pre><code>&lt;?php
+class test&#123;
+    private $test1=&quot;hello&quot;;
+    public $test2=&quot;hello&quot;;
+    protected $test3=&quot;hello&quot;;
+&#125;
+$test = new test();
+echo serialize($test); 
+?&gt;</code></pre>
+<blockquote>
+<p> O:4:”test”:3:{s:11:”test test1”;s:5:”hello”;s:5:”test2”;s:5:”hello”;s:8:” * test3”;s:5:”hello”;}</p>
+</blockquote>
 
             </div>
             <hr>
             <div>
               <div class="post-metas mb-3">
                 
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/web/">web</a>
+                    
+                  </div>
                 
               </div>
               
@@ -291,8 +331,8 @@
     <div id="disqus_thread"></div>
     <script type="text/javascript">
       var disqus_config = function () {
-        this.page.url = 'http://example.com/2020/09/14/hello-world/';
-        this.page.identifier = '/2020/09/14/hello-world/';
+        this.page.url = 'http://example.com/2020/09/07/wakeupup/';
+        this.page.identifier = '/2020/09/07/wakeupup/';
       };
       function loadDisqus() {
         (function () {
@@ -468,7 +508,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "Hello World&nbsp;",
+        "序列化 反序列化&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
