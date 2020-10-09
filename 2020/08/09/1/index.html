@@ -191,7 +191,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      967 字
+      1.1k 字
     </span>
   
 
@@ -201,7 +201,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      13
+      15
        分钟
     </span>
   
@@ -374,6 +374,21 @@ deb-src https://mirrors.ustc.edu.cn/ubuntu/ bionic-security main restricted univ
 deb https://mirrors.ustc.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse
 deb-src https://mirrors.ustc.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse</code></pre>
 <p> <a href="/download/comments_IR.csv">IR project_comments</a></p>
+<pre><code>python 读写csv
+file_object2=open(&#39;D:\A仲敏2015\python_code\\advice.csv&#39;).read().split(&#39;\n&#39;)  #一行行的读取内容
+Rs2=[] #建立存储分词的列表
+for i in range(len(file_object2)):
+    result=[]
+    seg_list = jieba.cut(file_object2[i])
+    for w in seg_list :#读取每一行分词
+        result.append(w)
+    Rs2.append(result)#将该行分词写入列表形式的总分词列表
+#写入CSV
+file=open(&#39;D:\Azhongmin2015\python_code\\result2.csv&#39;,&#39;w&#39;)
+writer = csv.writer(file)#定义写入格式
+writer.writerows(Rs2)#按行写入
+#file.write(str(Rs))
+file.close() </code></pre>
 
             </div>
             <hr>
