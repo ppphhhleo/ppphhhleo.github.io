@@ -201,7 +201,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      21
+      23
        分钟
     </span>
   
@@ -390,9 +390,38 @@ writer.writerows(Rs2)#按行写入
 #file.write(str(Rs))
 file.close() 
 
-import pandas as pd</code></pre>
-<p>list=[‘A’,  ‘B’,    ‘C’,  ‘D’,    ‘E’,  ‘F’,  ‘G’,  ‘H’,    ‘I’, ‘J’,  ‘K’, ‘L’]<br>word_list=[]<br>for i in range(0,len(list)):<br>    for j  in range(0,len(list)):<br>        word_list.append([list[i],list[j]])</p>
-<p>data={}<br>for k in range(0,10):<br>    with open(str(k)+”_keywords.txt”,’r’,encoding=’utf-8’,errors=’ignore’) as f:<br>        txt_list=f.read().strip().split(“\n”)<br>        for line in txt_list:<br>            for l in word_list:<br>                if l[0] in line and l[1]in line:<br>                    key=str(l[0])+’;’+str(l[1])+’;’<br>                    if key in data.keys():<br>                        data[key]=data[key]+1<br>                    else:<br>                        data.update({key:1})<br>    print(str(k)+’ 完成’)<br>data_only={}<br>for key in data.keys():<br>    key_list=key.split(‘;’)<br>    fkey=key_list[1]+’;’+key_list[0]+’;’<br>    kkey =key_list[1]+’;’+key_list[1]+’;’<br>    if fkey in data_only.keys() :<br>        print(fkey+’  <strong>已经在其中不在录入</strong>  ‘+key)<br>        continue<br>    elif key==kkey :<br>        print(key + ‘ **为叠词不计入统计’ )<br>    else:<br>        data_only.update({key:data[key]})</p>
+import pandas as pd
+list=[&#39;A&#39;,  &#39;B&#39;,    &#39;C&#39;,  &#39;D&#39;,    &#39;E&#39;,  &#39;F&#39;,  &#39;G&#39;,  &#39;H&#39;,    &#39;I&#39;, &#39;J&#39;,  &#39;K&#39;, &#39;L&#39;]
+word_list=[]
+for i in range(0,len(list)):
+    for j  in range(0,len(list)):
+        word_list.append([list[i],list[j]])
+
+data=&#123;&#125;
+for k in range(0,10):
+    with open(str(k)+&quot;_keywords.txt&quot;,&#39;r&#39;,encoding=&#39;utf-8&#39;,errors=&#39;ignore&#39;) as f:
+        txt_list=f.read().strip().split(&quot;\n&quot;)
+        for line in txt_list:
+            for l in word_list:
+                if l[0] in line and l[1]in line:
+                    key=str(l[0])+&#39;;&#39;+str(l[1])+&#39;;&#39;
+                    if key in data.keys():
+                        data[key]=data[key]+1
+                    else:
+                        data.update(&#123;key:1&#125;)
+    print(str(k)+&#39; 完成&#39;)
+data_only=&#123;&#125;
+for key in data.keys():
+    key_list=key.split(&#39;;&#39;)
+    fkey=key_list[1]+&#39;;&#39;+key_list[0]+&#39;;&#39;
+    kkey =key_list[1]+&#39;;&#39;+key_list[1]+&#39;;&#39;
+    if fkey in data_only.keys() :
+        print(fkey+&#39;  **已经在其中不在录入**  &#39;+key)
+        continue
+    elif key==kkey :
+        print(key + &#39; **为叠词不计入统计&#39; )
+    else:
+        data_only.update(&#123;key:data[key]&#125;)</code></pre>
 <p>共现统计</p>
 <pre><code># for key,value in data_only.items():
 #     with open(&quot;关键词共现次数(top10).txt&quot;,&#39;a+&#39;,encoding=&#39;utf-8&#39;,errors=&#39;ignore&#39;) as f:
