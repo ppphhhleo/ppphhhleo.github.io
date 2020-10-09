@@ -191,7 +191,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.1k 字
+      1.5k 字
     </span>
   
 
@@ -201,7 +201,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      15
+      21
        分钟
     </span>
   
@@ -373,7 +373,7 @@ deb https://mirrors.ustc.edu.cn/ubuntu/ bionic-security main restricted universe
 deb-src https://mirrors.ustc.edu.cn/ubuntu/ bionic-security main restricted universe multiverse
 deb https://mirrors.ustc.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse
 deb-src https://mirrors.ustc.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse</code></pre>
-<p> <a href="/download/comments_IR.csv">IR project_comments</a></p>
+<p> <a href="/download/comments_IR.csv">IR project_comments</a><br> <a href="/download/stop_words.txt">IR project_stop_words</a><br> <a href="/download/use_dic.txt">IR project_use_dic</a></p>
 <pre><code>python 读写csv
 file_object2=open(&#39;D:\A仲敏2015\python_code\\advice.csv&#39;).read().split(&#39;\n&#39;)  #一行行的读取内容
 Rs2=[] #建立存储分词的列表
@@ -388,7 +388,26 @@ file=open(&#39;D:\Azhongmin2015\python_code\\result2.csv&#39;,&#39;w&#39;)
 writer = csv.writer(file)#定义写入格式
 writer.writerows(Rs2)#按行写入
 #file.write(str(Rs))
-file.close() </code></pre>
+file.close() 
+
+import pandas as pd</code></pre>
+<p>list=[‘A’,  ‘B’,    ‘C’,  ‘D’,    ‘E’,  ‘F’,  ‘G’,  ‘H’,    ‘I’, ‘J’,  ‘K’, ‘L’]<br>word_list=[]<br>for i in range(0,len(list)):<br>    for j  in range(0,len(list)):<br>        word_list.append([list[i],list[j]])</p>
+<p>data={}<br>for k in range(0,10):<br>    with open(str(k)+”_keywords.txt”,’r’,encoding=’utf-8’,errors=’ignore’) as f:<br>        txt_list=f.read().strip().split(“\n”)<br>        for line in txt_list:<br>            for l in word_list:<br>                if l[0] in line and l[1]in line:<br>                    key=str(l[0])+’;’+str(l[1])+’;’<br>                    if key in data.keys():<br>                        data[key]=data[key]+1<br>                    else:<br>                        data.update({key:1})<br>    print(str(k)+’ 完成’)<br>data_only={}<br>for key in data.keys():<br>    key_list=key.split(‘;’)<br>    fkey=key_list[1]+’;’+key_list[0]+’;’<br>    kkey =key_list[1]+’;’+key_list[1]+’;’<br>    if fkey in data_only.keys() :<br>        print(fkey+’  <strong>已经在其中不在录入</strong>  ‘+key)<br>        continue<br>    elif key==kkey :<br>        print(key + ‘ **为叠词不计入统计’ )<br>    else:<br>        data_only.update({key:data[key]})</p>
+<p>共现统计</p>
+<pre><code># for key,value in data_only.items():
+#     with open(&quot;关键词共现次数(top10).txt&quot;,&#39;a+&#39;,encoding=&#39;utf-8&#39;,errors=&#39;ignore&#39;) as f:
+# f.write(key+str(value)+&#39;;&#39;+&#39;\n&#39;)
+for i in range(0,len(list)):
+    with open(&quot;词频共现矩阵(top10).txt&quot;, &quot;a+&quot;, encoding=&#39;utf-8&#39;, errors=&#39;ignore&#39;) as f:
+        f.write(list[i] + &#39;\t&#39;)
+    for j in range(0,len(list)):
+               with open(&quot;词频共现矩阵(top10).txt&quot;, &quot;a+&quot;, encoding=&#39;utf-8&#39;, errors=&#39;ignore&#39;) as f:
+            f.write(str(data[list[i]+list[j]])+&#39;\t&#39;)
+    else:
+        with open(&quot;词频共现矩阵(top10).txt&quot;, &quot;a+&quot;, encoding=&#39;utf-8&#39;, errors=&#39;ignore&#39;) as f:
+            f.write(str(0) + &#39;\t&#39;)
+with open(&quot;词频共现矩阵(top10).txt&quot;, &quot;a+&quot;, encoding=&#39;utf-8&#39;, errors=&#39;ignore&#39;) as f:
+    f.write(&quot;\n&quot;)</code></pre>
 
             </div>
             <hr>
