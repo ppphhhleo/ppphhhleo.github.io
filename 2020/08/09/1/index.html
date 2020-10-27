@@ -31,13 +31,7 @@
     
     
       
-      
-        
-        
-        
-      
-      <link  rel="stylesheet" href="https://cdn.staticfile.org/prism/1.21.0/themes/prism-solarizedlight.min.css" />
-      
+      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/dracula.min.css" />
     
   
 
@@ -256,7 +250,7 @@
 <p><strong>所有命令，都在这里输入</strong></p>
 <ul>
 <li><p>输入命令， 查看当前 node 版本。可查到版本号，nodejs安装成功  </p>
-<pre><code>  npm -version </code></pre>
+<div class="hljs"><pre><code>  npm -version </code></pre></div>
 </li>
 </ul>
 <hr>
@@ -274,30 +268,30 @@
 <li><strong>安装 hexo 框架</strong>  </li>
 </ul>
 <p>稍微等待。<br>安装成功，下一步。<br>安装失败，重来。</p>
-<pre><code>cnpm install -g hexo-cli</code></pre>
+<div class="hljs"><pre><code>cnpm install -g hexo-cli</code></pre></div>
 <p>查看安装版本  </p>
-<pre><code>hexo -v</code></pre>
+<div class="hljs"><pre><code>hexo -v</code></pre></div>
 <hr>
 <hr>
 <h2 id="3-地基"><a href="#3-地基" class="headerlink" title="3 地基"></a><strong>3 地基</strong></h2><ul>
 <li><strong>新建博客文件</strong>    </li>
 </ul>
 <p>查看当前目录</p>
-<pre><code>chdir</code></pre>
+<div class="hljs"><pre><code>chdir</code></pre></div>
 <blockquote>
 <p>C：\ Users\ yourname  </p>
 </blockquote>
 <p>在该目录下，新建文件夹 blog。<br>此后，博客相关的文件，都会保存在 blog 文件夹里。<br><strong>如果后续步骤出错，难以解决，可直接删除 blog 文件夹， 从此步骤重新开始。</strong></p>
-<pre><code>mkdir blog
-cd blog</code></pre>
+<div class="hljs"><pre><code>mkdir blog
+cd blog</code></pre></div>
 <p>初始化博客。<br>hexo 为你的博客，自动 clone 初始文件。  </p>
-<pre><code>hexo init</code></pre>
+<div class="hljs"><pre><code>hexo init</code></pre></div>
 <p>等待。 祈祷无error  </p>
 <blockquote>
 <p>Start blogging with Hexo!  </p>
 </blockquote>
 <p>初始化成功</p>
-<pre><code>hexo server</code></pre>
+<div class="hljs"><pre><code>hexo server</code></pre></div>
 <blockquote>
 <p>Hexo is ruuning at http： // localhost:4000  . Press Ctrl + C to stop  </p>
 </blockquote>
@@ -324,25 +318,25 @@ cd blog</code></pre>
 <p>yourname.github.io  </p>
 </blockquote>
 <p><strong>（2） 打开cmd， 命令行：</strong></p>
-<pre><code>cnpm install --save hexo-deployer-git</code></pre>
+<div class="hljs"><pre><code>cnpm install --save hexo-deployer-git</code></pre></div>
 <p><strong>（3） 打开 blog 文件夹，找到 _config.yml , 打开编辑（VS Code ！）</strong></p>
 <blockquote>
 <p>_config.yml 找到 <strong>#Deployment</strong> ，并添加以下内容 </p>
 </blockquote>
-<pre><code>repo：https://github.com/yourname/yourname.github.io.git       // 新建的仓库地址 
+<div class="hljs"><pre><code>repo：https://github.com/yourname/yourname.github.io.git       // 新建的仓库地址 
 branch： master
 type： &#39;git&#39;
-message: blog</code></pre>
+message: blog</code></pre></div>
 <blockquote>
 <p>修改完成，保存。回到命令行：</p>
 </blockquote>
-<pre><code>hexo d</code></pre>
+<div class="hljs"><pre><code>hexo d</code></pre></div>
 <p>按照提示，输入 github 账号密码<br>成功后，刷新 github 仓库，可见本地 blog 文件夹在仓库里！<br><strong>在本地编辑好博文后， 依次输入以下命令行，即可更新博客！</strong></p>
-<pre><code>hexo clean
+<div class="hljs"><pre><code>hexo clean
 hexo g      
 hexo d
 
-done，通过博客地址可看到更新：https://yourname.github.io/ </code></pre>
+done，通过博客地址可看到更新：https://yourname.github.io/ </code></pre></div>
 <hr>
 <hr>
 <h2 id="6-主题"><a href="#6-主题" class="headerlink" title="6 主题"></a><strong>6 主题</strong></h2><ul>
@@ -353,23 +347,23 @@ done，通过博客地址可看到更新：https://yourname.github.io/ </code></
 <blockquote>
 <p>clone </p>
 </blockquote>
-<pre><code>git clone https://github.com/theme-next/hexo-theme-next themes/next             //next 主题</code></pre>
+<div class="hljs"><pre><code>git clone https://github.com/theme-next/hexo-theme-next themes/next             //next 主题</code></pre></div>
 <blockquote>
 <p>blog 文件夹， 打开 _config.yml<br>找到 <strong>theme：</strong><br>修改要使用的主题名为  <strong>next</strong> </p>
 </blockquote>
-<pre><code>theme: next</code></pre>
+<div class="hljs"><pre><code>theme: next</code></pre></div>
 <blockquote>
 <p>update: </p>
 </blockquote>
-<pre><code>hexo clean
+<div class="hljs"><pre><code>hexo clean
 hexo g
 hexo d
 
-done，通过博客地址可看到更新：https://yourname.github.io/ </code></pre>
+done，通过博客地址可看到更新：https://yourname.github.io/ </code></pre></div>
 <h2 id="7-个性"><a href="#7-个性" class="headerlink" title="7 个性"></a><strong>7 个性</strong></h2><p>博客页面设置，全可通过 blog 文件夹， _config.yml 设置完成。<br>官网有很多开发者提供并维护的主题：<br><a target="_blank" rel="noopener" href="https://hexo.io/">hexo主题</a></p>
 <hr>
 <p>镜像源</p>
-<pre><code>deb https://mirrors.ustc.edu.cn/ubuntu/ bionic main restricted universe multiverse
+<div class="hljs"><pre><code>deb https://mirrors.ustc.edu.cn/ubuntu/ bionic main restricted universe multiverse
 deb-src https://mirrors.ustc.edu.cn/ubuntu/ bionic main restricted universe multiverse
 deb https://mirrors.ustc.edu.cn/ubuntu/ bionic-updates main restricted universe multiverse
 deb-src https://mirrors.ustc.edu.cn/ubuntu/ bionic-updates main restricted universe multiverse
@@ -378,9 +372,9 @@ deb-src https://mirrors.ustc.edu.cn/ubuntu/ bionic-backports main restricted uni
 deb https://mirrors.ustc.edu.cn/ubuntu/ bionic-security main restricted universe multiverse
 deb-src https://mirrors.ustc.edu.cn/ubuntu/ bionic-security main restricted universe multiverse
 deb https://mirrors.ustc.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse
-deb-src https://mirrors.ustc.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse</code></pre>
+deb-src https://mirrors.ustc.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse</code></pre></div>
 <p> <a href="/download/comments_IR.csv">IR project_comments</a><br> <a href="/download/stop_words.txt">IR project_stop_words</a><br> <a href="/download/use_dic.txt">IR project_use_dic</a><br> <a href="/download/datalab-handout.tar">ICS experiment1_tar</a></p>
-<pre><code>python 读写csv
+<div class="hljs"><pre><code>python 读写csv
 file_object2=open(&#39;D:\A仲敏2015\python_code\\advice.csv&#39;).read().split(&#39;\n&#39;)  #一行行的读取内容
 Rs2=[] #建立存储分词的列表
 for i in range(len(file_object2)):
@@ -427,9 +421,9 @@ for key in data.keys():
     elif key==kkey :
         print(key + &#39; **为叠词不计入统计&#39; )
     else:
-        data_only.update(&#123;key:data[key]&#125;)</code></pre>
+        data_only.update(&#123;key:data[key]&#125;)</code></pre></div>
 <p>共现统计</p>
-<pre><code># for key,value in data_only.items():
+<div class="hljs"><pre><code># for key,value in data_only.items():
 #     with open(&quot;关键词共现次数(top10).txt&quot;,&#39;a+&#39;,encoding=&#39;utf-8&#39;,errors=&#39;ignore&#39;) as f:
 # f.write(key+str(value)+&#39;;&#39;+&#39;\n&#39;)
 for i in range(0,len(list)):
@@ -442,7 +436,7 @@ for i in range(0,len(list)):
         with open(&quot;词频共现矩阵(top10).txt&quot;, &quot;a+&quot;, encoding=&#39;utf-8&#39;, errors=&#39;ignore&#39;) as f:
             f.write(str(0) + &#39;\t&#39;)
 with open(&quot;词频共现矩阵(top10).txt&quot;, &quot;a+&quot;, encoding=&#39;utf-8&#39;, errors=&#39;ignore&#39;) as f:
-    f.write(&quot;\n&quot;)</code></pre>
+    f.write(&quot;\n&quot;)</code></pre></div>
 
             </div>
             <hr>
@@ -622,8 +616,6 @@ with open(&quot;词频共现矩阵(top10).txt&quot;, &quot;a+&quot;, encoding=&#
 
 
 
-  
-    
   
 
 

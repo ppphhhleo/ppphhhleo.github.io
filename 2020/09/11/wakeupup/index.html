@@ -31,13 +31,7 @@
     
     
       
-      
-        
-        
-        
-      
-      <link  rel="stylesheet" href="https://cdn.staticfile.org/prism/1.21.0/themes/prism-solarizedlight.min.css" />
-      
+      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/dracula.min.css" />
     
   
 
@@ -245,13 +239,13 @@
             
             <div class="markdown-body" id="post-body">
               <h1 id="web学习笔记-序列化-反序列化"><a href="#web学习笔记-序列化-反序列化" class="headerlink" title="web学习笔记 序列化 反序列化"></a>web学习笔记 序列化 反序列化</h1><p>题目为unserialize，</p>
-<pre><code>class xctf&#123;
+<div class="hljs"><pre><code>class xctf&#123;
 public $flag = &#39;111&#39;;
 public function __wakeup()&#123;
 exit(&#39;bad requests&#39;);
 &#125;
-?code=</code></pre>
-<h2 id="题目暗示，试将对象xctf-序列化："><a href="#题目暗示，试将对象xctf-序列化：" class="headerlink" title="题目暗示，试将对象xctf 序列化："></a>题目暗示，试将对象xctf 序列化：</h2><pre><code>&lt;?php
+?code=</code></pre></div>
+<h2 id="题目暗示，试将对象xctf-序列化："><a href="#题目暗示，试将对象xctf-序列化：" class="headerlink" title="题目暗示，试将对象xctf 序列化："></a>题目暗示，试将对象xctf 序列化：</h2><div class="hljs"><pre><code>&lt;?php
 class xctf &#123;
     public $flag = &#39;111&#39;;
     public funciton_wakeup() &#123;
@@ -260,7 +254,7 @@ class xctf &#123;
 &#125;
 $c = new xctf();
 echo(serialize($c));
-?&gt;</code></pre>
+?&gt;</code></pre></div>
 <p>得到序列化字符串：</p>
 <blockquote>
 <p>O:4:”xctf”:1:{s:4:”flag”;s:3:”111”;}</p>
@@ -278,7 +272,7 @@ echo(serialize($c));
 <p>4、serialize()和unserialize()函数对魔术方法的处理：serialize()函数会检查类中是否存在一个魔术方法__sleep()。  如果存在，该方法会先被调用，然后才执行序列化操作。</p>
 <p>5、__wakeup()执行漏洞：一个字符串或对象被序列化后，如果其属性被修改，则不会执行__wakeup()函数，这也是一个绕过点。</p>
 <p>BTW <strong>三个不同类型的字符串</strong>，但值相同，<br>序列化后输出的值也不相同  </p>
-<pre><code>&lt;?php
+<div class="hljs"><pre><code>&lt;?php
 class test&#123;
     private $test1=&quot;hello&quot;;
     public $test2=&quot;hello&quot;;
@@ -286,7 +280,7 @@ class test&#123;
 &#125;
 $test = new test();
 echo serialize($test); 
-?&gt;</code></pre>
+?&gt;</code></pre></div>
 <blockquote>
 <p> O:4:”test”:3:{s:11:”test test1”;s:5:”hello”;s:5:”test2”;s:5:”hello”;s:8:” * test3”;s:5:”hello”;}</p>
 </blockquote>
@@ -475,8 +469,6 @@ echo serialize($test);
 
 
 
-  
-    
   
 
 

@@ -31,13 +31,7 @@
     
     
       
-      
-        
-        
-        
-      
-      <link  rel="stylesheet" href="https://cdn.staticfile.org/prism/1.21.0/themes/prism-solarizedlight.min.css" />
-      
+      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/dracula.min.css" />
     
   
 
@@ -275,7 +269,7 @@
 <h2 id="2-3-Faster-postings-list-intersection-via-skip-pointers"><a href="#2-3-Faster-postings-list-intersection-via-skip-pointers" class="headerlink" title="2.3 Faster postings list intersection via skip pointers"></a>2.3 Faster postings list intersection via skip pointers</h2><p>Next we would discuss extensions to postings list data structures and how to increase the efficiency of using postings lists.   </p>
 <p>In chapter 1, we have intersection algorithm: if the list lengths are m and n, merging them takes <em>O (m + n)</em> operations. What if the index changes too fast for pointers to catch up? One way for optimization is to use a <strong>skip list by expanding postings lists with skip pointers at indexing time.</strong>  </p>
 <p>The algorithm of merging lists with skip pointers can solve <strong>AND</strong> queries but are useless for <strong>OR</strong> queries, for we skip to find identical elements, ignoring some elements individually contained in either of the postings lists.  </p>
-<pre><code>IntersectWithSkips (p1, p2)
+<div class="hljs"><pre><code>IntersectWithSkips (p1, p2)
 1    answer ← ( )
 2 while p1 ≠ nil and p2 ≠ nil
 3 do if docID(p1) = docID(p2)
@@ -291,7 +285,7 @@
 13             then while hasSkip(p2) a n d (docI D(skip(p2)) ≤ docI D(p1))
 14                     do p2← skip(p2)
 15                 else p2← ne xt(p2)
-16     return answer</code></pre>
+16     return answer</code></pre></div>
 <p>It is a tradeoff to decide <strong>where to place skip pointers</strong>, as more skips with shorter spans, more comparisons to pointers and more space storing pointers, while fewer skips on the opposite. A simple heuristic for placing pointers is to use <strong>√P</strong> evenly spaced skip pointer, and P is the list length. The heuristic has been practically proved to be useful, and can be improved upon.</p>
 <hr>
 <h2 id="2-4-Positional-postings-and-phrase-queries"><a href="#2-4-Positional-postings-and-phrase-queries" class="headerlink" title="2.4 Positional postings and phrase queries."></a>2.4 Positional postings and phrase queries.</h2><p>Most recent search engines support a double quotes syntax (“phrase”) for phrase queries, which proves to be understood by users. While phrase queries, 10% of web queries, many of which are <strong>implicit</strong>, entered words without use of double quotes. Therefore, it no longer suffices to store only:  </p>
@@ -518,8 +512,6 @@
 
 
 
-  
-    
   
 
 

@@ -31,13 +31,7 @@
     
     
       
-      
-        
-        
-        
-      
-      <link  rel="stylesheet" href="https://cdn.staticfile.org/prism/1.21.0/themes/prism-solarizedlight.min.css" />
-      
+      <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/dracula.min.css" />
     
   
 
@@ -274,7 +268,7 @@
 </blockquote>
 <p>We need to locate both <em>Brutus</em> and <em>Calpurnia</em> in the dictionary to retrieve both postings, then we need to efficiently intersect the document sets so as to find documents containing both terms. Using the <em>merge algorithm</em> is one simple and effective method of intersecting postings lists: We maintain pointers into both lists and walk through the two postings simultaneously, in time linear in the total number of posting entries. If the lengths of the postings lists are x and y, the intersection takes O (x + y) operations. </p>
 <p><strong>Merge algorithm</strong> for the intersection of two postings list p1 and p2:   </p>
-<pre><code>Intersect (p1, p2)
+<div class="hljs"><pre><code>Intersect (p1, p2)
 1 answer ← ()
 2 while p1 ≠ NIL and p2 ≠ NIL
 3 do if docID(p1) = docID(p2)
@@ -284,7 +278,7 @@
 7 else if docID(p1) &lt; docID(p2)
 8 then p1← next(p1)
 9 else p2← next(p2)
-10 return answer</code></pre>
+10 return answer</code></pre></div>
 <p>Knowing how to ‘merge’ two postings lists, we can extend the intersection operation to process more complicated queries, such as <strong>a query with an AND of n terms</strong>. For each of the n terms, we get its postings, then <strong>AND</strong> them together, but </p>
 <blockquote>
 <p><strong>what is the best order for query processing (‘merging’ all postings)?</strong></p>
@@ -501,8 +495,6 @@
 
 
 
-  
-    
   
 
 
