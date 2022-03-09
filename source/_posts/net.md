@@ -1,7 +1,7 @@
 ---
 title: 进程双向通信：消息队列
 date: 2022-03-08 18:28:28
-tags: linux;
+tags: [linux]
 ---
 ## 进程双向通信：消息队列
 
@@ -34,7 +34,7 @@ struct msgmbuf {/*消息的缓冲区结构*/
 struct msgmbuf msg_mbuf;  /*创建消息缓冲区*/ 
 ```
 
-![image-20220309172444177](/img/linux/image-20220309172444177.png)
+![message buffer structure](/img/linux/image-20220309172444177.png)
 
 ### 键值构建ftok()函数
 
@@ -147,7 +147,7 @@ cmd可以为如下的操作：
 
 如图，key1和key2 标识两个消息队列；相同颜色，代表消息类型一致；数字序号，表示FIFO
 
-![image-20220309181545286](/img/linux/image-20220309181545286.png)
+![Double queues](/img/linux/image-20220309181545286.png)
 
 
 
@@ -159,7 +159,7 @@ A发什么类型，对应B收什么类型的消息。反之亦是如此。
 
 如图，在同一个消息队列里：相同颜色，代表同一消息类型；数字序号，代表该类型消息的FIFO
 
-![image-20220309181924812](/img/linux/image-20220309181924812.png)
+![Single queue](/img/linux/image-20220309181924812.png)
 
 
 
@@ -167,7 +167,7 @@ A发什么类型，对应B收什么类型的消息。反之亦是如此。
 
 演示效果，当一方发出end，则终止对话。
 
-![image-20220309200143001](/img/linux/image-20220309200143001.png)
+![Demo](/img/linux/image-20220309200143001.png)
 
 
 
