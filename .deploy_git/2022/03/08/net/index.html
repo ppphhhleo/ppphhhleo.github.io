@@ -28,9 +28,9 @@
 <meta property="og:image" content="http://ppphhhleo.github.io/img/linux/image-20220309181924812.png">
 <meta property="og:image" content="http://ppphhhleo.github.io/img/linux/image-20220309200143001.png">
 <meta property="article:published_time" content="2022-03-09T02:28:28.000Z">
-<meta property="article:modified_time" content="2022-03-09T12:23:58.425Z">
+<meta property="article:modified_time" content="2022-03-09T12:33:14.787Z">
 <meta property="article:author" content="P.H.">
-<meta property="article:tag" content="linux;">
+<meta property="article:tag" content="linux">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://ppphhhleo.github.io/img/linux/image-20220309172444177.png">
   
@@ -261,7 +261,7 @@
 </ul>
 <figure class="highlight c"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">msgmbuf</span> &#123;</span><span class="hljs-comment">/*消息的缓冲区结构*/</span><br>		<span class="hljs-type">long</span> mtype; <span class="hljs-comment">// 注意long与int的字长问题</span><br>		<span class="hljs-type">char</span> mtext[MAX_TEXT];<br>		&#125;;<br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">msgmbuf</span> <span class="hljs-title">msg_mbuf</span>;</span>  <span class="hljs-comment">/*创建消息缓冲区*/</span> <br></code></pre></td></tr></table></figure>
 
-<p><img src="/img/linux/image-20220309172444177.png" srcset="/img/loading.gif" lazyload alt="image-20220309172444177"></p>
+<p><img src="/img/linux/image-20220309172444177.png" srcset="/img/loading.gif" lazyload alt="message buffer structure"></p>
 <h3 id="键值构建ftok-函数"><a href="#键值构建ftok-函数" class="headerlink" title="键值构建ftok()函数"></a>键值构建ftok()函数</h3><p>ftok() 函数，可实现将<strong>文件路径名和队列表示符</strong>，转变成一个系统IPC键值。</p>
 <p>一个IPC 键值，唯一对应一个消息队列。</p>
 <p>它的函数原型描述如下：</p>
@@ -327,13 +327,13 @@
 <p>对于双向通信，A -&gt; B 和 B -&gt; A 的消息，关键在于需要双向的消息，可以从消息类型上实现区分，也可以创建两个消息队列实现分离。</p>
 <h4 id="双消息队列"><a href="#双消息队列" class="headerlink" title="双消息队列"></a>双消息队列</h4><p>两个消息队列，意味着一个进程分别对两个消息队列单独放入和单独读取。对于消息类型，<strong>仅需要控制对单个队列的操作时，mtype一致即可</strong>。</p>
 <p>如图，key1和key2 标识两个消息队列；相同颜色，代表消息类型一致；数字序号，表示FIFO</p>
-<p><img src="/img/linux/image-20220309181545286.png" srcset="/img/loading.gif" lazyload alt="image-20220309181545286"></p>
+<p><img src="/img/linux/image-20220309181545286.png" srcset="/img/loading.gif" lazyload alt="Double queues"></p>
 <h4 id="单消息队列"><a href="#单消息队列" class="headerlink" title="单消息队列"></a>单消息队列</h4><p>单消息队列，控制：A-&gt;B为一种消息类型，B-&gt;A为另一种消息类型。</p>
 <p>A发什么类型，对应B收什么类型的消息。反之亦是如此。</p>
 <p>如图，在同一个消息队列里：相同颜色，代表同一消息类型；数字序号，代表该类型消息的FIFO</p>
-<p><img src="/img/linux/image-20220309181924812.png" srcset="/img/loading.gif" lazyload alt="image-20220309181924812"></p>
+<p><img src="/img/linux/image-20220309181924812.png" srcset="/img/loading.gif" lazyload alt="Single queue"></p>
 <p>演示效果，当一方发出end，则终止对话。</p>
-<p><img src="/img/linux/image-20220309200143001.png" srcset="/img/loading.gif" lazyload alt="image-20220309200143001"></p>
+<p><img src="/img/linux/image-20220309200143001.png" srcset="/img/loading.gif" lazyload alt="Demo"></p>
 <p>参考文章：<a target="_blank" rel="noopener" href="https://www.cxyzjd.com/article/qq_36779888/88703088">https://www.cxyzjd.com/article/qq_36779888/88703088</a></p>
 <p>所遇到问题：如何在子进程中直接结束整个进程 </p>
 
@@ -346,7 +346,7 @@
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/linux/">linux;</a>
+                      <a class="hover-with-bg" href="/tags/linux/">linux</a>
                     
                   </div>
                 
