@@ -6,8 +6,8 @@ tags: [nlp]
 # **基于TextCNN新闻文本分类**
 
 
-![Codes for TextCNN](https://github.com/ppphhhleo/nlp_TextCNN)
-## **数据**
+[Codes for TextCNN](https://github.com/ppphhhleo/nlp_TextCNN)
+## **0 数据**
 
 从**THUCNews**抽取了2000条短中文新闻标题，文本长度在30以内，共4大类别：finance、reality、education、science。数据集划分如下所示：
 
@@ -17,11 +17,20 @@ tags: [nlp]
 | 验证集     | 40         |
 | 测试集     | 40         |
 
-## Quick Start
+## 1 Quick Start
 
+### 配置参数
+TextCNN.py，config  
+训练集、验证集、测试集位置；学习率、dropout、batch size等超参数
 
+### 模型训练
+run.py  
+随意炼丹，参数选择的notes在blog记录
 
-## **详细内容**
+### 数据记录
+plot.ipynb 包含loss可视化
+
+## **2 详细内容**
 
 ### **一、神经网络文本分类实验流程**
 
