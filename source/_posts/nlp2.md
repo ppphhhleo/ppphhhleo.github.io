@@ -5,6 +5,8 @@ tags: [nlp]
 ---
 # **基于TextCNN新闻文本分类**
 
+
+![Codes for TextCNN](https://github.com/ppphhhleo/nlp_TextCNN)
 ## **数据**
 
 从**THUCNews**抽取了2000条短中文新闻标题，文本长度在30以内，共4大类别：finance、reality、education、science。数据集划分如下所示：
