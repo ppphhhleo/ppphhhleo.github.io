@@ -16,12 +16,12 @@
   <meta name="author" content="P.H.">
   <meta name="keywords" content="">
   
-    <meta name="description" content="NER 命名实体识别  LSTM CNN CRF相关论文 Bidirectional LSTM-CRF models for sequencetagging  A survey on deep learning for named entityrecognition   数据集用的是论文ACL 2018Chinese NER using Lattice LSTM(https:&#x2F;&#x2F;github.co">
+    <meta name="description" content="NER 命名实体识别  LSTM CNN CRF相关论文 Bidirectional LSTM-CRF models for sequence tagging  A survey on deep learning for named entity recognition   数据集用的是论文ACL 2018Chinese NER using Lattice LSTM(https:&#x2F;&#x2F;github.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NER 命名实体识别  LSTM CNN CRF">
-<meta property="og:url" content="http://ppphhhleo.github.io/2022/03/01/nlp1/index.html">
+<meta property="og:url" content="http://ppphhhleo.github.io/2021/11/01/nlp1/index.html">
 <meta property="og:site_name" content="PH&#39;s Lounge">
-<meta property="og:description" content="NER 命名实体识别  LSTM CNN CRF相关论文 Bidirectional LSTM-CRF models for sequencetagging  A survey on deep learning for named entityrecognition   数据集用的是论文ACL 2018Chinese NER using Lattice LSTM(https:&#x2F;&#x2F;github.co">
+<meta property="og:description" content="NER 命名实体识别  LSTM CNN CRF相关论文 Bidirectional LSTM-CRF models for sequence tagging  A survey on deep learning for named entity recognition   数据集用的是论文ACL 2018Chinese NER using Lattice LSTM(https:&#x2F;&#x2F;github.">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://ppphhhleo.github.io/media/bb54f4c318200718bea37e5fc0f7351c.png">
 <meta property="og:image" content="http://ppphhhleo.github.io/media/03c896105edfba85e4e491be3a5a6b49.png">
@@ -45,8 +45,8 @@
 <meta property="og:image" content="http://ppphhhleo.github.io/media/4f10bb52a3935f91deb30798262c3255.png">
 <meta property="og:image" content="http://ppphhhleo.github.io/media/0b1360e26cd31b6aebb7c24d66fbc427.png">
 <meta property="og:image" content="http://ppphhhleo.github.io/media/c474e9b5284b55be2587bdceb6ce711d.png">
-<meta property="article:published_time" content="2022-03-01T09:46:07.000Z">
-<meta property="article:modified_time" content="2022-03-10T10:06:03.277Z">
+<meta property="article:published_time" content="2021-11-01T08:46:07.000Z">
+<meta property="article:modified_time" content="2022-03-10T10:10:03.300Z">
 <meta property="article:author" content="P.H.">
 <meta property="article:tag" content="nlp">
 <meta name="twitter:card" content="summary_large_image">
@@ -209,8 +209,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2022-03-01 01:46" pubdate>
-        March 1, 2022 am
+      <time datetime="2021-11-01 01:46" pubdate>
+        November 1, 2021 am
       </time>
     </span>
   
@@ -262,12 +262,12 @@
             
             <div class="markdown-body">
               <h1 id="NER-命名实体识别-LSTM-CNN-CRF"><a href="#NER-命名实体识别-LSTM-CNN-CRF" class="headerlink" title="NER 命名实体识别  LSTM CNN CRF"></a><strong>NER 命名实体识别  LSTM CNN CRF</strong></h1><h2 id="相关论文"><a href="#相关论文" class="headerlink" title="相关论文"></a><strong>相关论文</strong></h2><ol>
-<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1508.01991.pdf"><strong>Bidirectional LSTM-CRF models for sequence<br>tagging</strong></a></p>
+<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1508.01991.pdf"><strong>Bidirectional LSTM-CRF models for sequence tagging</strong></a></p>
 </li>
-<li><p><a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/abstract/document/9039685/"><strong>A survey on deep learning for named entity<br>recognition</strong></a></p>
+<li><p><a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/abstract/document/9039685/"><strong>A survey on deep learning for named entity recognition</strong></a></p>
 </li>
 </ol>
-<p>数据集用的是论文ACL 2018Chinese NER using Lattice LSTM<br>(<a target="_blank" rel="noopener" href="https://github.com/jiesutd/LatticeLSTM">https://github.com/jiesutd/LatticeLSTM</a>)<br>中收集的简历数据，数据的格式如下，它的每一行由一个字及其对应的标注组成，标注集采用BME，B表示实体开头，M表示实体中间，E表示实体结尾，句子之间用一个空行隔开。该数据集就位于目录下的ResumeNER文件夹里。如下为数据及标签示例：</p>
+<p>数据集用的是论文ACL 2018Chinese NER using Lattice LSTM(<a target="_blank" rel="noopener" href="https://github.com/jiesutd/LatticeLSTM">https://github.com/jiesutd/LatticeLSTM</a>)中收集的简历数据，数据的格式如下，它的每一行由一个字及其对应的标注组成，标注集采用BME，B表示实体开头，M表示实体中间，E表示实体结尾，句子之间用一个空行隔开。该数据集就位于目录下的ResumeNER文件夹里。如下为数据及标签示例：</p>
 <p><img src="/media/bb54f4c318200718bea37e5fc0f7351c.png" srcset="/img/loading.gif" lazyload alt="dataset"></p>
 <h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a><strong>Quick Start</strong></h2><ul>
 <li><p>实验环境  </p>
@@ -315,8 +315,7 @@
 <p><strong>以下为使用神经网路模型进行命名实体识别的实验流程总结：</strong></p>
 <p><img src="/media/b15a2c6f230f4e2343aa5e306ca5f7a3.png" srcset="/img/loading.gif" lazyload alt="流程"></p>
 <hr>
-<p><strong>二、模型分析</strong></p>
-<p>本次实验，我们使用到LSTM、BI-LSTM、CRF、LSTM-CRF、BI-LSTM、BI-LSTM-CRF、CNN、CNN-CRF模型，以下将介绍相关模型。</p>
+<h3 id="二、模型分析"><a href="#二、模型分析" class="headerlink" title="二、模型分析"></a><strong>二、模型分析</strong></h3><p>本次实验，我们使用到LSTM、BI-LSTM、CRF、LSTM-CRF、BI-LSTM、BI-LSTM-CRF、CNN、CNN-CRF模型，以下将介绍相关模型。</p>
 <p><strong>1、LSTM</strong></p>
 <p>循环神经网络<br>(RNN)，是传统前馈神经网络的扩展，能够保留基于历史信息的记忆，对于较多的特征，能更好地预测当先输出特征表达。</p>
 <p>图2-1展示了RNN模型的框架，输入层x，隐藏层h和输出层y，在命名实体识别中，x代表输入特征（features），y代表实体识别标注（tags）。图2-1演示了一个命名实体识别系统中，每个字（word）都会标注为other（O）或者其他四种实体类别：人物（Person，PER），地点（Location，LOC），组织（Organization，ORG）和混合（Miscellaneous，MISC）。例句EU<br>rejects German call to boycott British lamb.<br>中的每个词，依次被标注为B-ORG，O，B-MISC，O，O，O，B-MISC，O，O，其中B-和I-前缀标注说明了实体的起始和中间的位置。</p>
@@ -363,8 +362,7 @@
 <p>我们将CNN和CRF结合，便构成了CNN-CRF网络</p>
 <p><strong>7、BILSTM + CRF</strong></p>
 <p>我们将BILSTM和CRF结合，便构成了BILSTM-CRF网络</p>
-<p><strong>三、模型对比</strong></p>
-<p>模型训练超参数，batch size &#x3D; 64，learning rate &#x3D; 0.001，epoches &#x3D; 20，print_step<br>&#x3D; 5，embedding size &#x3D; 100，pretrained embedding<br>vectors：‘.&#x2F;ResumeNER&#x2F;pretrained_word_emb&#x2F;word2vec.txt’，<strong>hidden size &#x3D;<br>100，不使用预训练词向量</strong></p>
+<h3 id="三、模型对比"><a href="#三、模型对比" class="headerlink" title="三、模型对比"></a><strong>三、模型对比</strong></h3><p>模型训练超参数，batch size &#x3D; 64，learning rate &#x3D; 0.001，epoches &#x3D; 20，print_step<br>&#x3D; 5，embedding size &#x3D; 100，pretrained embedding<br>vectors：‘.&#x2F;ResumeNER&#x2F;pretrained_word_emb&#x2F;word2vec.txt’，<strong>hidden size &#x3D;<br>100，不使用预训练词向量</strong></p>
 <p><strong>对于LSTM，BiLSTM，CNN模型，三组validation loss曲线如图。</strong></p>
 <p><strong><img src="/media/a3bee9fdecfd456b9d6690ae8cfc1ac0.png" srcset="/img/loading.gif" lazyload></strong></p>
 <p><strong>对于LSTM-CRF，BiLSTM-CRF，CNN-CRF，三组validation loss如下图。</strong></p>
@@ -410,8 +408,7 @@
 <td>216</td>
 </tr>
 </tbody></table>
-<p><strong>四、是否使用预训练词向量对比</strong></p>
-<p>模型训练超参数，batch size &#x3D; 64，learning rate &#x3D; 0.001，epoches &#x3D; 20，print_step<br>&#x3D; 5，embedding size &#x3D; 100，pretrained embedding<br>vectors：‘.&#x2F;ResumeNER&#x2F;pretrained_word_emb&#x2F;word2vec.txt’，<strong>hidden size &#x3D;<br>100（CNN输出维度，LSTM隐向量维数），layer number &#x3D;<br>3（CNN层数），使用预训练词向量</strong></p>
+<h3 id="四、是否使用预训练词向量对比"><a href="#四、是否使用预训练词向量对比" class="headerlink" title="四、是否使用预训练词向量对比"></a><strong>四、是否使用预训练词向量对比</strong></h3><p>模型训练超参数，batch size &#x3D; 64，learning rate &#x3D; 0.001，epoches &#x3D; 20，print_step<br>&#x3D; 5，embedding size &#x3D; 100，pretrained embedding<br>vectors：‘.&#x2F;ResumeNER&#x2F;pretrained_word_emb&#x2F;word2vec.txt’，<strong>hidden size &#x3D;<br>100（CNN输出维度，LSTM隐向量维数），layer number &#x3D;<br>3（CNN层数），使用预训练词向量</strong></p>
 <p>使用已有的预训练词向量，对应模型的f1_score均降低。</p>
 <table>
 <thead>
@@ -432,8 +429,7 @@
 <td>201</td>
 </tr>
 </tbody></table>
-<p><strong>五、CNN模型调参对比</strong></p>
-<p><strong>1、kernel size</strong></p>
+<h3 id="五、CNN模型调参对比"><a href="#五、CNN模型调参对比" class="headerlink" title="五、CNN模型调参对比"></a><strong>五、CNN模型调参对比</strong></h3><p><strong>1、kernel size</strong></p>
 <p>模型训练超参数，batch size &#x3D; 64，learning rate &#x3D; 0.001，epoches &#x3D; 20，print_step<br>&#x3D; 5，embedding size &#x3D; 100，pretrained embedding<br>vectors：‘.&#x2F;ResumeNER&#x2F;pretrained_word_emb&#x2F;word2vec.txt’，<strong>hidden size &#x3D;<br>100（CNN输出维度），layer number &#x3D; 3（CNN层数），不使用预训练词向量。</strong></p>
 <p>对kernel size分别取**[3，5，7，9，11]**进行测试，对比标注f1_score.</p>
 <p>五组kernel size，validation loss 曲线：</p>
@@ -504,8 +500,7 @@
 </tr>
 </tbody></table>
 <hr>
-<p><strong>六、总结</strong></p>
-<p><strong>1、结果</strong></p>
+<h3 id="六、总结"><a href="#六、总结" class="headerlink" title="六、总结"></a><strong>六、总结</strong></h3><p><strong>1、结果</strong></p>
 <p>（1）对LSTM，BiLSTM，CNN三组模型分别加上CRF，命名实体识别准确度均有所提高，<strong>CRF能充分利用相邻标注的信息，来预测当前序列标注，获得更高的序列标注准确度</strong>。</p>
 <p>（2）LSTM-CRF，BiLSTM-CRF，CNN-CRF三组模型中，本次实验LSTM-CRF的标注准确度更高，<strong>f1_score高达0.9264，略高于BiLSTM-CRF模型</strong>。但<strong>按照实验所复现的论文</strong>，BiLSTM-CRF模型能充分利用过去和未来的输入特征和句子级别的标注信息，在不同标注任务中表现更佳。本次实验结果<strong>并未达到论文所呈现的效果</strong>，分析可能与数据集（论文使用三种不同任务的数据集）、学习率（原文为0.1，本次实验为0.001）、LSTM隐藏层维数（原文为300且模型效果对隐藏层维数并不敏感，本次实验为100）、batch<br>size选取等因素相关，后续可以进行更完善的复现测试。</p>
 <p>（3）CNN的kernel size 一般选取较小的奇数，本次实验测试CNN模型在kernel size &#x3D;<br>7时取得较佳标注准确度，f1_score 达0.9239；在<strong>kernel size &#x3D; 7</strong><br>条件下进一步测试CNN <strong>hidden size &#x3D; 100</strong>时，表现较佳，<strong>f1_score &#x3D; 0.9239</strong></p>
