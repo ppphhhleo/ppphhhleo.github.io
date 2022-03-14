@@ -1,0 +1,693 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="P.H.">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="基于主题的情感分析基于主题情感分类Github aspect-based sentimentanalysis 是文本分类的一个子任务。文本分类是 NLP的基础任务，旨在对给定文本预测其类别，应用场景广泛，比如垃圾邮件分类，微博情感分类，外卖评论，电影评论分类等。 输入：一段文本； 输出：主题-极性，比如：服务-积极（ positive）、味道-消极（ negative ）、价格-中立（ neutr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于主题的情感分析">
+<meta property="og:url" content="http://ppphhhleo.github.io/2021/11/26/senticla/index.html">
+<meta property="og:site_name" content="PH&#39;s Lounge">
+<meta property="og:description" content="基于主题的情感分析基于主题情感分类Github aspect-based sentimentanalysis 是文本分类的一个子任务。文本分类是 NLP的基础任务，旨在对给定文本预测其类别，应用场景广泛，比如垃圾邮件分类，微博情感分类，外卖评论，电影评论分类等。 输入：一段文本； 输出：主题-极性，比如：服务-积极（ positive）、味道-消极（ negative ）、价格-中立（ neutr">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/e64c9609bfeab6835dfb862b97ae4272.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/c8c6a1710ca55363c542c03ae0c34ac8.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/d13576500c9259dc704036c15c016aba.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/2cff921d72e7bcf2f8a0ccc433e3c727.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/a5c295b0f49be7685ede0503b3a4bdca.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/fd8391bffde64ff2a0dc09f0870c2a95.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/48830b3b8c1b5c8412ebb8829ab91c64.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/0d5a561d876cf4a5a08821dec1ac207a.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/245879326d998b05fca24db3001a58bc.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/3f13c2943347db957da4839003966dbc.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/6e51c2ba2bf20eb9e8fd13ff48188179.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/bc1bd0e106eb43f666f38fb8724d133f.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/6e608a007f67a0ddfd67ffa5a0dbab5e.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/b360c90a56134d2b5d0e5354a8fecf4e.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/3cde31ae701ec61e36e1a553ad58f16f.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/0b3d3f088e6274651a627f1d61d11677.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/195646fc495a2224f7e9f3eaa2b09e10.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/724475af42199fcc2680275d8cea0d6a.png">
+<meta property="og:image" content="http://ppphhhleo.github.io/media/e6ae8fcebe5f5b9d3ead8258189ffe9d.png">
+<meta property="article:published_time" content="2021-11-27T06:12:40.000Z">
+<meta property="article:modified_time" content="2022-03-14T06:10:44.691Z">
+<meta property="article:author" content="P.H.">
+<meta property="article:tag" content="nlp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://ppphhhleo.github.io/media/e64c9609bfeab6835dfb862b97ae4272.png">
+  
+  
+  <title>基于主题的情感分析 - PH&#39;s Lounge</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"ppphhhleo.github.io","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>PH&#39;s Lounge</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="基于主题的情感分析">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-11-26 22:12" pubdate>
+        November 26, 2021 pm
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.5k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      38 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">基于主题的情感分析</h1>
+            
+            <div class="markdown-body">
+              <h1 id="基于主题的情感分析"><a href="#基于主题的情感分析" class="headerlink" title="基于主题的情感分析"></a><strong>基于主题的情感分析</strong></h1><p><a href="git@github.com:ppphhhleo/SentiClassify.git">基于主题情感分类Github</a></p>
+<p>aspect-based sentiment<br>analysis 是文本分类的一个子任务。文本分类是 NLP<br>的基础任务，旨在对给定文本预测其类别，应用场景广泛，比如垃圾邮件分类，微博情感分类，外卖评论，电影评论分类等。</p>
+<p><strong>输入</strong>：一段文本； <strong>输出</strong>：主题-极性，比如：服务-积极（ positive<br>）、味道-消极（ negative ）、价格-中立（ neutral ）</p>
+<br />
+
+<hr>
+<h2 id="QUICK-START"><a href="#QUICK-START" class="headerlink" title="QUICK START"></a><strong>QUICK START</strong></h2><ul>
+<li><p><strong>文件</strong></p>
+<ul>
+<li><p><strong>&#x2F;Data，测试集 训练集</strong></p>
+</li>
+<li><p><strong>&#x2F;Emb，已训练好的词向量，词典</strong></p>
+</li>
+</ul>
+</li>
+<li><p><strong>main.py ，可选择模型</strong></p>
+</li>
+</ul>
+<p><strong>LSTM，AELSTM（添加aspect embedding），ATLSTM（添加attention机制），ATAELSTM</strong><br></br><br>选择完成后，运行main.py即开始训练模型</p>
+<p><img src="/media/e64c9609bfeab6835dfb862b97ae4272.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li><strong>model.py 定义以上模型</strong></li>
+</ul>
+<p> 包括如何实现aspect 嵌入、注意力机制等 </p>
+<ul>
+<li><strong>数据记录和作图，保存在record.ipynb文件中。</strong></li>
+</ul>
+<hr>
+<br />
+
+<h2 id="详细描述"><a href="#详细描述" class="headerlink" title="详细描述"></a><strong>详细描述</strong></h2><h3 id="0-数据集"><a href="#0-数据集" class="headerlink" title="0 数据集"></a><strong>0 数据集</strong></h3><p><strong>SemEval2014 task4</strong></p>
+<p>数据集主要用于细粒度情感分析，包含“Laptop”和“Restaurant”两个领域。</p>
+<p>单条数据集，形式如：{<strong>“sentence”</strong>: “desserts are almost incredible: my<br>personal favorite is their tart of the day.”, <strong>“aspect”</strong>: “food”,<br><strong>“sentiment”</strong>:<br>“positive”}，包含文本内容<strong>sentence</strong>、主题<strong>aspect</strong>和情感极性<strong>sentiment</strong>，其中，情感极性分为积极<strong>positive、消极negative</strong>和<strong>中立neutral</strong>三个水平。我们的目标是根据给定主题，来识别句子在该主题下包含的情感极性。</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Positive</th>
+<th>Negative</th>
+<th>Neural</th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td>Train</td>
+<td>Test</td>
+<td>Train</td>
+<td>Test</td>
+<td>Train</td>
+<td>Test</td>
+</tr>
+<tr>
+<td><strong>Food</strong></td>
+<td>867</td>
+<td>302</td>
+<td>209</td>
+<td>69</td>
+<td>90</td>
+<td>31</td>
+</tr>
+<tr>
+<td><strong>Price</strong></td>
+<td>179</td>
+<td>51</td>
+<td>115</td>
+<td>28</td>
+<td>10</td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>Service</strong></td>
+<td>324</td>
+<td>101</td>
+<td>218</td>
+<td>63</td>
+<td>20</td>
+<td>3</td>
+</tr>
+<tr>
+<td><strong>Ambience</strong></td>
+<td>263</td>
+<td>76</td>
+<td>98</td>
+<td>21</td>
+<td>23</td>
+<td>8</td>
+</tr>
+<tr>
+<td><strong>Miscellaneous</strong></td>
+<td>546</td>
+<td>127</td>
+<td>199</td>
+<td>41</td>
+<td>357</td>
+<td>51</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td>2179</td>
+<td>657</td>
+<td>839</td>
+<td>222</td>
+<td>500</td>
+<td>94</td>
+</tr>
+</tbody></table>
+<br />
+<br />
+
+
+<h3 id="1-情感分析任务描述"><a href="#1-情感分析任务描述" class="headerlink" title="1 情感分析任务描述"></a><strong>1 情感分析任务描述</strong></h3><p>基于主题的情感分析（aspect-based sentiment analysis）有两个子任务：</p>
+<ul>
+<li><strong>ATSA (aspect-term sentiment analysis)</strong></li>
+</ul>
+<p>这个任务的目的是预测与文本中出现的<strong>目标实体相关的情感极性</strong>。如：“这个餐厅的味道很不错，但是太贵了”，对于这个句子，我们对“味道”<br>进行情感分析，并返回结果“{味道: positive}”。</p>
+<ul>
+<li><strong>ACSA (aspect-category sentiment analysis)</strong></li>
+</ul>
+<p>这个任务的目的是预测与<strong>给定的主题相关的情感极性</strong>。如：“这个餐厅的味道很不错，但是太贵了”，对于这个句子，我们对“价格”<br>进行情感分析，并返回结果“{价格: negative}”。</p>
+<hr>
+<br />
+<br />
+
+<h3 id="2-复现流程"><a href="#2-复现流程" class="headerlink" title="2 复现流程"></a><strong>2 复现流程</strong></h3><h4 id="a-安装并导入相关的深度学习库。"><a href="#a-安装并导入相关的深度学习库。" class="headerlink" title="a. 安装并导入相关的深度学习库。"></a><strong>a. 安装并导入相关的深度学习库。</strong></h4><p><strong>Pytorch</strong></p>
+<h4 id="b-访问原始数据集，加载和处理数据"><a href="#b-访问原始数据集，加载和处理数据" class="headerlink" title="b. 访问原始数据集，加载和处理数据"></a><strong>b. 访问原始数据集，加载和处理数据</strong></h4><p>data_process.py<br>中定义MyDataset类：定义三个列表，分别用于存储数据集中单条数据的<strong>“sentence”</strong>内容、<strong>“aspect”</strong>主题和<strong>“sentiment”</strong>情感极性，其中情感极性用<strong>0、1、2</strong>分别表示<strong>negative、positive、neutral</strong>；获取数据长度；定义根据index获取数据。</p>
+<p><img src="/media/c8c6a1710ca55363c542c03ae0c34ac8.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="c-数据加载"><a href="#c-数据加载" class="headerlink" title="c. 数据加载"></a><strong>c. 数据加载</strong></h4><h4 id="d-定义模型"><a href="#d-定义模型" class="headerlink" title="d. 定义模型"></a><strong>d. 定义模型</strong></h4><p><strong>model.py 内定义了LSTM、Aspect Embedding-LSTM、Attention Aspect<br>Embedding-LSTM、AT-LSTM</strong></p>
+<h4 id="e-定义损失函数和优化器"><a href="#e-定义损失函数和优化器" class="headerlink" title="e. 定义损失函数和优化器"></a><strong>e. 定义损失函数和优化器</strong></h4><p><img src="/media/d13576500c9259dc704036c15c016aba.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="f-训练和测试模型"><a href="#f-训练和测试模型" class="headerlink" title="f. 训练和测试模型"></a><strong>f. 训练和测试模型</strong></h4></br>
+
+<hr>
+</br>
+
+
+<h3 id="2-模型分析"><a href="#2-模型分析" class="headerlink" title="2 模型分析"></a><strong>2 模型分析</strong></h3><h4 id="（1）LSTM（Long-Short-term-Memory）"><a href="#（1）LSTM（Long-Short-term-Memory）" class="headerlink" title="（1）LSTM（Long Short-term Memory）"></a><strong>（1）LSTM（Long Short-term Memory）</strong></h4><p>循环神经网络<br>(RNN)，是传统前馈神经网络的扩展。为解决标准RNN存在梯度消失或梯度爆炸问题，长短期记忆神经网络架构被提出，并取得更佳的表现结果。</p>
+<p>在LSTM架构中，有记忆状态cell state和三道控制门。</p>
+<p><strong>状态向量</strong>cell state表示LSTM本身的状态信息，一步一步往下传。</p>
+<p><strong>遗忘门forget gate</strong>，ft，将上一轮输出和本轮x混合，再Sigmoid激活函数处理。</p>
+<p><strong>输入门 input gate</strong>，it，将上一轮输出和本轮x混合，再利用tanh函数处理。</p>
+<p><strong><img src="/media/2cff921d72e7bcf2f8a0ccc433e3c727.png" srcset="/img/loading.gif" lazyload alt="图1-1 遗忘门"><br><img src="/media/a5c295b0f49be7685ede0503b3a4bdca.png" srcset="/img/loading.gif" lazyload alt="图1-2 输入门"></strong></p>
+<p><strong>更新cell<br>state</strong>，遗忘门控制上一个历史状态（做点乘），输入门控制本轮次的状态Ct（做点乘，上一轮的输出和本轮x混合的tanh），再把遗忘门和输入门做加法。</p>
+<p><strong>输出门output gate</strong>，<strong>ot</strong>，ht输出由ot控制（0~1），更得到怎样的状态向量。</p>
+<p><strong><img src="/media/fd8391bffde64ff2a0dc09f0870c2a95.png" srcset="/img/loading.gif" lazyload alt="图1-3 更新"><br><img src="/media/48830b3b8c1b5c8412ebb8829ab91c64.png" srcset="/img/loading.gif" lazyload alt="图1-4 输出门"></strong></p>
+<p><strong>每一步的LSTM可以按如下公式计算：</strong></p>
+<p><img src="/media/0d5a561d876cf4a5a08821dec1ac207a.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>总而言之，LSTM可以整体架构如下图所示：</strong></p>
+<p><strong><img src="/media/245879326d998b05fca24db3001a58bc.png" srcset="/img/loading.gif" lazyload alt="图1-5 标准LSTM架构"></strong></p>
+<h4 id="（2）AE-LSTM-（LSTM-with-Aspect-Embedding）"><a href="#（2）AE-LSTM-（LSTM-with-Aspect-Embedding）" class="headerlink" title="（2）AE-LSTM （LSTM with Aspect Embedding）"></a><strong>（2）AE-LSTM （LSTM with Aspect Embedding）</strong></h4><p>在对一个句子给定的主题进行分类时，数据集中的主题内容是最重要的。如果考虑多个<strong>不同</strong>的主题，我们可能会得到<strong>相反的情感极性</strong>。为了充分利用主题信息，提出对每个主题都构造嵌入向量。</p>
+<p>向量vai ∈ Rda 代表主题（aspect）的嵌入，其中da是主题嵌入（aspect<br>embedding）的维度。A ∈ Rda×|A|<br>由所有主题嵌入组成。本次实验复现的论文，据其团队所了解，是首次提出主题方面嵌入（aspect<br>embedding）。</p>
+<h4 id="（3）AT-LSTM-（Attention-based-LSTM）"><a href="#（3）AT-LSTM-（Attention-based-LSTM）" class="headerlink" title="（3）AT-LSTM （Attention-based LSTM）"></a><strong>（3）AT-LSTM （Attention-based LSTM）</strong></h4><p>对于基于主题的情感分析，标准LSTM模型无法检测文本中的最重要部分。为了能获取最重要的内容主题，引入基于LSTM模型的注意力机制。</p>
+<p>基于注意力机制的LSTM模型架构，如图1-6所示。主题嵌入决定注意力权重和句子表示，{w1,<br>w2，…，<br>wN}表示所在句子长度为N的词向量；vα代表主题嵌入，注意力机制会生成一个注意力权重向量α和一个加权隐藏结果γ；{h1,<br>h2，…， hN}为隐藏向量。</p>
+<p><img src="/media/3f13c2943347db957da4839003966dbc.png" srcset="/img/loading.gif" lazyload alt="图1-6 Attention-based LSTM架构"></p>
+<p>除了LSTM模型的基本处理，之后，<strong>注意力机制</strong>还会完成以下处理：</p>
+<p><img src="/media/6e51c2ba2bf20eb9e8fd13ff48188179.png" srcset="/img/loading.gif" lazyload></p>
+<p>其中，<strong>M ∈ R(d+da)×N , α ∈ RN , r ∈ Rd</strong>，且<strong>Wh ∈ Rd×d , Wv ∈ Rda×da 和</strong> <strong>w<br>∈ Rd+da</strong>属于投影参数（projection parameters）。α 是一个包含注意力权重的向量，γ<br>是一个具有给定主题句子的加权表达（weighted representation of sentence with given<br>aspect）。算式7中，包含<strong>va ⊗ eN &#x3D; [v; v; . . . ; v]<strong>运算，⊗<br>操作符意味着重复连接v向量N次，运算中的eN是一个N维列向量，</strong>Wvva ⊗<br>eN</strong>重复线性变换<strong>va（linea</strong>，句子次数就是变换次数。</p>
+<p>最终的句子表示为下式（10），其中<strong>h∗ ∈ Rd</strong>，Wp 和 Wx<br>是训练时要学习的投影参数。添加<strong>WxhN</strong>到最终句子表示中，运行效果更好。</p>
+<p><img src="/media/bc1bd0e106eb43f666f38fb8724d133f.png" srcset="/img/loading.gif" lazyload></p>
+<p>当需要考虑不同的主题aspect，注意力机制能让模型捕捉到句子中最重要的部分。</p>
+<p>经过Attention-Based<br>LSTM运算处理得到的最终句子表达<strong>h*<strong>，是一个</strong>给定输入主题的句子的特征表达。</strong>我们增加一个<strong>线性层</strong>，将句子向量转换至e，是一个长度等于<br>|C| 的实值向量。接着，再连接<strong>softmax层</strong>归一化，将e转换至条件概率分布。</p>
+<p><img src="/media/6e608a007f67a0ddfd67ffa5a0dbab5e.png" srcset="/img/loading.gif" lazyload></p>
+<p>其中Ws 和 bs 是softmax层参数。</p>
+<h4 id="（4）ATAE-LSTM-（Attention-based-LSTM-with-Aspect-Embedding）"><a href="#（4）ATAE-LSTM-（Attention-based-LSTM-with-Aspect-Embedding）" class="headerlink" title="（4）ATAE-LSTM （Attention-based LSTM with Aspect Embedding）"></a><strong>（4）ATAE-LSTM （Attention-based LSTM with Aspect Embedding）</strong></h4><p>在AE-LSTM中利用主题信息（aspect information）的方法，是让主题嵌入（aspect<br>embedding）在注意力权重（attention<br>weight）的计算中发挥作用。为了更好地利用句子中所包含的主题信息，我们将<strong>输入主题嵌入</strong>（input<br>aspect embedding），附加到<strong>每个词的输入向量</strong>（input<br>vector）中。如此，通过LSTM模型，得到的输出隐藏表示（h1，h2，…,hn）将包含输入层的主题输入vα（input<br>aspect）。因此，在之后计算注意力权重的步骤中</p>
+<p><img src="/media/b360c90a56134d2b5d0e5354a8fecf4e.png" srcset="/img/loading.gif" lazyload alt="图1-7 Attention-based LSTM with Aspect Embedding (ATAE-LSTM)"></p>
+<p>本次实验在model.py文件中import<br>torch.nn，定义了LSTM、AE-LSTM、ATAE-LSTM三个模型，均使用预训练词向量，基于单向LSTM模型。<strong>并且，词向量维度、主题嵌入（aspect<br>embedding）和隐藏层（hidden<br>layer）大小均为300</strong>；对于AE-LSTM和ATAE-LSTM，因经过LSTM模型训练前，要嵌入aspect，因此对应的词向量输入维度扩大一倍为600。根据上文介绍的模型流程，注意力机制处理后，还需将attention后的表示与LSTM的hidden层作拼接，<strong>用到torch.cat函数</strong>。</p>
+<p><img src="/media/3cde31ae701ec61e36e1a553ad58f16f.png" srcset="/img/loading.gif" lazyload></p>
+</br>
+
+<hr>
+</br>
+
+<h3 id="3-结果分析"><a href="#3-结果分析" class="headerlink" title="3 结果分析"></a><strong>3 结果分析</strong></h3><ul>
+<li><strong>Long Short-term Memory（LSTM）</strong></li>
+</ul>
+<p>训练结果为：<strong>test_loss &#x3D; 0.6819，test_accuracy &#x3D; 0.7415</strong></p>
+<p>训练、测试函数的模型输入为：output &#x3D; model (input_)，训练过程loss曲线如图：</p>
+<p><img src="/media/0b3d3f088e6274651a627f1d61d11677.png" srcset="/img/loading.gif" lazyload alt="图2-1 LSTM模型损失曲线"></p>
+<ul>
+<li><strong>LSTM with Aspect Embedding （AE-LSTM）</strong></li>
+</ul>
+<p>训练结果为：<strong>test_loss &#x3D; 0.8327，test_accuracy &#x3D; 0.6281</strong></p>
+<p>训练、测试函数的模型输入为：output &#x3D; model<br>(input_，aspect)，训练过程loss曲线如图：</p>
+<p><strong><img src="/media/195646fc495a2224f7e9f3eaa2b09e10.png" srcset="/img/loading.gif" lazyload alt="图2-2 AE-LSTM模型损失曲线"></strong></p>
+<p>该模型训练过程，损失曲线无大变化，学习遇到瓶颈，相比于LSTM模型，该模型训练效果较差。推测对于单条数据文本，可能存在涉及主题的多个表达，且没有注意力机制，模型受到混淆和干扰。</p>
+<ul>
+<li><strong>Attention-based LSTM（AT-LSTM）</strong></li>
+</ul>
+<p>训练结果为：<strong>test_loss &#x3D; 0.6104，test_accuracy &#x3D; 0.7893</strong></p>
+<p>训练、测试函数的模型输入为：output &#x3D; model<br>(input_，aspect)，训练过程loss曲线如图：</p>
+<p><strong><img src="/media/724475af42199fcc2680275d8cea0d6a.png" srcset="/img/loading.gif" lazyload alt="图2-3 AT-LSTM模型损失曲线"></strong></p>
+<p>模型训练过程中，损失曲线下降平滑。</p>
+<ul>
+<li><strong>Attention-based LSTM with Aspect Embedding（ATAE-LSTM）</strong></li>
+</ul>
+<p>训练结果为：<strong>test_loss &#x3D; 0.5950，test_accuracy &#x3D; 0.8025</strong></p>
+<p>训练、测试函数的模型输入为：output &#x3D; model<br>(input_，aspect)，训练过程loss曲线如图：</p>
+<p><strong><img src="/media/e6ae8fcebe5f5b9d3ead8258189ffe9d.png" srcset="/img/loading.gif" lazyload alt="图2-4 ATAE-LSTM模型损失曲线"></strong></p>
+<ul>
+<li><strong>对比模型</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>Models</strong></th>
+<th><strong>Test Accuracy</strong></th>
+<th><strong>Test Loss</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>LSTM</strong></td>
+<td>0.6228</td>
+<td>0.8974</td>
+</tr>
+<tr>
+<td><strong>AE-LSTM</strong></td>
+<td>0.6241</td>
+<td>0.8357</td>
+</tr>
+<tr>
+<td><strong>AT-LSTM</strong></td>
+<td>0.7893</td>
+<td>0.6104</td>
+</tr>
+<tr>
+<td><strong>ATAE-LSTM</strong></td>
+<td><strong>0.8025</strong></td>
+<td><strong>0.5950</strong></td>
+</tr>
+</tbody></table>
+<p>本次实验中，注意力机制和主题嵌入的提出，都一定程度提高了分类准确率，AE-LSTM、AT-LSTM模型的表现均高于LSTM模型。</p>
+<p>ATAE-LSTM模型，输入部分将主题嵌入到词向量中，如此，训练过程可以很好地学习到主题内容，且主题能参与到注意力权重计算中。该模型不仅解决了词向量和主题嵌入地不一致性，还能根据给定主题捕获句子中最重要的信息，因此测试准确率最高，<strong>达0.8025</strong>。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/nlp/">nlp</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/03/06/hello-world/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Hello World</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/11/01/nlp1/">
+                        <span class="hidden-mobile">NER 命名实体识别  LSTM CNN CRF</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
