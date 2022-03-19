@@ -39,5 +39,5 @@ More info: [Deployment](https://hexo.io/docs/one-command-deployment.html)
 
 
 ### Information
-[PDF](./img/Lookbook.pdf)
+[PDF](/img/Lookbook.pdf)
 
