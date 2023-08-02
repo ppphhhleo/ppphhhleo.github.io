@@ -1,0 +1,73 @@
+<html>
+<head>
+</head>
+
+<body>
+
+<h2>Tutorial Example</h2>
+<h3>Global</h3>
+<iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=global&showPrediction=1" 
+		width="1000px" height="245px"
+		frameBorder="0" scrolling="no"
+		></iframe>
+<h3>Sub-Global</h3>
+<iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=subglobal&subspaceId=0&showPrediction=1" 
+		width="1000px" height="245px"
+		frameBorder="0" scrolling="no"
+		></iframe>
+<h3>Incremental</h3>
+<iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=incremental&subspaceId=0&showPrediction=1" 
+		width="1000px" height="245px"
+		frameBorder="0" scrolling="no"
+		></iframe>
+<h3>Instance</h3>
+<iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=instance&showPrediction=1" 
+		width="1000px" height="245px"
+		frameBorder="0" scrolling="no"
+		></iframe>
+
+<h2>Interactive</h2>
+<div>
+Application <select id="input_appId">
+  <option value="housingprice-kingcounty">Housing Price: King County</option>
+  <option value="housingprice-nyc">Housing Price: NYC</option>
+  <option value="health-pima-diabetes">Health: Pima Diabetes</option>
+  <option value="health-heart-disease">Health: Heart Disease</option>
+</select> |
+Case <input id="input_id" type="range" min="1" max="15" value="1" style="width:160px" /><br/>
+XAI Type <select id="input_xaiType">
+  <option value="global">Global</option>
+  <option value="subglobal">Sub-Global</option>
+  <option value="incremental" selected>Incremental</option>
+  <option value="instance">Instance</option>
+</select> |
+Subspace ID <input id="input_subspaceId" type="range" min="0" max="3" value="0" style="width:80px" /> |
+Show Prediction <input id="input_showPrediction" type="checkbox" checked />
+</div>
+<iframe id="interactiveIframe" 
+<iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=incremental&subspaceId=0&showPrediction=1" 
+		width="1000px" height="245px"
+		frameBorder="0" scrolling="no"
+		></iframe>
+		
+<script>
+function updateIframeUrl(iframeId) {
+	const appId = document.querySelector("#input_appId").value;
+	const id = document.querySelector("#input_id").value;
+	const xaiType = document.querySelector("#input_xaiType").value;
+	const subspaceId = document.querySelector("#input_subspaceId").value;
+	const showPrediction = document.querySelector("#input_showPrediction").checked ? 1 : 0;
+	
+	const url = "incremental-xai-ui.html?appId="+appId+"&id="+id+"&xaiType="+xaiType+"&subspaceId="+subspaceId+"&showPrediction="+showPrediction;
+	document.querySelector("#interactiveIframe").src = url;
+}
+document.querySelector("#input_appId").onchange = updateIframeUrl;
+document.querySelector("#input_id").onchange = updateIframeUrl;
+document.querySelector("#input_xaiType").onchange = updateIframeUrl;
+document.querySelector("#input_subspaceId").onchange = updateIframeUrl;
+document.querySelector("#input_showPrediction").onchange = updateIframeUrl;
+</script>
+
+</body>
+
+</html>

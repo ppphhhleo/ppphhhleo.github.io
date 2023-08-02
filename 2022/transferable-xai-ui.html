@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.4.3/decimal.min.js"></script>
+<script type="text/javascript">
+const thousands = (n) => n.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ','); // to show comma separation in numbers
+const round = (n, roundNearest, toFixed) => { 
+	n = roundNearest > 0 ? Math.round(n / roundNearest) * roundNearest : n; 
+	n = toFixed !== undefined && toFixed > -1 ? Number(n.toFixed(toFixed)) : n;
+	return n;
+}
+
+/**
+ * Read URL key-values to get condition and trial
+ */
+const queryString = window.location.search; // e.g.: http://localhost:9000/transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=2&newExplanation=1&showSimilarity=1&showPrediction=1
+const urlParams = new URLSearchParams(queryString);
+
+const appId = urlParams.get('appId');
+const refId = Number(urlParams.get('refId'));
+let rankFromRef = Number(urlParams.get('rankFromRef'));
+const newExplanation = Number(urlParams.get('newExplanation'));
+const isRef = rankFromRef == null || rankFromRef == 0;
+const showSimilarity = Number(urlParams.get('showSimilarity'));
+const showPrediction = Number(urlParams.get('showPrediction'));
+let notRounding = Number(urlParams.get('notRounding')) == 1;
+if (notRounding == null) { notRounding = false; }
+
+const vec_sum = (vec) => vec.reduce((sum, el) => sum + el, 0);
+const vec_magnitude = (vec) => Math.sqrt(vec.reduce((sum, el) => sum + el*el, 0));
+const vec_elementwise_product = (vec, vec2) => vec.map((el, i) => el * vec2[i]);
+const vec_dot_product = (vec, vec2) => vec_sum(vec_elementwise_product(vec, vec2));
+
+function extractAttributeNames(data) {
+	const a = ["Base", "", "", "", "", "", ""]
+	const w_roundNearest = [1, 1, 1, 1, 1, 1];
+	const w_toFixed = [-1, -1, -1, -1, -1, -1];
+	const w_snExp = [0, 0, 0, 0, 0, 0]; // exponent in scientific notation; e.g., -3 would convert 0.01234 to 12.34*10^-3
+	
+	const row = data.findIndex(d => d.appId == appId); // get row that has id
+	
+	for (let i = 0; i <= 5; i++) {
+		a[i] = data[row]['a'+i];
+		w_roundNearest[i] = data[row]['w'+i+'_roundNearest'];
+		w_toFixed[i] = data[row]['w'+i+'_toFixed'];
+		w_snExp[i] = data[row]['w'+i+'_snExp'];
+	}
+	const y_unit = data[row].y_unit;
+	const y_roundNearest = data[row].y_roundNearest;
+	const y_toFixed = data[row].y_toFixed;
+	const y_asPercent = data[row].y_asPercent;
+	const y_model = data[row].y_model;
+	
+	return {
+		a: a,
+		y_unit: y_unit,
+		w_roundNearest: w_roundNearest,
+		w_toFixed: w_toFixed,
+		w_snExp: w_snExp,
+		y_roundNearest: y_roundNearest, 
+		y_toFixed: y_toFixed,
+		y_asPercent: y_asPercent,
+		y_model: y_model,
+	};
+}
+
+function extractInstance(atts, data, refId, rankFromRef) {
+	const ref_row = data.findIndex(d => d.appId == appId && d.refId == refId && d.rankFromRef == 0);
+	const test_row = data.findIndex(d => d.appId == appId && d.refId == refId && d.rankFromRef == rankFromRef);
+	
+	let v_ref = [1, 0, 0, 0, 0, 0];
+	let v = [1, 0, 0, 0, 0, 0];
+	for (let i = 1; i <= 5; i++) {
+		v_ref[i] = data[ref_row]['v'+i];
+		v[i] = data[test_row]['v'+i];
+	}
+	let w_ref = [0, 0, 0, 0, 0, 0];
+	let w = [0, 0, 0, 0, 0, 0];
+	for (let i = 0; i <= 5; i++) {
+		w_ref[i] = data[ref_row]['w'+i];
+		w[i] = data[test_row]['w'+i];
+		if (!newExplanation) { w[i] = w_ref[i]; }
+		w[i] = round(w[i], atts.w_roundNearest[i], atts.w_toFixed[i]); // round for simple interpretability; though this needs to be consistent with ye
+	}
+	
+	const dx = data[test_row].diffFromRef;
+	
+	let ye = vec_dot_product(v, w); // ye = summation(v * w)	
+	//if (atts.y_model == 'logistic') { ye = 1 / (1 + Math.exp(-ye)); } // wrong, since LIME is a regression model on the y-hat probability (0-1), not just its prediction label (0 or 1)
+	//if (atts.y_model == 'logistic') { ye = Math.max(0, ye); } // clip to >= 0; but half of ye_rt (reference explainer predictor is just negative too (due to poor fit))
+	const y = data[test_row]['y'];
+	// for y = percentage, it is more intuitive to just use the raw % for diff, since at least that's standardized, and % of % is unintuitive
+	const dy = atts.y_model == 'logistic' ? Math.abs(y - ye) : Math.abs(y - ye) / y;
+	//console.log('dy', dy);
+	
+	return {
+		v: v, w: w,
+		v_ref: v_ref, w_ref: w_ref,
+		dx: dx,
+		ye: ye,
+		y: y, 
+		dy: dy,
+	};
+}
+
+function renderUI(atts, data) {	
+	instance = extractInstance(atts, data, refId, rankFromRef);
+	for (let i = 0; i <= 5; i++) {
+		document.getElementById('text_' + 'a'+i).innerHTML = atts.a[i];
+		document.getElementById('text_' + 'v'+i).innerHTML = instance.v[i];
+		
+		let wi = new Decimal(instance.w[i]).times(Decimal.pow(10, -atts.w_snExp[i])); // remember to invert exponent, since this is corrected later in text with "10^..."; using high-precision floating point library due to precision errors
+		//if (atts.w_snExp[i] != 0) { wi = wi.toPrecision(3); }
+		const s_wi = thousands(wi) + (atts.w_snExp[i] == 0 ? "" : "<span class=\"scinoteExponent\"> &times;10<sup>" + atts.w_snExp[i] + "</sup></span>");
+		document.getElementById('text_' + 'w'+i).innerHTML = s_wi;
+	}
+	
+	document.getElementById('text_' + 'case_type').innerHTML = isRef ? "Reference" : "Test";
+	document.getElementById('text_' + 'case_num').innerHTML = isRef ? refId : rankFromRef;
+	Array.from(document.getElementsByClassName('text_' + 'new_xai')).forEach(el => el.style.display = newExplanation && !isRef ? "inline" : "none");
+	
+	Array.from(document.getElementsByClassName('text_' + 'y_unit')).forEach(el => el.innerHTML = "(" + atts.y_unit + ")");
+	let ye = instance.ye, y = instance.y;
+	if (atts.y_asPercent) { ye *= 100; y *= 100; }
+	ye = round(ye, atts.y_roundNearest, atts.y_toFixed);
+	y = round(y, atts.y_roundNearest, atts.y_toFixed);
+	document.getElementById('text_' + 'ye').innerHTML = thousands(ye);
+	document.getElementById('text_' + 'y').innerHTML = thousands(y);
+	
+	const diffToRed = (diff, threshold) => (1 - diff) * (100 - threshold) + threshold; // calculate redness based on % difference
+	
+	document.getElementById('text_' + 'dx').innerHTML = round(instance.dx * 100, 0, 1);
+	const lightness_dx = diffToRed(instance.dx, 60);
+	document.getElementById('text_' + 'dx').style.background = 'hsl(0, 100%, ' + lightness_dx + '%)';
+	
+	document.getElementById('text_' + 'dy').innerHTML = round(instance.dy * 100, 0, 1);
+	const lightness_dy = diffToRed(instance.dy, 60);
+	document.getElementById('text_' + 'dy').style.background = 'hsl(0, 100%, ' + lightness_dy + '%)';
+	
+	Array.from(document.getElementsByClassName('show_aisystem')).forEach(el => el.style.visibility = showPrediction ? 'visible' : 'hidden');
+	Array.from(document.getElementsByClassName('show_similarity')).forEach(el => el.style.visibility = showSimilarity && !isRef ? 'visible' : 'hidden');
+}
+
+Papa.parse("./app-attributes.csv", {
+	download: true,
+	header: true,
+	dynamicTyping: true,
+	complete: function(res) {
+		//console.log('att_res', res);
+		let atts = extractAttributeNames(res.data);
+		
+		Papa.parse("./transferable-xai-trials-data.csv", {
+			download: true,
+			header: true,
+			dynamicTyping: true,
+			complete: function(results) {
+				//console.log('data_results', results);
+				renderUI(atts, results.data);
+			}
+		});
+	}
+});
+
+</script>
+</head>
+
+
+<body>
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0}
+.tg td{font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:5px 5px;word-break:normal;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:5px 5px;word-break:normal;}
+.tg .tg-lboi{border-color:inherit;text-align:left;vertical-align:middle}
+.tg .tg-c4wh{border-color:inherit;color:#656565;text-align:center;vertical-align:top}
+.tg .tg-zme7{background-color:#FFF2CC;border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-c3ot{border-color:inherit;text-align:center;vertical-align:top;}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top; width:120px;}
+.tg .tg-c3ow2{border-color:inherit;text-align:center;vertical-align:top; border: 1px #000 solid; width:120px;}
+.tg .tg-3py0{border-color:inherit;color:#9b9b9b;text-align:right;vertical-align:top}
+.tg .tg-dvpl{border-color:inherit;text-align:right;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-eqtu{background-color:#FFD966;border-color:inherit;text-align:center;vertical-align:top}
+.text_new_xai {color:#23f}
+body {margin:0px; padding:0px}
+h3 {line-height:0.0em;}
+.scinoteExponent {font-size:11px;color:#999}
+</style>
+
+<h3>
+<span id="text_case_type"></span> Case <span id="text_case_num"></span> <span class="text_new_xai">(with New Explanation)</span>
+</h3>
+
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-dvpl">Attributes</th>
+    <th class="tg-c3ow" style="width: 80px">Values</th>
+    <th class="tg-0pky"></th>
+    <th class="tg-c3ow" style="width: 100px"><span class="text_new_xai">New</span> Factors <span class="text_y_unit">y_unit</span></th>
+    <th class="tg-0pky"></th>
+    <th class="tg-0pky"></th>
+    <th class="tg-0pky"></th>
+    <th class="tg-0pky"></th>
+    <th class="tg-0pky"></th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-dvpl"><div id="text_a1">a1</div></td>
+    <td class="tg-c3ow"><div id="text_v1">v1</div></td>
+    <td class="tg-c3ot">&times;</td>
+    <td class="tg-eqtu"><div id="text_w1">w1</div></td>
+    <td class="tg-lboi" rowspan="6">}</td>
+    <td class="tg-lboi" rowspan="6">+</td>
+    <td class="tg-lboi" rowspan="6">&rarr;</td>
+    <td class="tg-lboi" rowspan="6">
+	  <table class="tg">
+	    <tr><th class="tg-c3ow">AI Explainer <span class="text_y_unit">y_unit</span></th></tr>
+        <tr><td class="tg-c3ow2"><div id="text_ye">ye</div></td></tr>
+        <tr><td class="tg-c3ow">&nbsp;</td></tr>
+	  </table></td>
+    <td class="tg-lboi show_aisystem" rowspan="6">&asymp;</td>
+    <td class="tg-lboi" rowspan="6">
+	  <table class="tg show_aisystem">
+	    <tr><th class="tg-c3ow">AI System <span class="text_y_unit">y_unit</span></th></tr>
+        <tr><td class="tg-c3ow2"><div id="text_y">y</div></td></tr>
+        <tr><td class="tg-c3ow">&nbsp;</td></tr>
+	  </table></td>
+  </tr>
+  <tr>
+    <td class="tg-dvpl"><div id="text_a2">a2</div></td>
+    <td class="tg-c3ow"><div id="text_v2">v2</div></td>
+    <td class="tg-c3ot">&times;</td>
+    <td class="tg-eqtu"><div id="text_w2">w2</div></td>
+  </tr>
+  <tr>
+    <td class="tg-dvpl"><div id="text_a3">a3</div></td>
+    <td class="tg-c3ow"><div id="text_v3">v3</div></td>
+    <td class="tg-c3ot">&times;</td>
+    <td class="tg-eqtu"><div id="text_w3">w3</div></td>
+  </tr>
+  <tr>
+    <td class="tg-dvpl"><div id="text_a4">a4</div></td>
+    <td class="tg-c3ow"><div id="text_v4">v4</div></td>
+    <td class="tg-c3ot">&times;</td>
+    <td class="tg-eqtu"><div id="text_w4">w4</div></td>
+  </tr>
+  <tr>
+    <td class="tg-dvpl"><div id="text_a5">a5</div></script></td>
+    <td class="tg-c3ow"><div id="text_v5">v5</div></td>
+    <td class="tg-c3ot">&times;</td>
+    <td class="tg-eqtu"><div id="text_w5">w5</div></td>
+  </tr>
+  <tr>
+    <td class="tg-3py0"><div id="text_a0">a0</div></td>
+    <td class="tg-c3ow"><div id="text_v0" style="display:none">v0</div></td>
+    <td class="tg-c4wh">+</td>
+    <td class="tg-zme7"><div id="text_w0">w0</div></td>
+  </tr>
+  
+  <tr>
+    <td class="tg-3py0"></td>
+    <td class="tg-c3ow show_similarity">% Difference from<br/>Reference</td>
+    <td class="tg-c4wh"></td>
+    <td class="tg-c3ow"></td>
+    <td class="tg-lboi"></td>
+    <td class="tg-lboi"></td>
+    <td class="tg-lboi"></td>
+    <td class="tg-c3ow show_aisystem">% Difference from<br/>AI System</td>
+  </tr>
+  <tr>
+    <td class="tg-3py0"></td>
+    <td class="tg-c3ow show_similarity" id="text_dx">dx</td>
+    <td class="tg-c3ow show_similarity" colspan="5">&rarr; leads to increasing &rarr;</td>
+    <td class="tg-c3ow show_aisystem" id="text_dy">dy</td>
+  </tr>
+</tbody>
+</table>
+
+</body>
+</html>

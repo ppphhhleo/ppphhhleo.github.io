@@ -1,0 +1,88 @@
+<html>
+<head>
+</head>
+
+<body>
+
+<h2>Tutorial Example</h2>
+<div>
+showPrediction=0, showSimilarity=(depends on condition)
+</div>
+<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=0&newExplanation=0&showSimilarity=1&showPrediction=1" 
+		width="790px" height="300px"
+		frameBorder="0" scrolling="no"
+		></iframe>
+<br/>
+<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=3&newExplanation=0&showSimilarity=1&showPrediction=1" 
+		width="790px" height="300px"
+		frameBorder="0" scrolling="no"
+		></iframe>
+<br/>
+<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=3&newExplanation=1&showSimilarity=1&showPrediction=1" 
+		width="790px" height="300px"
+		frameBorder="0" scrolling="no"
+		></iframe>
+
+<h2>Main Trial Example</h2>
+<div>
+showPrediction=0, showSimilarity=0, iframe height less
+</div>
+<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=0&newExplanation=0&showSimilarity=0&showPrediction=0" 
+		width="790px" height="230px"
+		frameBorder="0" scrolling="no"
+		></iframe>
+<br/>
+<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=3&newExplanation=0&showSimilarity=0&showPrediction=0" 
+		width="790px" height="230px"
+		frameBorder="0" scrolling="no"
+		></iframe>
+<br/>
+<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=3&newExplanation=1&showSimilarity=0&showPrediction=0" 
+		width="790px" height="230px"
+		frameBorder="0" scrolling="no"
+		></iframe>
+
+<h2>Interactive</h2>
+<div>
+Application <select id="input_appId">
+  <option value="housingprice-kingcounty">Housing Price: King County</option>
+  <option value="housingprice-nyc">Housing Price: NYC</option>
+  <option value="health-pima-diabetes">Health: Pima Diabetes</option>
+  <option value="health-heart-disease">Health: Heart Disease</option>
+</select><br/>
+Reference Case <input id="input_refId" type="range" min="1" max="5" value="1" style="width:80px" /> |
+Test Case <input id="input_rankFromRef" type="range" min="0" max="5" value="1" style="width:80px" /><br/>
+New Explanation <input id="input_newExplanation" type="checkbox" /> |
+Show Similarity <input id="input_showSimilarity" type="checkbox" /> |
+Show Prediction <input id="input_showPrediction" type="checkbox" />
+</div>
+<iframe id="interactiveIframe" 
+        src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=0&newExplanation=0&showSimilarity=0&showPrediction=0" 
+		width="790px" height="300px"
+		frameBorder="0" scrolling="no"
+		></iframe>
+		
+<script>
+function updateIframeUrl(iframeId) {
+	const appId = document.querySelector("#input_appId").value;
+	const refId = document.querySelector("#input_refId").value;
+	const rankFromRef = document.querySelector("#input_rankFromRef").value;
+	const newExplanation = document.querySelector("#input_newExplanation").checked ? 1 : 0;
+	const showSimilarity = document.querySelector("#input_showSimilarity").checked ? 1 : 0;
+	const showPrediction = document.querySelector("#input_showPrediction").checked ? 1 : 0;
+	//console.log(refId, rankFromRef, newExplanation, showSimilarity, showPrediction);
+	
+	const url = "transferable-xai-ui.html?appId="+appId+"&refId="+refId+"&rankFromRef="+rankFromRef+"&newExplanation="+newExplanation+"&showSimilarity="+showSimilarity+"&showPrediction="+showPrediction;
+	document.querySelector("#interactiveIframe").src = url;
+}
+document.querySelector("#input_appId").onchange = updateIframeUrl;
+document.querySelector("#input_refId").onchange = updateIframeUrl;
+document.querySelector("#input_rankFromRef").onchange = updateIframeUrl;
+document.querySelector("#input_newExplanation").onchange = updateIframeUrl;
+document.querySelector("#input_showSimilarity").onchange = updateIframeUrl;
+document.querySelector("#input_showPrediction").onchange = updateIframeUrl;
+</script>
+
+</body>
+
+</html>
