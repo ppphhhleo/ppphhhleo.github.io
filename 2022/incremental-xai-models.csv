@@ -7,3 +7,4 @@ housingprice-kingcounty,incremental,General,,0,-237120.45,-1559.880551,-3597.989
 housingprice-kingcounty,incremental,General,Age > 5<br/># Bedrooms < 3,1,-237120.45,-1559.880551,-3597.989585,62114.38634,167.0852777,87923.21415,741007.379,246.964232,198.333631,-58004.44574,-167.3304465,-80888.31055
 housingprice-kingcounty,incremental,General,Living Area < 1235<br/># Bathrooms < 2,2,-237120.45,-1559.880551,-3597.989585,62114.38634,167.0852777,87923.21415,783782.0231,2830.699553,6679.017744,-90871.6267,-159.5123511,-100566.3993
 housingprice-kingcounty,instance,,similar to<br/>Current Case,0,0,0,0,0,0,0,0,0,0,0,0,0
+housingprice-kingcounty,none,?,similar to<br/>Current Case,0,0,0,0,0,0,0,0,0,0,0,0,0

@@ -3,7 +3,7 @@
 <head>
 <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
 <script type="text/javascript">
-const thousands = (n, asK) => (asK ? n = n/1000 : n).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',') + (asK ? "k" : ""); // to show comma separation in numbers
+const thousands = (n) => n.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ','); // to show comma separation in numbers
 const round = (n, roundNearest, toFixed) => { n = Math.round(n / roundNearest) * roundNearest; return toFixed !== undefined ? Number(n.toFixed(toFixed)) : n; }
 
 /**
@@ -17,7 +17,7 @@ const id = Number(urlParams.get('id'));
 const xaiType = urlParams.get('xaiType');
 const subspaceId = Number(urlParams.get('subspaceId'));
 const showGlobal = xaiType == 'global' || xaiType == 'incremental';
-const showSubspace = xaiType == 'subglobal' || xaiType == 'incremental' || xaiType == 'instance' || xaiType == 'none';
+const showSubspace = xaiType == 'subglobal' || xaiType == 'incremental' || xaiType == 'instance';
 const showIncremental = xaiType == 'incremental';
 const showPrediction = Number(urlParams.get('showPrediction'));
 
@@ -26,13 +26,17 @@ const vec_magnitude = (vec) => Math.sqrt(vec.reduce((sum, el) => sum + el*el, 0)
 const vec_elementwise_product = (vec, vec2) => vec.map((el, i) => el * vec2[i]);
 const vec_dot_product = (vec, vec2) => vec_sum(vec_elementwise_product(vec, vec2));
 
-function extractAttributeNames(data) {	
+function extractAttributeNames(data) {
+	const a = ["Base", "", "", "", "", "", ""]
+	let y_unit = "";
+	const w_roundNearest = [1, 1, 1, 1, 1, 1];
+	let y_roundNearest = 1;
+	let y_toFixed = 0;
+	
 	const appId_row = data.findIndex(d => d.appId == appId); // get row that has id
 	//console.log('appId_row', appId_row);	
 	const row = appId_row;
 	
-	const a = ["Base", "", "", "", "", "", ""];
-	const w_roundNearest = [1, 1, 1, 1, 1, 1];
 	for (let i = 0; i <= 5; i++) {
 		a[i] = data[row]['a'+i];
 		w_roundNearest[i] = data[row]['w'+i+'_roundNearest'];
@@ -45,15 +49,14 @@ function extractAttributeNames(data) {
 		v_max[i] = data[row]['v'+i+'_max'];
 	}
 		
-	const y_unit = data[row].y_unit;
-	const y_unitName = data[row].y_unitName;
-	const y_roundNearest = data[row].y_roundNearest;
-	const y_toFixed = data[row].y_toFixed;
+	y_unit = data[row].y_unit;
+	y_roundNearest = data[row].y_roundNearest;
+	toFixed = data[row].toFixed;
 	
 	return {
 		a: a,
 		v_min: v_min, v_max: v_max,
-		y_unit: y_unit, y_unitName: y_unitName,
+		y_unit: y_unit,
 		w_roundNearest: w_roundNearest,
 		y_roundNearest: y_roundNearest, 
 		y_toFixed: y_toFixed,
@@ -62,7 +65,7 @@ function extractAttributeNames(data) {
 
 function extractGlobalModel(atts, data) {
 	let row;
-	if (xaiType == 'global' || xaiType == 'instance' || xaiType == 'none') {
+	if (xaiType == 'global' || xaiType == 'instance') {
 		row = data.findIndex(d => d.appId == appId && d.xaiType == xaiType);
 	}
 	else {
@@ -114,7 +117,7 @@ function extractInstance(atts, globalModel, data, id) {
 	const ye = vec_sum(yp); // ye = summation(v * w)	
 	
 	const y = data[row]['y'];
-	const dy = (ye - y) / y;
+	const dy = Math.abs(y - ye) / y;
 	
 	return {
 		v: v, w: w,
@@ -133,25 +136,19 @@ function renderUI(atts, globalModel, data) {
 		document.getElementById('text_' + 'v'+i).innerHTML = thousands(instance.v[i]);
 		
 		if (i > 0) {
-			const meter = document.getElementById('meter_' + 'v'+i);
-			meter.value = instance.v[i];
-			meter.min = atts.v_min[i];
-			meter.max = atts.v_max[i];
-			meter.title = "min: " + thousands(meter.min) + ", max: " + thousands(meter.max);
+			const v_frac = (instance.v[i] - atts.v_min[i]) / (atts.v_max[i] - atts.v_min[i]);
+			document.getElementById('meter_' + 'v'+i).value = v_frac;
 		}
 		
-		if (xaiType == 'none') {
-			document.getElementById('text_' + 'w'+i+'.1').innerHTML = '?';
-		}
-		else if (xaiType == 'instance') {
-			document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w[i], true);
+		if (xaiType == 'instance') {
+			document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w[i]);
 		}
 		else {
-			document.getElementById('text_' + 'w'+i).innerHTML = thousands(globalModel.w[i], true);
-			document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(globalModel.wb[i], true);
+			document.getElementById('text_' + 'w'+i).innerHTML = thousands(globalModel.w[i]);
+			document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(globalModel.wb[i]);
 		}
 		
-		document.getElementById('text_' + 'y'+i).innerHTML = xaiType == 'none' ? "?" : thousands(instance.yp[i], true);
+		document.getElementById('text_' + 'y'+i).innerHTML = thousands(instance.yp[i]);
 	}
 	
 	if (globalModel.subspaceName) {
@@ -159,29 +156,16 @@ function renderUI(atts, globalModel, data) {
 	}
 	
 	Array.from(document.getElementsByClassName('text_' + 'y_unit')).forEach(el => el.innerHTML = "(" + atts.y_unit + ")");
-	document.getElementById('text_' + 'y_unitName').innerHTML = atts.y_unitName;
 	const ye = round(instance.ye, atts.y_roundNearest, atts.y_toFixed);
-	document.getElementById('text_' + 'ye').innerHTML = xaiType == 'none' ? "?" : thousands(ye, true);
+	document.getElementById('text_' + 'ye').innerHTML = thousands(ye);
 	const y = round(instance.y, atts.y_roundNearest, atts.y_toFixed);
-	document.getElementById('text_' + 'y').innerHTML = thousands(y, true);
+	document.getElementById('text_' + 'y').innerHTML = thousands(y);
 	
 	const diffToRed = (diff, threshold) => (1 - diff) * (100 - threshold) + threshold; // calculate redness based on % difference
 	
-	const abs_dy = Math.abs(instance.dy);
-	document.getElementById('text_' + 'dy').innerHTML = xaiType == 'none' ? "?" : round((abs_dy) * 100, 1, 1);
-	const lightness_dy = diffToRed(abs_dy, 60);
-	document.getElementById('text_' + 'dy').style.background = xaiType == 'none' ? "#eee" : 'hsl(0, 100%, ' + lightness_dy + '%)';
-	
-	const textDyDirection = document.getElementById('text_' + 'dy_direction');
-	const textDyInequality = document.getElementById('text_' + 'dy_inequality');
-	if (instance.dy == 0) {
-		textDyDirection.innerHTML = "<b>Different</b> from";
-		textDyInequality.innerHTML = "&asymp;";
-	}
-	else {
-		textDyDirection.innerHTML = instance.dy > 0 ? "<b>Higher</b> than" : "<b>Lower</b> than";
-		textDyInequality.innerHTML = instance.dy > 0 ? "&gt;" : "&lt;";
-	}
+	document.getElementById('text_' + 'dy').innerHTML = round(instance.dy * 100, 1, 1);
+	const lightness_dy = diffToRed(instance.dy, 60);
+	document.getElementById('text_' + 'dy').style.background = 'hsl(0, 100%, ' + lightness_dy + '%)';
 	
 	Array.from(document.getElementsByClassName('showAiSystem')).forEach(el => el.style.visibility = showPrediction ? 'visible' : 'hidden');
 	Array.from(document.getElementsByClassName('showGlobal')).forEach(el => el.style.display = showGlobal ? 'revert' : 'none');
@@ -230,22 +214,22 @@ Papa.parse("./app-attributes.csv", {
 .tg td,th{font-family:Arial,sans-serif;font-size:14px;padding:5px 5px;}
 .tg .tg-lboi{border-color:inherit;text-align:left;vertical-align:middle}
 .tg .tg-c4wh{border-color:inherit;color:#656565;text-align:center;}
-.tg .tg-zme7{background-color:#e8fae5;border-color:inherit;text-align:center;}
+.tg .tg-zme7{background-color:#e6ffde;border-color:inherit;text-align:center;}
 .tg .tg-c3ot{border-color:inherit;text-align:center;}
-.tg .tg-c3ot2{background-color:#2e8112;color:#fff;border-color:inherit;text-align:center;}
-.tg .tg-c3ot3{background-color:#e8fae5;border-color:inherit;text-align:center;}
+.tg .tg-c3ot2{background-color:#226a0a;color:#fff;border-color:inherit;text-align:center;}
+.tg .tg-c3ot3{background-color:#e6ffde;border-color:inherit;text-align:center;}
 .tg .tg-c3ow0{border-color:inherit;text-align:center;width:50px;}
 .tg .tg-c3ow{border-color:inherit;text-align:center;width:125px;}
-.tg .tg-c3ow2{border-color:inherit;text-align:center;border: 2px #000 solid; width:125px;}
+.tg .tg-c3ow2{border-color:inherit;text-align:center;border: 1px #000 solid; width:125px;}
 .tg .tg-3py0{border-color:inherit;color:#9b9b9b;text-align:right;}
 .tg .tg-dvpl{border-color:inherit;text-align:right;}
 .tg .tg-0pky{border-color:inherit;text-align:left;}
-.tg .tg-eqtu{background-color:#2e8112;color:#fff;border-color:inherit;text-align:center;}
+.tg .tg-eqtu{background-color:#226a0a;color:#fff;border-color:inherit;text-align:center;}
 th {vertical-align:bottom;font-weight:bold;}
 body {margin:0px; padding:0px}
-#text_subspaceName {color:#2e8112}
+#text_subspaceName {color:#226a0a}
 .subspaceFactor {color:#deff36}
-meter {width:15px; cursor:pointer;}
+meter {width:20px}
 </style>
 
 <table class="tg">
@@ -260,7 +244,7 @@ meter {width:15px; cursor:pointer;}
     <th class="tg-c3ow showSubspace" style="vertical-align:top">Factors when<br/><span id="text_subspaceName">Typical<br/>Case</span></th>
     <th class="tg-c3ot showIncremental"></th>
     <th class="tg-c3ot showGlobal"></th>
-    <th class="tg-c3ow showGlobal" style="vertical-align:top">&nbsp;<br/>Partial<br/><span id="text_y_unitName">Score</span></th>
+    <th class="tg-c3ow showGlobal" style="vertical-align:top">&nbsp;<br/>Partial<br/>Result</th>
     <th class="tg-0pky"></th>
     <th class="tg-0pky"></th>
     <th class="tg-0pky"></th>
@@ -287,16 +271,16 @@ meter {width:15px; cursor:pointer;}
     <td class="tg-lboi" rowspan="6">
 	  <table class="tg">
         <tr><td class="tg-c3ow showAiSystem">&nbsp;<br/>&nbsp;</td></tr>
-	    <tr><th class="tg-c3ow"><span style="color:#2e8112">AI Explainer <span class="text_y_unit">y_unit</span></span></th></tr>
-        <tr><td class="tg-c3ow2" style="border-color:#2e8112"><div id="text_ye">ye</div></td></tr>
-        <tr><td class="tg-c3ow showAiSystem">% <span id="text_dy_direction">Difference from</span><br/>AI System</td></tr>
+	    <tr><th class="tg-c3ow">AI Explainer <span class="text_y_unit">y_unit</span></th></tr>
+        <tr><td class="tg-c3ow2"><div id="text_ye">ye</div></td></tr>
+        <tr><td class="tg-c3ow showAiSystem">% Difference from<br/>AI System</td></tr>
         <tr><td class="tg-c3ow showAiSystem" id="text_dy">dy</td></tr>
 	  </table></td>
-    <td class="tg-lboi showAiSystem" rowspan="6"><span id="text_dy_inequality">&asymp;</span></td>
+    <td class="tg-lboi showAiSystem" rowspan="6">&asymp;</td>
     <td class="tg-lboi" rowspan="6">
 	  <table class="tg showAiSystem">
-	    <tr><th class="tg-c3ow"><span style="color:#326fff">AI System <span class="text_y_unit">y_unit</span></span></th></tr>
-        <tr><td class="tg-c3ow2" style="border-color:#326fff"><div id="text_y">y</div></td></tr>
+	    <tr><th class="tg-c3ow">AI System <span class="text_y_unit">y_unit</span></th></tr>
+        <tr><td class="tg-c3ow2"><div id="text_y">y</div></td></tr>
         <tr><td class="tg-c3ow">&nbsp;</td></tr>
 	  </table></td>
   </tr>

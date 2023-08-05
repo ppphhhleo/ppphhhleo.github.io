@@ -7,22 +7,27 @@
 <h2>Tutorial Example</h2>
 <h3>Global</h3>
 <iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=global&showPrediction=1" 
-		width="1000px" height="245px"
+		width="1080px" height="245px"
 		frameBorder="0" scrolling="no"
 		></iframe>
 <h3>Sub-Global</h3>
 <iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=subglobal&subspaceId=0&showPrediction=1" 
-		width="1000px" height="245px"
+		width="1080px" height="245px"
 		frameBorder="0" scrolling="no"
 		></iframe>
 <h3>Incremental</h3>
 <iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=incremental&subspaceId=0&showPrediction=1" 
-		width="1000px" height="245px"
+		width="1080px" height="245px"
 		frameBorder="0" scrolling="no"
 		></iframe>
 <h3>Instance</h3>
 <iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=instance&showPrediction=1" 
-		width="1000px" height="245px"
+		width="1080px" height="260px"
+		frameBorder="0" scrolling="no"
+		></iframe>
+<h3>None</h3>
+<iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=none&showPrediction=1" 
+		width="1080px" height="260px"
 		frameBorder="0" scrolling="no"
 		></iframe>
 
@@ -40,13 +45,14 @@ XAI Type <select id="input_xaiType">
   <option value="subglobal">Sub-Global</option>
   <option value="incremental" selected>Incremental</option>
   <option value="instance">Instance</option>
+  <option value="none">None</option>
 </select> |
 Subspace ID <input id="input_subspaceId" type="range" min="0" max="3" value="0" style="width:80px" /> |
 Show Prediction <input id="input_showPrediction" type="checkbox" checked />
 </div>
 <iframe id="interactiveIframe" 
 <iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=incremental&subspaceId=0&showPrediction=1" 
-		width="1000px" height="245px"
+		width="1080px" height="245px"
 		frameBorder="0" scrolling="no"
 		></iframe>
 		
