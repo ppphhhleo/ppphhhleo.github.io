@@ -8,37 +8,28 @@
 <div>
 showPrediction=0, showSimilarity=(depends on condition)
 </div>
-<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=0&xaiType=ref&showSimilarity=1&showPrediction=1" 
+<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=1&xaiType=ref&showSimilarity=1&showPrediction=1" 
 		width="880px" height="300px"
 		frameBorder="0" scrolling="no"
 		></iframe>
 <br/>
-<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=3&xaiType=ref&showSimilarity=1&showPrediction=1" 
+<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=0&xaiType=ref&showSimilarity=1&showPrediction=0" 
 		width="880px" height="300px"
 		frameBorder="0" scrolling="no"
 		></iframe>
 <br/>
-<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=3&xaiType=ref&showSimilarity=1&showPrediction=1" 
+<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=0&xaiType=new&showSimilarity=1&showPrediction=0" 
 		width="880px" height="300px"
 		frameBorder="0" scrolling="no"
-		></iframe
-
-<h2>Practice Trial Example</h2>
-<div>
-showPrediction=0, showSimilarity=0, iframe height less
-</div>
-<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=0&xaiType=new&showSimilarity=0&showPrediction=0" 
-		width="880px" height="230px"
+		></iframe>
+<br/>
+<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=0&xaiType=ref&showSimilarity=1&showPrediction=1" 
+		width="880px" height="300px"
 		frameBorder="0" scrolling="no"
 		></iframe>
 <br/>
-<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=3&xaiType=new&showSimilarity=0&showPrediction=0" 
-		width="880px" height="230px"
-		frameBorder="0" scrolling="no"
-		></iframe>
-<br/>
-<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=3&xaiType=new&showSimilarity=0&showPrediction=0" 
-		width="880px" height="230px"
+<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=0&xaiType=new&showSimilarity=1&showPrediction=1" 
+		width="880px" height="300px"
 		frameBorder="0" scrolling="no"
 		></iframe>
 
@@ -46,20 +37,16 @@ showPrediction=0, showSimilarity=0, iframe height less
 <div>
 showPrediction=0, showSimilarity=0, iframe height less
 </div>
-<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=0&xaiType=none&showSimilarity=0&showPrediction=0" 
+<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=1&xaiType=none&showSimilarity=0&showPrediction=0" 
 		width="880px" height="230px"
 		frameBorder="0" scrolling="no"
 		></iframe>
 <br/>
-<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=3&xaiType=none&showSimilarity=0&showPrediction=0" 
+<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=0&xaiType=none&showSimilarity=0&showPrediction=0" 
 		width="880px" height="230px"
 		frameBorder="0" scrolling="no"
 		></iframe>
 <br/>
-<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=3&xaiType=none&showSimilarity=0&showPrediction=0" 
-		width="880px" height="230px"
-		frameBorder="0" scrolling="no"
-		></iframe>
 
 <h2>Interactive</h2>
 <div>
@@ -68,9 +55,8 @@ Application <select id="input_appId">
   <option value="housingprice-nyc">Housing Price: NYC</option>
   <option value="health-pima-diabetes">Health: Pima Diabetes</option>
   <option value="health-heart-disease">Health: Heart Disease</option>
-</select><br/>
-Reference Case <input id="input_refId" type="range" min="1" max="6" value="1" style="width:80px" /> |
-Test Case <input id="input_rankFromRef" type="range" min="1" max="5" value="1" style="width:80px" /><br/>
+</select> |
+Trial <input id="text_pairId" value="1" size="2" maxlength="2" disabled/> <input id="input_pairId" type="range" min="1" max="50" value="1" style="width:250px" /><br/>
 Explanation Type <select id="input_xaiType">
   <option value="none">None</option>
   <option value="ref" selected>Reference</option>
@@ -80,13 +66,13 @@ Show Similarity <input id="input_showSimilarity" type="checkbox" /> |
 Show Prediction <input id="input_showPrediction" type="checkbox" />
 </div>
 <iframe id="interactiveIframeRef" 
-        src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=0&xaiType=ref&showSimilarity=0&showPrediction=0" 
+        src="transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=1&xaiType=ref&showSimilarity=0&showPrediction=0" 
 		width="880px" height="300px"
 		frameBorder="0" scrolling="no"
 		></iframe>
 <br/>
 <iframe id="interactiveIframe" 
-        src="transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=1&xaiType=ref&showSimilarity=0&showPrediction=0" 
+        src="transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=0&xaiType=ref&showSimilarity=0&showPrediction=0" 
 		width="880px" height="300px"
 		frameBorder="0" scrolling="no"
 		></iframe>
@@ -94,21 +80,21 @@ Show Prediction <input id="input_showPrediction" type="checkbox" />
 <script>
 function updateIframeUrl(iframeId) {
 	const appId = document.querySelector("#input_appId").value;
-	const refId = document.querySelector("#input_refId").value;
-	const rankFromRef = document.querySelector("#input_rankFromRef").value;
+	const pairId = document.querySelector("#input_pairId").value;
 	const xaiType = document.querySelector("#input_xaiType").value;
 	const showSimilarity = document.querySelector("#input_showSimilarity").checked ? 1 : 0;
 	const showPrediction = document.querySelector("#input_showPrediction").checked ? 1 : 0;
 	//console.log(refId, rankFromRef, xaiType, showSimilarity, showPrediction);
 	
-	const urlRef = "transferable-xai-ui.html?appId="+appId+"&refId="+refId+"&rankFromRef="+0+"&xaiType="+xaiType+"&showSimilarity="+showSimilarity+"&showPrediction="+showPrediction;
+	const urlRef = "transferable-xai-ui.html?appId="+appId+"&pairId="+pairId+"&isRef="+1+"&xaiType="+xaiType+"&showSimilarity="+showSimilarity+"&showPrediction="+showPrediction;
 	document.querySelector("#interactiveIframeRef").src = urlRef;
-	const url = "transferable-xai-ui.html?appId="+appId+"&refId="+refId+"&rankFromRef="+rankFromRef+"&xaiType="+xaiType+"&showSimilarity="+showSimilarity+"&showPrediction="+showPrediction;
+	const url = "transferable-xai-ui.html?appId="+appId+"&pairId="+pairId+"&isRef="+0+"&xaiType="+xaiType+"&showSimilarity="+showSimilarity+"&showPrediction="+showPrediction;
 	document.querySelector("#interactiveIframe").src = url;
+	
+	document.querySelector("#text_pairId").value = pairId;
 }
 document.querySelector("#input_appId").onchange = updateIframeUrl;
-document.querySelector("#input_refId").onchange = updateIframeUrl;
-document.querySelector("#input_rankFromRef").onchange = updateIframeUrl;
+document.querySelector("#input_pairId").onchange = updateIframeUrl;
 document.querySelector("#input_xaiType").onchange = updateIframeUrl;
 document.querySelector("#input_showSimilarity").onchange = updateIframeUrl;
 document.querySelector("#input_showPrediction").onchange = updateIframeUrl;

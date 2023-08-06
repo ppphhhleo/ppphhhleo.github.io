@@ -16,16 +16,17 @@ const round = (n, roundNearest, toFixed, snExp) => {
 /**
  * Read URL key-values to get condition and trial
  */
-const queryString = window.location.search; // e.g.: http://localhost:9000/transferable-xai-ui.html?appId=housingprice-kingcounty&refId=1&rankFromRef=2&newExplanation=1&showSimilarity=1&showPrediction=1
+const queryString = window.location.search; // e.g.: http://localhost:9000/transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=1&xaiType=new&showSimilarity=1&showPrediction=1
 const urlParams = new URLSearchParams(queryString);
 
 const appId = urlParams.get('appId');
-const refId = Number(urlParams.get('refId'));
-let rankFromRef = Number(urlParams.get('rankFromRef'));
+const isRef = Number(urlParams.get('isRef'));
+const pairId = Number(urlParams.get('pairId'));
+//const refId = Number(urlParams.get('refId'));
+//const testId = Number(urlParams.get('testId'));
 const xaiType = urlParams.get('xaiType');
 const newExplanation = xaiType == 'new';
 const noXai = xaiType == 'none';
-const isRef = rankFromRef == null || rankFromRef == 0;
 const showSimilarity = Number(urlParams.get('showSimilarity'));
 const showPrediction = Number(urlParams.get('showPrediction'));
 let notRounding = Number(urlParams.get('notRounding')) == 1;
@@ -81,34 +82,34 @@ function extractAttributeNames(data) {
 	};
 }
 
-function extractInstance(atts, data, refId, rankFromRef) {
-	const ref_row = data.findIndex(d => d.appId == appId && d.refId == refId && d.rankFromRef == 0);
-	const test_row = data.findIndex(d => d.appId == appId && d.refId == refId && d.rankFromRef == rankFromRef);
+function extractInstance(atts, data, pairId) {
+	const row = data.findIndex(d => d.appId == appId && d.pairId == pairId);
 	
 	const v_ref = [1, 0, 0, 0, 0, 0];
 	const v = [1, 0, 0, 0, 0, 0];
 	for (let i = 1; i <= 5; i++) {
-		v_ref[i] = data[ref_row]['v'+i];
-		v[i] = data[test_row]['v'+i];
+		v_ref[i] = data[row]['v'+i+'_r'];
+		v[i] = data[row]['v'+i+'_t'];
+		if (isRef) { v[i] = v_ref[i]; }
 	}
 	const w_ref = [0, 0, 0, 0, 0, 0];
 	const w = [0, 0, 0, 0, 0, 0];
 	for (let i = 0; i <= 5; i++) {
-		w_ref[i] = data[ref_row]['w'+i];
-		w[i] = data[test_row]['w'+i];
-		if (!newExplanation) { w[i] = w_ref[i]; }
+		w_ref[i] = data[row]['w'+i+'_r'];
+		w[i] = data[row]['w'+i+'_t'];
+		if (isRef || !newExplanation) { w[i] = w_ref[i]; }
 		w[i] = round(w[i], atts.w_roundNearest[i], atts.w_toFixed[i], atts.w_snExp[i]); // round for simple interpretability; though this needs to be consistent with ye
 	}
 	
 	const yp = [0, 0, 0, 0, 0, 0]; // partial y's
 	for (let i = 0; i <= 5; i++) {
-		yp[i] = new Decimal(v[i]).mul(new Decimal(w[i]));
+		yp[i] = Number(new Decimal(v[i]).mul(new Decimal(w[i])));
 	}
-	const ye = vec_sum(yp); // ye = summation(v * w)	
+	const ye = vec_sum(yp); // ye = summation(v * w)
 	
-	const y = data[test_row]['y'];
+	const y = xaiType == 'ref' ? data[row]['y_rr'] : data[row]['y_tt'];
 	
-	const dx = data[test_row].diffFromRef;
+	const dx = data[row].d;
 	const dy = atts.y_model == 'logistic' ? (ye - y) : (ye - y) / y;
 	
 	return {
@@ -123,7 +124,7 @@ function extractInstance(atts, data, refId, rankFromRef) {
 }
 
 function renderUI(atts, data) {	
-	instance = extractInstance(atts, data, refId, rankFromRef);
+	instance = extractInstance(atts, data, pairId);
 	for (let i = 0; i <= 5; i++) {
 		document.getElementById('text_' + 'a'+i).innerHTML = atts.a[i];
 		document.getElementById('text_' + 'v'+i).innerHTML = thousands(instance.v[i]);
@@ -228,7 +229,7 @@ td,th{font-family:Arial,sans-serif;font-size:14px;padding:5px 5px;}
 .tg-c4wh{border-color:inherit;color:#656565;text-align:center;vertical-align:top}
 .tg-zme7{background-color:#FFF2CC;border-color:inherit;text-align:center;vertical-align:top; width:90px}
 .tg-c3ot{border-color:inherit;text-align:center;vertical-align:top;}
-.tg-c3ot2{border-color:inherit;text-align:left;vertical-align:top;width:40px}
+.tg-c3ot2{border-color:inherit;text-align:left;vertical-align:top;padding:5px 0; width:40px}
 .tg-c3ot3{background-color:#FFF2CC;border-color:inherit;text-align:center;}
 .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top; width:70px;}
 .tg-c3ow2{border-color:inherit;text-align:center;vertical-align:top; border: 1px #000 solid; width:120px;}
@@ -257,7 +258,8 @@ meter::-moz-meter-bar {background:red;}
 <thead>
   <tr>
     <th class="tg-dvpl">Attributes</th>
-    <th class="tg-c3ow" colspan="2" style="width: 80px">Values</th>
+    <th class="tg-c3ow">Values</th>
+    <th class="tg-c3ot2 show_similarity"><span title="Differences from Reference" style="cursor:pointer;">(Diff)</span></th>
     <th class="tg-0pky"></th>
     <th class="tg-c3ow" style="width: 100px"><span class="text_new_xai">New</span> Factors</th>
     <th class="tg-c3ot"></th>
@@ -273,7 +275,7 @@ meter::-moz-meter-bar {background:red;}
   <tr>
     <td class="tg-dvpl"><div id="text_a1">a1</div></td>
     <td class="tg-c3ow"><div id="text_v1">v1</div></td>
-    <td class="tg-c3ot2"><meter id="meter_v1" value=".5"></meter></td>
+    <td class="tg-c3ot2 show_similarity"><meter id="meter_v1" value=".5"></meter></td>
     <td class="tg-c3ot">&times;</td>
     <td class="tg-eqtu cell_w"><div id="text_w1">w1</div></td>
     <td class="tg-c3ot3 cell_w0">=</td>
@@ -298,7 +300,7 @@ meter::-moz-meter-bar {background:red;}
   <tr>
     <td class="tg-dvpl"><div id="text_a2">a2</div></td>
     <td class="tg-c3ow"><div id="text_v2">v2</div></td>
-    <td class="tg-c3ot2"><meter id="meter_v2" value=".5"></meter></td>
+    <td class="tg-c3ot2 show_similarity"><meter id="meter_v2" value=".5"></meter></td>
     <td class="tg-c3ot">&times;</td>
     <td class="tg-eqtu cell_w"><div id="text_w2">w2</div></td>
     <td class="tg-c3ot3 cell_w0">=</td>
@@ -307,7 +309,7 @@ meter::-moz-meter-bar {background:red;}
   <tr>
     <td class="tg-dvpl"><div id="text_a3">a3</div></td>
     <td class="tg-c3ow"><div id="text_v3">v3</div></td>
-    <td class="tg-c3ot2"><meter id="meter_v3" value=".5"></meter></td>
+    <td class="tg-c3ot2 show_similarity"><meter id="meter_v3" value=".5"></meter></td>
     <td class="tg-c3ot">&times;</td>
     <td class="tg-eqtu cell_w"><div id="text_w3">w3</div></td>
     <td class="tg-c3ot3 cell_w0">=</td>
@@ -316,7 +318,7 @@ meter::-moz-meter-bar {background:red;}
   <tr>
     <td class="tg-dvpl"><div id="text_a4">a4</div></td>
     <td class="tg-c3ow"><div id="text_v4">v4</div></td>
-    <td class="tg-c3ot2"><meter id="meter_v4" value=".5"></meter></td>
+    <td class="tg-c3ot2 show_similarity"><meter id="meter_v4" value=".5"></meter></td>
     <td class="tg-c3ot">&times;</td>
     <td class="tg-eqtu cell_w"><div id="text_w4">w4</div></td>
     <td class="tg-c3ot3 cell_w0">=</td>
@@ -325,7 +327,7 @@ meter::-moz-meter-bar {background:red;}
   <tr>
     <td class="tg-dvpl"><div id="text_a5">a5</div></script></td>
     <td class="tg-c3ow"><div id="text_v5">v5</div></td>
-    <td class="tg-c3ot2"><meter id="meter_v5" value=".5"></meter></td>
+    <td class="tg-c3ot2 show_similarity"><meter id="meter_v5" value=".5"></meter></td>
     <td class="tg-c3ot">&times;</td>
     <td class="tg-eqtu cell_w"><div id="text_w5">w5</div></td>
     <td class="tg-c3ot3 cell_w0">=</td>
@@ -333,7 +335,7 @@ meter::-moz-meter-bar {background:red;}
   </tr>
   <tr>
     <td class="tg-3py0"><div id="text_a0">a0</div></td>
-    <td class="tg-c3ow"><div id="text_v0" style="display:none">v0</div></td>
+    <td class="tg-c3ow show_similarity"><div id="text_v0" style="display:none">v0</div></td>
     <td class="tg-c3ot2"></td>
     <td class="tg-c4wh">+</td>
     <td class="tg-zme7 cell_w0"><div id="text_w0">w0</div></td>
@@ -343,7 +345,7 @@ meter::-moz-meter-bar {background:red;}
   
   <tr>
     <td class="tg-3py0"></td>
-    <td class="tg-c3ow show_similarity" colspan="2">% Difference from<br/>Reference</td>
+    <td class="tg-c3ow show_similarity" colspan="2">% Difference<br/>from Reference</td>
     <td class="tg-c3ow" colspan="7"></td>
     <td class="tg-c3ow show_aisystem" style="width:120px">% <span id="text_dy_direction">Difference from</span><br/>AI System</td>
   </tr>
