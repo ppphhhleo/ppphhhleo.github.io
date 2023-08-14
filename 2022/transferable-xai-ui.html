@@ -107,7 +107,7 @@ function extractInstance(atts, data, pairId) {
 	}
 	const ye = vec_sum(yp); // ye = summation(v * w)
 	
-	const y = xaiType == 'ref' ? data[row]['y_rr'] : data[row]['y_tt'];
+	const y = isRef || xaiType == 'ref' ? data[row]['y_rr'] : data[row]['y_tt'];
 	
 	const dx = data[row].d;
 	const dy = atts.y_model == 'logistic' ? (ye - y) : (ye - y) / y;
@@ -352,7 +352,7 @@ meter::-moz-meter-bar {background:red;}
   <tr>
     <td class="tg-3py0"></td>
     <td class="tg-c3ow show_similarity" id="text_dx" colspan="2">dx</td>
-    <td class="tg-c3ow show_similarity_leads" colspan="7">&rarr; leads to increasing &rarr;</td>
+    <td class="tg-c3ow show_similarity_leads" colspan="7">&rarr; lower/higher leads to lower/higher in &rarr;</td>
     <td class="tg-c3ow show_aisystem" id="text_dy">dy</td>
   </tr>
 </tbody>
