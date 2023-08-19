@@ -2,20 +2,27 @@
 <html>
 <head>
 <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.4.3/decimal.min.js"></script>
 <script type="text/javascript">
-const thousands = (n, asK) => (asK ? n = n/1000 : n).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',') + (asK ? "k" : ""); // to show comma separation in numbers
-const round = (n, roundNearest, toFixed) => { n = Math.round(n / roundNearest) * roundNearest; return toFixed !== undefined ? Number(n.toFixed(toFixed)) : n; }
+
+const PRECISION = 2;
+//const thousands = (n, asK) => (asK ? n = n/1000 : n).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',') + (asK ? "k" : ""); // to show comma separation in numbers
+const thousands = (n, asK) => Number(n.toPrecision(PRECISION)).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',') + (asK ? "k" : ""); // to show comma separation in numbers
+//const round = (n, roundNearest, toFixed) => { n = Math.round(n / roundNearest) * roundNearest; return toFixed !== undefined ? Number(n.toFixed(toFixed)) : n; }
+const round = (n, roundNearest, toFixed) => Number(n.toPrecision(PRECISION));
 
 /**
  * Read URL key-values to get condition and trial
  */
-const queryString = window.location.search; // e.g.: http://localhost:9000/incremental-xai-ui.html?appId=housingprice-kingcounty&xaiType=incremental&subspaceId=0&id=1&showPrediction=1
+//const queryString =  "http://localhost:9000/incremental-xai-ui.html?appId=housingprice-kingcounty&xaiType=incremental&id=1&showPrediction=1";
+const queryString = window.location.search; // e.g.: http://localhost:9000/incremental-xai-ui.html?appId=housingprice-kingcounty&xaiType=incremental&id=1&showPrediction=1
 const urlParams = new URLSearchParams(queryString);
 
 const appId = urlParams.get('appId');
 const id = Number(urlParams.get('id'));
 const xaiType = urlParams.get('xaiType');
-const subspaceId = Number(urlParams.get('subspaceId'));
+//const subspaceId = Number(urlParams.get('subspaceId'));
+let subspaceId = 0;
 const showGlobal = xaiType == 'global' || xaiType == 'incremental';
 const showSubspace = xaiType == 'subglobal' || xaiType == 'incremental' || xaiType == 'instance' || xaiType == 'none';
 const showIncremental = xaiType == 'incremental';
@@ -31,16 +38,16 @@ function extractAttributeNames(data) {
 	//console.log('appId_row', appId_row);	
 	const row = appId_row;
 	
-	const a = ["Base", "", "", "", "", "", ""];
-	const w_roundNearest = [1, 1, 1, 1, 1, 1];
-	for (let i = 0; i <= 5; i++) {
+	const a = ["Base", "", "", "", "", ""];
+	const w_roundNearest = [1, 1, 1, 1, 1];
+	for (let i = 0; i <= 4; i++) {
 		a[i] = data[row]['a'+i];
 		w_roundNearest[i] = data[row]['w'+i+'_roundNearest'];
 	}
 	
-	const v_min = [0, 0, 0, 0, 0, 0];
-	const v_max = [0, 0, 0, 0, 0, 0];
-	for (let i = 1; i <= 5; i++) {
+	const v_min = [0, 0, 0, 0, 0];
+	const v_max = [0, 0, 0, 0, 0];
+	for (let i = 1; i <= 4; i++) {
 		v_min[i] = data[row]['v'+i+'_min'];
 		v_max[i] = data[row]['v'+i+'_max'];
 	}
@@ -61,55 +68,81 @@ function extractAttributeNames(data) {
 }
 
 function extractGlobalModel(atts, data) {
-	let row;
-	if (xaiType == 'global' || xaiType == 'instance' || xaiType == 'none') {
-		row = data.findIndex(d => d.appId == appId && d.xaiType == xaiType);
-	}
-	else {
-		row = data.findIndex(d => d.appId == appId && d.xaiType == xaiType && d.subspaceId == subspaceId);
-	}
+	const row_g  = data.findIndex(d => d.appId == appId && d.xaiType == 'global');
+	const row_s0 = data.findIndex(d => d.appId == appId && d.xaiType == 'subglobal' && d.subspaceId == 0);
+	const row_s1 = data.findIndex(d => d.appId == appId && d.xaiType == 'subglobal' && d.subspaceId == 1);
+	const row_i0 = data.findIndex(d => d.appId == appId && d.xaiType == 'incremental' && d.subspaceId == 0);
+	const row_i1 = data.findIndex(d => d.appId == appId && d.xaiType == 'incremental' && d.subspaceId == 1);
+	const row_l  = data.findIndex(d => d.appId == appId && d.xaiType == 'instance');
+	const row_n  = data.findIndex(d => d.appId == appId && d.xaiType == 'none');
 	
-	const w = [0, 0, 0, 0, 0, 0];
-	const wb = [0, 0, 0, 0, 0, 0];
-	for (let i = 0; i <= 5; i++) {
-		w[i] = data[row]['w'+i];
-		w[i] = round(w[i], atts.w_roundNearest[i], 0); // round for simple interpretability; though this needs to be consistent with ye
-		wb[i] = data[row]['w'+i+'.1'];
-		wb[i] = round(wb[i], atts.w_roundNearest[i], 0); 
-	}
+	const w_g  = [0, 0, 0, 0, 0];
+	const w_s0 = [0, 0, 0, 0, 0];
+	const w_s1 = [0, 0, 0, 0, 0];
+	const w_i0 = [0, 0, 0, 0, 0];
+	const w_i1 = [0, 0, 0, 0, 0];
 	
-	const spaceName = data[row].spaceName;
-	const subspaceName = data[row].subspaceName;
+	for (let i = 0; i <= 4; i++) {
+		/*w_g[i]  = round(data[row_g]['w'+i]); // round for interpretability
+		w_s0[i] = round(data[row_s0]['w'+i]);
+		w_s1[i] = round(data[row_s1]['w'+i]);
+		w_i0[i] = round(data[row_s0]['w'+i]);
+		w_i1[i] = round(data[row_s1]['w'+i]);*/
+		w_g[i]  = data[row_g]['w'+i]; 
+		w_s0[i] = data[row_s0]['w'+i];
+		w_s1[i] = data[row_s1]['w'+i];
+		w_i0[i] = data[row_i0]['w'+i];
+		w_i1[i] = data[row_i1]['w'+i];
+	}
 	
 	return {
-		w: w,
-		wb: wb,
-		spaceName: spaceName,
-		subspaceName: subspaceName,
+		w_g:  w_g,
+		w_s0: w_s0,
+		w_s1: w_s1,
+		w_i0: w_i0,
+		w_i1: w_i1,
+		s0name: data[row_s0]['subspaceName'],
+		s1name: data[row_s1]['subspaceName'],
+		i0name: data[row_i0]['subspaceName'],
+		i1name: data[row_i1]['subspaceName'],
+		lname:  data[row_l]['subspaceName'],
+		nname:  data[row_n]['subspaceName'],
 	};
 }
 
 function extractInstance(atts, globalModel, data, id) {
 	const row = data.findIndex(d => d.id == id);
 	
-	const v = [1, 0, 0, 0, 0, 0];
+	const v = [1, 0, 0, 0, 0];
 	for (let i = 1; i <= 5; i++) {
 		v[i] = data[row]['v'+i];
 	}
-	const w = [0, 0, 0, 0, 0, 0];
-	for (let i = 0; i <= 5; i++) {
-		w[i] = data[row]['w'+i];
-		w[i] = round(w[i], atts.w_roundNearest[i], 0); // round for simple interpretability; though this needs to be consistent with ye		
+	const w_l = [0, 0, 0, 0, 0];
+	for (let i = 0; i <= 4; i++) {
+		w_l[i] = round(data[row]['w'+i], atts.w_roundNearest[i], 0);
 	}
 	
-	const yp = [0, 0, 0, 0, 0, 0]; // partial y's
-	for (let i = 0; i <= 5; i++) {
-		if (xaiType == 'instance') {
-			yp[i] = v[i]*w[i];
+	subspaceId = v[3] >= 9; // hardcoded from Jessica's rules: Grade >= 9
+	const w = [0, 0, 0, 0, 0];
+	const yp = [0, 0, 0, 0, 0]; // partial y's
+	
+	for (let i = 0; i <= 4; i++) {
+		switch (xaiType) {
+			case 'global': 
+				w[i] = globalModel.w_g[i];
+				break;
+			case 'subglobal':
+				w[i] = subspaceId == 0 ? globalModel.w_s0[i] : globalModel.w_s1[i];
+				break;
+			case 'incremental':
+				w[i] = globalModel.w_i0[i] + (subspaceId == 0 ? 0 : globalModel.w_i1[i]);
+				break;
+			case 'instance':
+				w[i] = w_l[i];
+				break;
 		}
-		else {
-			yp[i] = v[i] * (globalModel.w[i] + globalModel.wb[i]);
-		}
+		yp[i] = v[i] * w[i];
+		//yp[i] = new Decimal(v[i]).mul(new Decimal(w[i]));
 	}
 	const ye = vec_sum(yp); // ye = summation(v * w)	
 	
@@ -117,18 +150,23 @@ function extractInstance(atts, globalModel, data, id) {
 	const dy = (ye - y) / y;
 	
 	return {
-		v: v, w: w,
+		v: v,
+		w_g: globalModel.w_g, 
+		w_s: subspaceId == 0 ? globalModel.w_s0 : globalModel.w_s1,
+		w_i0: globalModel.w_i0, w_i1: subspaceId == 0 ? [0, 0, 0, 0, 0] : globalModel.w_i1,
+		w_l: w_l,
 		yp: yp,
 		ye: ye,
 		y: y, 
 		dy: dy,
+		subspaceId: subspaceId,
 	};
 }
 
 function renderUI(atts, globalModel, data) {	
 	instance = extractInstance(atts, globalModel, data, id);
 	
-	for (let i = 0; i <= 5; i++) {
+	for (let i = 0; i <= 4; i++) {
 		document.getElementById('text_' + 'a'+i).innerHTML = atts.a[i];
 		document.getElementById('text_' + 'v'+i).innerHTML = thousands(instance.v[i]);
 		
@@ -140,23 +178,48 @@ function renderUI(atts, globalModel, data) {
 			meter.title = "min: " + thousands(meter.min) + ", max: " + thousands(meter.max);
 		}
 		
-		if (xaiType == 'none') {
-			document.getElementById('text_' + 'w'+i+'.1').innerHTML = '?';
-		}
-		else if (xaiType == 'instance') {
-			document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w[i], true);
-		}
-		else {
-			document.getElementById('text_' + 'w'+i).innerHTML = thousands(globalModel.w[i], true);
-			document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(globalModel.wb[i], true);
+		switch (xaiType) {
+			case 'global': 
+				document.getElementById('text_' + 'w'+i).innerHTML = thousands(globalModel.w_g[i], true);
+				break;
+			case 'subglobal':
+				document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w_s[i], true);
+				break;
+			case 'incremental':
+				document.getElementById('text_' + 'w'+i).innerHTML = thousands(instance.w_i0[i], true);
+				document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w_i1[i], true);
+				break;
+			case 'instance':
+				document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w_l[i], true);
+				break;
+			case 'none':
+				document.getElementById('text_' + 'w'+i).innerHTML = '?';
+				document.getElementById('text_' + 'w'+i+'.1').innerHTML = '?';
+				break;
 		}
 		
 		document.getElementById('text_' + 'y'+i).innerHTML = xaiType == 'none' ? "?" : thousands(instance.yp[i], true);
 	}
 	
-	if (globalModel.subspaceName) {
-		document.getElementById('text_' + 'subspaceName').innerHTML = globalModel.subspaceName;
+	let subspaceName = "";
+	switch (xaiType) {
+		case 'subglobal': 
+			subspaceName = instance.subspaceId == 0 ? globalModel.s0name : globalModel.s1name;
+			break;
+		case 'incremental':
+			subspaceName = instance.subspaceId == 0 ? globalModel.i0name : globalModel.i1name;
+			break;
+		case 'instance':
+			subspaceName = globalModel.lname;
+			break;
+		case 'none':
+			subspaceName = globalModel.nname;
+			break;
 	}
+	const textSubspaceName = document.getElementById('text_' + 'subspaceName')
+	textSubspaceName.innerHTML = subspaceName;
+	if (instance.subspaceId == 1) { textSubspaceName.classList.add('subspace1'); }
+	else { textSubspaceName.classList.add('subspace0'); }
 	
 	Array.from(document.getElementsByClassName('text_' + 'y_unit')).forEach(el => el.innerHTML = "(" + atts.y_unit + ")");
 	document.getElementById('text_' + 'y_unitName').innerHTML = atts.y_unitName;
@@ -189,7 +252,7 @@ function renderUI(atts, globalModel, data) {
 	Array.from(document.getElementsByClassName('showIncremental')).forEach(el => el.style.display = showIncremental ? 'revert' : 'none');
 }
 
-Papa.parse("./app-attributes.csv", {
+Papa.parse("https://brianlimyl.github.io/transferable-xai/incremental-xai-app-attributes.csv", {
 	download: true,
 	header: true,
 	dynamicTyping: true,
@@ -197,7 +260,7 @@ Papa.parse("./app-attributes.csv", {
 		//console.log('att_res', att_res);
 		const atts = extractAttributeNames(att_res.data);
 		
-		Papa.parse("./incremental-xai-models.csv", {
+		Papa.parse("https://brianlimyl.github.io/transferable-xai/incremental-xai-models.csv", {
 			download: true,
 			header: true,
 			dynamicTyping: true,
@@ -205,7 +268,7 @@ Papa.parse("./app-attributes.csv", {
 				//console.log('models_res', models_res);
 				const globalModel = extractGlobalModel(atts, models_res.data);
 		
-				Papa.parse("./incremental-xai-trials-data.csv", {
+				Papa.parse("https://brianlimyl.github.io/transferable-xai/incremental-xai-trials-data.csv", {
 					download: true,
 					header: true,
 					dynamicTyping: true,
@@ -230,21 +293,22 @@ Papa.parse("./app-attributes.csv", {
 .tg td,th{font-family:Arial,sans-serif;font-size:14px;padding:5px 5px;}
 .tg .tg-lboi{border-color:inherit;text-align:left;vertical-align:middle}
 .tg .tg-c4wh{border-color:inherit;color:#656565;text-align:center;}
-.tg .tg-zme7{background-color:#e8fae5;border-color:inherit;text-align:center;}
+.tg .tg-zme7{background-color:#f2f2f2;color:#aeaaaa;border-color:inherit;text-align:center;}
 .tg .tg-c3ot{border-color:inherit;text-align:center;}
-.tg .tg-c3ot2{background-color:#2e8112;color:#fff;border-color:inherit;text-align:center;}
-.tg .tg-c3ot3{background-color:#e8fae5;border-color:inherit;text-align:center;}
+.tg .tg-c3ot2{background-color:#fff;color:#000;border-color:inherit;text-align:center;}
+.tg .tg-c3ot3{background-color:#fff;border-color:inherit;text-align:center;}
 .tg .tg-c3ow0{border-color:inherit;text-align:center;width:50px;}
 .tg .tg-c3ow{border-color:inherit;text-align:center;width:125px;}
 .tg .tg-c3ow2{border-color:inherit;text-align:center;border: 2px #000 solid; width:125px;}
 .tg .tg-3py0{border-color:inherit;color:#9b9b9b;text-align:right;}
 .tg .tg-dvpl{border-color:inherit;text-align:right;}
 .tg .tg-0pky{border-color:inherit;text-align:left;}
-.tg .tg-eqtu{background-color:#2e8112;color:#fff;border-color:inherit;text-align:center;}
+.tg .tg-eqtu{background-color:#C6E0B4;color:#000;border-color:inherit;text-align:center;}
 th {vertical-align:bottom;font-weight:bold;}
 body {margin:0px; padding:0px}
-#text_subspaceName {color:#2e8112}
-.subspaceFactor {color:#deff36}
+.subspaceName {color:#2e8112}
+.subspace1 {color:#ce1101}
+.subspaceFactor {color:#4472c4}
 meter {width:15px; cursor:pointer;}
 </style>
 
@@ -252,15 +316,15 @@ meter {width:15px; cursor:pointer;}
 <thead>
   <tr>
     <th class="tg-dvpl">Attributes</th>
-    <th class="tg-c3ow0" colspan="2"><br/><br/>Values</th>
+    <th class="tg-c3ow0" colspan="2"><br/>Values</th>
     <th class="tg-c3ot"></th>
     <th class="tg-c3ot showIncremental"></th>
-    <th class="tg-c3ow showGlobal" style="vertical-align:top">Factors<br/>in<br/>General</th>
+    <th class="tg-c3ow showGlobal" style="vertical-align:top">Factors<br/>in General</th>
     <th class="tg-c3ot showIncremental"></th>
-    <th class="tg-c3ow showSubspace" style="vertical-align:top">Factors when<br/><span id="text_subspaceName">Typical<br/>Case</span></th>
+    <th class="tg-c3ow showSubspace" style="vertical-align:top">Factors when<br/><span id="text_subspaceName" class="subspaceName">Typical Case</span></th>
     <th class="tg-c3ot showIncremental"></th>
-    <th class="tg-c3ot showGlobal"></th>
-    <th class="tg-c3ow showGlobal" style="vertical-align:top">&nbsp;<br/>Partial<br/><span id="text_y_unitName">Score</span></th>
+    <th class="tg-c3ot"></th>
+    <th class="tg-c3ow" style="vertical-align:bottom">Partial <span id="text_y_unitName">Score</span></th>
     <th class="tg-0pky"></th>
     <th class="tg-0pky"></th>
     <th class="tg-0pky"></th>
@@ -279,8 +343,8 @@ meter {width:15px; cursor:pointer;}
     <td class="tg-c3ot2 showIncremental">+</td>
     <td class="tg-eqtu showSubspace"><div id="text_w1.1" class="subspaceFactor">w1.1</div></td>
     <td class="tg-c3ot2 showIncremental">)</td>
-    <td class="tg-c3ot3 showGlobal">=</td>
-    <td class="tg-zme7 showGlobal"><div id="text_y1">y1</div></td>
+    <td class="tg-c3ot3">=</td>
+    <td class="tg-zme7"><div id="text_y1">y1</div></td>
     <td class="tg-lboi" rowspan="6">}</td>
     <td class="tg-lboi" rowspan="6">+</td>
     <td class="tg-lboi" rowspan="6">&rarr;</td>
@@ -310,8 +374,8 @@ meter {width:15px; cursor:pointer;}
     <td class="tg-c3ot2 showIncremental">+</td>
     <td class="tg-eqtu showSubspace"><div id="text_w2.1" class="subspaceFactor">w2.1</div></td>
     <td class="tg-c3ot2 showIncremental">)</td>
-    <td class="tg-c3ot3 showGlobal">=</td>
-    <td class="tg-zme7 showGlobal"><div id="text_y2">y2</div></td>
+    <td class="tg-c3ot3">=</td>
+    <td class="tg-zme7"><div id="text_y2">y2</div></td>
   </tr>
   <tr>
     <td class="tg-dvpl"><div id="text_a3">a3</div></td>
@@ -323,8 +387,8 @@ meter {width:15px; cursor:pointer;}
     <td class="tg-c3ot2 showIncremental">+</td>
     <td class="tg-eqtu showSubspace"><div id="text_w3.1" class="subspaceFactor">w3.1</div></td>
     <td class="tg-c3ot2 showIncremental">)</td>
-    <td class="tg-c3ot3 showGlobal">=</td>
-    <td class="tg-zme7 showGlobal"><div id="text_y3">y3</div></td>
+    <td class="tg-c3ot3">=</td>
+    <td class="tg-zme7"><div id="text_y3">y3</div></td>
   </tr>
   <tr>
     <td class="tg-dvpl"><div id="text_a4">a4</div></td>
@@ -336,21 +400,8 @@ meter {width:15px; cursor:pointer;}
     <td class="tg-c3ot2 showIncremental">+</td>
     <td class="tg-eqtu showSubspace"><div id="text_w4.1" class="subspaceFactor">w4.1</div></td>
     <td class="tg-c3ot2 showIncremental">)</td>
-    <td class="tg-c3ot3 showGlobal">=</td>
-    <td class="tg-zme7 showGlobal"><div id="text_y4">y4</div></td>
-  </tr>
-  <tr>
-    <td class="tg-dvpl"><div id="text_a5">a5</div></script></td>
-    <td class="tg-c3ow0"><div id="text_v5">v5</div></td>
-    <td class="tg-c3ot"><meter id="meter_v5" value=".5"></meter></td>
-    <td class="tg-c3ot">&times;</td>
-    <td class="tg-c3ot2 showIncremental">(</td>
-    <td class="tg-eqtu showGlobal"><div id="text_w5">w5</div></td>
-    <td class="tg-c3ot2 showIncremental">+</td>
-    <td class="tg-eqtu showSubspace"><div id="text_w5.1" class="subspaceFactor">w5.1</div></td>
-    <td class="tg-c3ot2 showIncremental">)</td>
-    <td class="tg-c3ot3 showGlobal">=</td>
-    <td class="tg-zme7 showGlobal"><div id="text_y5">y5</div></td>
+    <td class="tg-c3ot3">=</td>
+    <td class="tg-zme7"><div id="text_y4">y4</div></td>
   </tr>
   <tr style="color:#9b9b9b">
     <td class="tg-3py0"><div id="text_a0">a0</div></td>
@@ -362,8 +413,8 @@ meter {width:15px; cursor:pointer;}
     <td class="tg-c3ot2 showIncremental">+</td>
     <td class="tg-eqtu showSubspace"><div id="text_w0.1" class="subspaceFactor">w0.1</div></td>
     <td class="tg-c3ot2 showIncremental">)</td>
-    <td class="tg-c3ot3 showGlobal">=</td>
-    <td class="tg-zme7 showGlobal"><div id="text_y0">y0</div></td>
+    <td class="tg-c3ot3">=</td>
+    <td class="tg-zme7"><div id="text_y0">y0</div></td>
   </tr>
 </tbody>
 </table>

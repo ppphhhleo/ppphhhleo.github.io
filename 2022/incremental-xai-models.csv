@@ -1,10 +1,8 @@
-﻿appId,xaiType,spaceName,subspaceName,subspaceId,w0,w1,w2,w3,w4,w5,w0.1,w1.1,w2.1,w3.1,w4.1,w5.1
-housingprice-kingcounty,global,General,,0,503886.929,-1312.916319,-3399.655954,4109.940601,-0.245168776,7034.903597,0,0,0,0,0,0
-housingprice-kingcounty,subglobal,,Age ≥ 4<br/># Bedrooms < 2,0,0,0,0,0,0,0,546661.5731,1270.819002,3081.028159,-28757.24036,7.572926594,-12643.18517
-housingprice-kingcounty,subglobal,,Age < 4,1,0,0,0,0,0,0,480272.1846,-1895.203908,2943.572107,4175.373729,-7.54746919,-12718.11224
-housingprice-kingcounty,subglobal,,# Bedrooms ≥ 2,2,0,0,0,0,0,0,600682.8854,1097.281903,12596.45261,-80712.39177,-265.9086939,-27003.45027
-housingprice-kingcounty,incremental,General,,0,-237120.45,-1559.880551,-3597.989585,62114.38634,167.0852777,87923.21415,0,0,0,0,0,0
-housingprice-kingcounty,incremental,General,Age > 5<br/># Bedrooms < 3,1,-237120.45,-1559.880551,-3597.989585,62114.38634,167.0852777,87923.21415,741007.379,246.964232,198.333631,-58004.44574,-167.3304465,-80888.31055
-housingprice-kingcounty,incremental,General,Living Area < 1235<br/># Bathrooms < 2,2,-237120.45,-1559.880551,-3597.989585,62114.38634,167.0852777,87923.21415,783782.0231,2830.699553,6679.017744,-90871.6267,-159.5123511,-100566.3993
-housingprice-kingcounty,instance,,similar to<br/>Current Case,0,0,0,0,0,0,0,0,0,0,0,0,0
-housingprice-kingcounty,none,?,similar to<br/>Current Case,0,0,0,0,0,0,0,0,0,0,0,0,0
+﻿appId,xaiType,spaceName,subspaceName,subspaceId,w0,w1,w2,w3,w4
+housingprice-kingcounty,global,in General,,0,-1042.872192,17.18966932,0.15289559,140.4821365,3.43783399
+housingprice-kingcounty,subglobal,,Grade < 9,0,-625.1415277,15.27324765,0.09333964,103.6557506,2.48287398
+housingprice-kingcounty,subglobal,,Grade ≥ 9,1,-1583.463039,88.0280201,0.20438621,153.8279239,6.06248875
+housingprice-kingcounty,incremental,in General,Grade < 9,0,-724.9419959,20.55505857,0.09740964,113.8138664,2.73095069
+housingprice-kingcounty,incremental,in General,Grade ≥ 9,1,-418.0816337,39.60859286,0.11406203,0.14202191,2.62135242
+housingprice-kingcounty,instance,,Similar Case,0,0,0,0,0,0
+housingprice-kingcounty,none,?,Unknown,0,0,0,0,0,0
