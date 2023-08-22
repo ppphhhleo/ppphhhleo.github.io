@@ -16,8 +16,8 @@ const round = (n, roundNearest, toFixed, snExp) => {
 /**
  * Read URL key-values to get condition and trial
  */
-const queryString = window.location.search; // e.g.: http://localhost:9000/transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=1&xaiType=new&showSimilarity=1&showPrediction=1
-const urlParams = new URLSearchParams(queryString);
+const url = window.location.search; // e.g.: http://localhost:9000/transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=1&xaiType=new&showSimilarity=1&showPrediction=1
+const urlParams = new URLSearchParams(url);
 
 const appId = urlParams.get('appId');
 const isRef = Number(urlParams.get('isRef'));
@@ -107,7 +107,8 @@ function extractInstance(atts, data, pairId) {
 	}
 	const ye = vec_sum(yp); // ye = summation(v * w)
 	
-	const y = isRef || xaiType == 'ref' ? data[row]['y_rr'] : data[row]['y_tt'];
+	const y = isRef ? data[row]['y_rr'] : data[row]['y_tt'];
+	//console.log('y', y, isRef, url);
 	
 	const dx = data[row].d;
 	const dy = atts.y_model == 'logistic' ? (ye - y) : (ye - y) / y;
