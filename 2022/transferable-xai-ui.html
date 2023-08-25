@@ -16,7 +16,7 @@ const round = (n, roundNearest, toFixed, snExp) => {
 /**
  * Read URL key-values to get condition and trial
  */
-const url = window.location.search; // e.g.: http://localhost:9000/transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=1&xaiType=new&showSimilarity=1&showPrediction=1
+const url = window.location.search; // e.g.: http://localhost:9000/transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=1&xaiType=new&showSimilarity=1&showPrediction=1&tutorial=1
 const urlParams = new URLSearchParams(url);
 
 const appId = urlParams.get('appId');
@@ -27,10 +27,9 @@ const pairId = Number(urlParams.get('pairId'));
 const xaiType = urlParams.get('xaiType');
 const newExplanation = xaiType == 'new';
 const noXai = xaiType == 'none';
+const tutorial = Number(urlParams.get('tutorial'));
 const showSimilarity = Number(urlParams.get('showSimilarity'));
 const showPrediction = Number(urlParams.get('showPrediction'));
-let notRounding = Number(urlParams.get('notRounding')) == 1;
-if (notRounding == null) { notRounding = false; }
 
 const vec_sum = (vec) => vec.reduce((sum, el) => sum + el, 0);
 const vec_magnitude = (vec) => Math.sqrt(vec.reduce((sum, el) => sum + el*el, 0));
@@ -204,6 +203,31 @@ function renderUI(atts, data) {
 	Array.from(document.getElementsByClassName('show_aisystem')).forEach(el => el.style.visibility = showPrediction ? 'visible' : 'hidden');
 	Array.from(document.getElementsByClassName('show_similarity')).forEach(el => el.style.visibility = showSimilarity && !isRef ? 'visible' : 'hidden');
 	Array.from(document.getElementsByClassName('show_similarity_leads')).forEach(el => el.style.visibility = showPrediction & showSimilarity & !isRef ? 'visible' : 'hidden');
+	
+	if (0 < tutorial && tutorial < 10) {
+		const tutorialEl = document.getElementById('tutorial' + tutorial);
+		if (tutorialEl.parentElement.style.visibility != 'hidden') { tutorialEl.style.visibility = 'visible'; }
+	}
+	else if (tutorial === undefined || tutorial == 0) { // none
+		Array.from(document.getElementsByClassName('tutorialRow')).forEach(el => el.style.display = 'none');
+	}
+	else if (tutorial == -1) { // all
+		Array.from(document.getElementsByClassName('tutorial')).forEach(el => {
+			if (el.parentElement.style.visibility != 'hidden') { el.style.visibility = 'visible'; }
+		});
+	}
+	else if (tutorial == 17) { // all basic 1-6
+		Array.from(document.getElementsByClassName('tutorial')).forEach(el => {
+			const t = Number(el.id.replace('tutorial',''));
+			if (1 <= t && t <= 7 && el.parentElement.style.visibility != 'hidden') { el.style.visibility = 'visible'; }
+		});
+	}
+	else if (tutorial == 79) { // all similarity 7-9
+		Array.from(document.getElementsByClassName('tutorial')).forEach(el => {
+			const t = Number(el.id.replace('tutorial',''));
+			if (7 <= t && t <= 9 && el.parentElement.style.visibility != 'hidden') { el.style.visibility = 'visible'; }
+		});
+	}
 }
 
 Papa.parse("./transferable-xai-app-attributes.csv", {
@@ -257,7 +281,10 @@ meter {width:25px; cursor:pointer;}
 meter::-webkit-meter-optimum-value {background:red;}
 meter::-moz-meter-bar {background:red;}
 .xaiTop {border-top: solid 2px #000;} .xaiSides {border-left: solid 2px #000; border-right: solid 2px #000;} .xaiBottom {border-bottom: solid 2px #000;}
-tr.adjustment {opacity:0.60;}
+tr.adjustment {opacity:0.50;}
+.tutorial {
+  display:inline-block;border-radius:50%;background:#0070C0;color:#fff; box-shadow: 1px 2px 3px 0px #999; visibility:hidden;
+  padding:.3em; height:1em; aspect-ratio:1/1; line-height:1em;text-align:center;}
 </style>
 
 <h3>
@@ -267,14 +294,28 @@ tr.adjustment {opacity:0.60;}
 
 <table class="tg">
 <thead>
+  <tr class="tutorialRow">
+    <th class="tg-dvpl"><span class="tutorial" id="tutorial1">1</span></th>
+    <th class="tg-c3ow"><span class="tutorial" id="tutorial2">2</span></th>
+    <th class="tg-c3ot2 show_similarity"><span class="tutorial" id="tutorial9">9</span></th>
+    <th class="tg-0pky"></th>
+    <th class="tg-c3ow"><span class="tutorial" id="tutorial3">3</span></th>
+    <th class="tg-c3ot"></th>
+    <th class="tg-c3ow"><span class="tutorial" id="tutorial4">4</span></th>
+    <th class="tg-0pky"></th>
+    <th class="tg-0pky"></th>
+    <th class="tg-0pky"></th>
+    <th class="tg-0pky"></th>
+    <th class="tg-0pky"></th>
+  </tr>
   <tr>
     <th class="tg-dvpl">Attributes</th>
     <th class="tg-c3ow">Values</th>
-    <th class="tg-c3ot2 show_similarity"><span title="Differences from Reference" style="cursor:pointer;">(Diff)</span></th>
+    <th class="tg-c3ot2 show_similarity" style="vertical-align:bottom"><span title="Differences from Reference" style="cursor:pointer;">(Diff)</span></th>
     <th class="tg-0pky"></th>
-    <th class="tg-c3ow" style="width: 100px"><span class="text_new_xai">New</span> Factors</th>
+    <th class="tg-c3ow" style="width:100px"><span class="text_new_xai">New</span> Factors</th>
     <th class="tg-c3ot"></th>
-    <th class="tg-c3ow" style="vertical-align:top">Partial <span id="text_y_unitName">Score</span> <span class="text_y_unit">y_unit</span></th></th>
+    <th class="tg-c3ow">Partial <span id="text_y_unitName">Score</span> <span class="text_y_unit">y_unit</span></th>
     <th class="tg-0pky"></th>
     <th class="tg-0pky"></th>
     <th class="tg-0pky"></th>
@@ -296,16 +337,20 @@ tr.adjustment {opacity:0.60;}
     <td class="tg-lboi" rowspan="6">&rarr;</td>
     <td class="tg-lboi" rowspan="6">
 	  <table class="tg">
+	    <tr class="tutorialRow"><th class="tg-c3ow"><span class="tutorial" id="tutorial5">5</span></th></tr>
 	    <tr><th class="tg-c3ow">AI Explainer <span class="text_y_unit">y_unit</span></th></tr>
         <tr><td class="tg-c3ow2"><div id="text_ye">ye</div></td></tr>
         <tr><td class="tg-c3ow">&nbsp;</td></tr>
+        <tr class="tutorialRow"><td class="tg-c3ow" style="visibility:hidden"><span class="tutorial">0</span></td></tr>
 	  </table></td>
     <td class="tg-lboi" rowspan="6"><span id="text_dy_inequality">&asymp;</span></td>
     <td class="tg-lboi" rowspan="6">
 	  <table class="tg">
+	    <tr class="tutorialRow"><th class="tg-c3ow"><span class="tutorial" id="tutorial6">6</span></th></tr>
 	    <tr><th class="tg-c3ow">AI System <span class="text_y_unit">y_unit</span></th></tr>
         <tr><td class="tg-c3ow2"><div id="text_y">y</div></td></tr>
         <tr><td class="tg-c3ow">&nbsp;</td></tr>
+        <tr class="tutorialRow"><td class="tg-c3ow" style="visibility:hidden"><span class="tutorial">0</span></td></tr>
 	  </table></td>
   </tr>
   <tr>
@@ -365,6 +410,12 @@ tr.adjustment {opacity:0.60;}
     <td class="tg-c3ow show_similarity" id="text_dx" colspan="2">dx</td>
     <td class="tg-c3ow show_similarity_leads" colspan="7">&rarr; lower/higher leads to lower/higher in &rarr;</td>
     <td class="tg-c3ow show_aisystem" id="text_dy">dy</td>
+  </tr>
+  <tr class="tutorialRow">
+    <td class="tg-dvpl"></td>
+    <td class="tg-c3ow show_similarity" id="text_dx" colspan="2"><span class="tutorial" id="tutorial8">8</span></td>
+    <td class="tg-c3ow show_similarity_leads" colspan="7"></td>
+    <td class="tg-c3ow show_aisystem"><span class="tutorial" id="tutorial7">7</span></td>
   </tr>
 </tbody>
 </table>

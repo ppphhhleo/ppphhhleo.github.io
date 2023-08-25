@@ -39,7 +39,7 @@ Application <select id="input_appId">
   <option value="health-pima-diabetes">Health: Pima Diabetes</option>
   <option value="health-heart-disease">Health: Heart Disease</option>
 </select> |
-Case <input id="text_id" value="1" size="2" maxlength="2" disabled/> <input id="input_id" type="range" min="1" max="60" value="1" style="width:160px" /><br/>
+Case <input id="text_id" value="1" size="2" maxlength="2" disabled/> <input id="input_id" type="range" min="1" max="100" value="1" style="width:160px" /><br/>
 XAI Type <select id="input_xaiType">
   <option value="global">Global</option>
   <option value="subglobal">Sub-Global</option>
@@ -47,30 +47,75 @@ XAI Type <select id="input_xaiType">
   <option value="instance">Instance</option>
   <option value="none">None</option>
 </select> |
+Hide Factor <select id="input_hideFactor">
+  <option value="-1">None</option>
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+</select> |
+Tutorial <select id="input_tutorial">
+  <option value="-1">All (-1)</option>
+  <option value="0" selected>None (0)</option>
+  <option value="1">Attributes (1)</option>
+  <option value="2">Values (2)</option>
+  <option value="3">Factors (3)</option>
+  <option value="4">Partial Score (4)</option>
+  <option value="5">AI Explainer (5)</option>
+  <option value="6">AI System (6)</option>
+  <option value="7">Diff from y (7)</option>
+</select> |
 Show Prediction <input id="input_showPrediction" type="checkbox" checked />
 </div>
+<div>URL: <a id="text_url" href=""></a> <button onclick="copyIframeHtml()">Copy Iframe</button> <button onclick="copyUrl()">Copy URL</button></div>
 <iframe id="interactiveIframe" 
-<iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=incremental&showPrediction=1" 
-		width="1080px" height="220px"
+		src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=incremental&hideFactor=-1&showPrediction=1" 
+		width="1080px" height="256px"
 		frameBorder="0" scrolling="no"
 		></iframe>
 		
 <script>
+let url = "";
+const urlRoot = "https://brianlimyl.github.io/transferable-xai/";
+let tutorial = 0;
+
 function updateIframeUrl(iframeId) {
 	const appId = document.querySelector("#input_appId").value;
 	const id = document.querySelector("#input_id").value;
 	const xaiType = document.querySelector("#input_xaiType").value;
+	const hideFactor = document.querySelector("#input_hideFactor").value;
+	const tutorial = document.querySelector("#input_tutorial").value;
 	const showPrediction = document.querySelector("#input_showPrediction").checked ? 1 : 0;
 	
-	const url = "incremental-xai-ui.html?appId="+appId+"&id="+id+"&xaiType="+xaiType+"&showPrediction="+showPrediction;
+	url = "incremental-xai-ui.html?appId="+appId+"&id="+id+"&xaiType="+xaiType+"&hideFactor="+hideFactor+"&tutorial="+tutorial+"&showPrediction="+showPrediction;
 	document.querySelector("#interactiveIframe").src = url;
 	
 	document.querySelector("#text_id").value = id;
+	
+	document.querySelector("#text_url").href = url;
+	document.querySelector("#text_url").innerHTML = url;
 }
+
+function copyIframeHtml() {
+	let html = document.querySelector("#interactiveIframe").outerHTML;
+	html = html.replace("src=\"", "src=\"" + urlRoot);
+	html = html.replaceAll("&amp;", "&");
+	html = html.replaceAll("id=\"interactiveIframe\" ", "");
+	if (tutorial == 0) { html = html.replace("height=\"354px\"", "height=\"300px\""); }
+	navigator.clipboard.writeText(html);
+}
+function copyUrl() {
+	navigator.clipboard.writeText(urlRoot + url);
+}
+
 document.querySelector("#input_appId").onchange = updateIframeUrl;
 document.querySelector("#input_id").onchange = updateIframeUrl;
 document.querySelector("#input_xaiType").onchange = updateIframeUrl;
+document.querySelector("#input_hideFactor").onchange = updateIframeUrl;
+document.querySelector("#input_tutorial").onchange = updateIframeUrl;
 document.querySelector("#input_showPrediction").onchange = updateIframeUrl;
+
+updateIframeUrl();
 </script>
 
 </body>

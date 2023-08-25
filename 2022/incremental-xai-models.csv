@@ -1,8 +1,8 @@
 ﻿appId,xaiType,spaceName,subspaceName,subspaceId,w0,w1,w2,w3,w4
-housingprice-kingcounty,global,in General,,0,-1042.872192,17.18966932,0.15289559,140.4821365,3.43783399
-housingprice-kingcounty,subglobal,,Grade < 9,0,-625.1415277,15.27324765,0.09333964,103.6557506,2.48287398
-housingprice-kingcounty,subglobal,,Grade ≥ 9,1,-1583.463039,88.0280201,0.20438621,153.8279239,6.06248875
-housingprice-kingcounty,incremental,in General,Grade < 9,0,-724.9419959,20.55505857,0.09740964,113.8138664,2.73095069
-housingprice-kingcounty,incremental,in General,Grade ≥ 9,1,-418.0816337,39.60859286,0.11406203,0.14202191,2.62135242
+housingprice-kingcounty,global,in General,,0,-1042.872192,17.18966932,152.89559,140.4821365,3.43783399
+housingprice-kingcounty,subglobal,,Living Area < 2.5,0,-697.4272706,15.86730813,62.94112,120.8011553,2.4735919
+housingprice-kingcounty,subglobal,,Living Area ≥ 2.5,1,-1662.449009,57.37080245,241.79033,158.6141858,4.85980549
+housingprice-kingcounty,incremental,in General,Living Area < 2.5,0,-917.0512198,25.48209128,94.91404,136.483858,3.11294492
+housingprice-kingcounty,incremental,in General,Grade ≥ 9,1,-371.4198553,0,120.78722,0,0.75908897
 housingprice-kingcounty,instance,,Similar Case,0,0,0,0,0,0
 housingprice-kingcounty,none,?,Unknown,0,0,0,0,0,0

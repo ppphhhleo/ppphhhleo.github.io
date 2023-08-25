@@ -5,17 +5,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.4.3/decimal.min.js"></script>
 <script type="text/javascript">
 
-const PRECISION = 2;
 //const thousands = (n, asK) => (asK ? n = n/1000 : n).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',') + (asK ? "k" : ""); // to show comma separation in numbers
-const thousands = (n, asK) => Number(n.toPrecision(PRECISION)).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',') + (asK ? "k" : ""); // to show comma separation in numbers
-//const round = (n, roundNearest, toFixed) => { n = Math.round(n / roundNearest) * roundNearest; return toFixed !== undefined ? Number(n.toFixed(toFixed)) : n; }
-const round = (n, roundNearest, toFixed) => Number(n.toPrecision(PRECISION));
+const thousands = (n, precision, asK) => Number(n.toPrecision(precision)).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',') + (asK ? "k" : ""); // to show comma separation in numbers
 
 /**
  * Read URL key-values to get condition and trial
  */
-//const queryString =  "http://localhost:9000/incremental-xai-ui.html?appId=housingprice-kingcounty&xaiType=incremental&id=1&showPrediction=1";
-const queryString = window.location.search; // e.g.: http://localhost:9000/incremental-xai-ui.html?appId=housingprice-kingcounty&xaiType=incremental&id=1&showPrediction=1
+const queryString = window.location.search; // e.g.: http://localhost:9000/incremental-xai-ui.html?appId=housingprice-kingcounty&xaiType=incremental&id=1&hideFactor=-1&tutorial=0&showPrediction=1
 const urlParams = new URLSearchParams(queryString);
 
 const appId = urlParams.get('appId');
@@ -26,6 +22,9 @@ let subspaceId = 0;
 const showGlobal = xaiType == 'global' || xaiType == 'incremental';
 const showSubspace = xaiType == 'subglobal' || xaiType == 'incremental' || xaiType == 'instance' || xaiType == 'none';
 const showIncremental = xaiType == 'incremental';
+const s_hideFactor = urlParams.get('hideFactor');
+const hideFactor = s_hideFactor == null ? -1 : Number(s_hideFactor);
+const tutorial = Number(urlParams.get('tutorial'));
 const showPrediction = Number(urlParams.get('showPrediction'));
 
 const vec_sum = (vec) => vec.reduce((sum, el) => sum + el, 0);
@@ -39,10 +38,8 @@ function extractAttributeNames(data) {
 	const row = appId_row;
 	
 	const a = ["Base", "", "", "", "", ""];
-	const w_roundNearest = [1, 1, 1, 1, 1];
 	for (let i = 0; i <= 4; i++) {
 		a[i] = data[row]['a'+i];
-		w_roundNearest[i] = data[row]['w'+i+'_roundNearest'];
 	}
 	
 	const v_min = [0, 0, 0, 0, 0];
@@ -52,18 +49,15 @@ function extractAttributeNames(data) {
 		v_max[i] = data[row]['v'+i+'_max'];
 	}
 		
+	const y_max = Number(data[row].y_max);
 	const y_unit = data[row].y_unit;
 	const y_unitName = data[row].y_unitName;
-	const y_roundNearest = data[row].y_roundNearest;
-	const y_toFixed = data[row].y_toFixed;
 	
 	return {
 		a: a,
 		v_min: v_min, v_max: v_max,
 		y_unit: y_unit, y_unitName: y_unitName,
-		w_roundNearest: w_roundNearest,
-		y_roundNearest: y_roundNearest, 
-		y_toFixed: y_toFixed,
+		y_max,
 	};
 }
 
@@ -83,11 +77,6 @@ function extractGlobalModel(atts, data) {
 	const w_i1 = [0, 0, 0, 0, 0];
 	
 	for (let i = 0; i <= 4; i++) {
-		/*w_g[i]  = round(data[row_g]['w'+i]); // round for interpretability
-		w_s0[i] = round(data[row_s0]['w'+i]);
-		w_s1[i] = round(data[row_s1]['w'+i]);
-		w_i0[i] = round(data[row_s0]['w'+i]);
-		w_i1[i] = round(data[row_s1]['w'+i]);*/
 		w_g[i]  = data[row_g]['w'+i]; 
 		w_s0[i] = data[row_s0]['w'+i];
 		w_s1[i] = data[row_s1]['w'+i];
@@ -119,10 +108,12 @@ function extractInstance(atts, globalModel, data, id) {
 	}
 	const w_l = [0, 0, 0, 0, 0];
 	for (let i = 0; i <= 4; i++) {
-		w_l[i] = round(data[row]['w'+i], atts.w_roundNearest[i], 0);
+		w_l[i] = data[row]['w'+i];
 	}
 	
-	subspaceId = v[3] >= 9; // hardcoded from Jessica's rules: Grade >= 9
+	//subspaceId = v[3] >= 9; // hardcoded from Jessica's rules: Grade >= 9
+	subspaceId = v[2] >= 2.5; // hardcoded from Jessica's rules: Living Area >= 2.5 ksqft
+	
 	const w = [0, 0, 0, 0, 0];
 	const yp = [0, 0, 0, 0, 0]; // partial y's
 	
@@ -147,7 +138,7 @@ function extractInstance(atts, globalModel, data, id) {
 	const ye = vec_sum(yp); // ye = summation(v * w)	
 	
 	const y = data[row]['y'];
-	const dy = (ye - y) / y;
+	const dy = xaiType == 'none' ? 0 : (ye - y) / atts.y_max;
 	
 	return {
 		v: v,
@@ -168,29 +159,36 @@ function renderUI(atts, globalModel, data) {
 	
 	for (let i = 0; i <= 4; i++) {
 		document.getElementById('text_' + 'a'+i).innerHTML = atts.a[i];
-		document.getElementById('text_' + 'v'+i).innerHTML = thousands(instance.v[i]);
+		document.getElementById('text_' + 'v'+i).innerHTML = thousands(instance.v[i], 2);
+		document.getElementById('text_' + 'v'+i).title = instance.v[i];
 		
 		if (i > 0) {
 			const meter = document.getElementById('meter_' + 'v'+i);
 			meter.value = instance.v[i];
 			meter.min = atts.v_min[i];
 			meter.max = atts.v_max[i];
-			meter.title = "min: " + thousands(meter.min) + ", max: " + thousands(meter.max);
+			meter.title = "min: " + thousands(meter.min) + ", max: " + thousands(meter.max, 2);
 		}
 		
 		switch (xaiType) {
 			case 'global': 
-				document.getElementById('text_' + 'w'+i).innerHTML = thousands(globalModel.w_g[i], true);
+				document.getElementById('text_' + 'w'+i).innerHTML = thousands(globalModel.w_g[i], i == 0 ? 3 : 2, true);
+				document.getElementById('text_' + 'w'+i).title = thousands(globalModel.w_g[i], 5, true);
 				break;
 			case 'subglobal':
-				document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w_s[i], true);
+				document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w_s[i], i == 0 ? 3 : 2, true);
+				document.getElementById('text_' + 'w'+i+'.1').title = thousands(instance.w_s[i], 5, true);
 				break;
 			case 'incremental':
-				document.getElementById('text_' + 'w'+i).innerHTML = thousands(instance.w_i0[i], true);
-				document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w_i1[i], true);
+				document.getElementById('text_' + 'w'+i).innerHTML = thousands(instance.w_i0[i], i == 0 ? 3 : 2, true);
+				document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w_i1[i], i == 0 ? 3 : 2, true);
+				document.getElementById('text_' + 'w'+i).title = thousands(instance.w_i0[i], 5, true);
+				document.getElementById('text_' + 'w'+i+'.1').title = thousands(instance.w_i1[i], 5, true);
+				if (instance.w_i1[i] == 0) { document.getElementById('text_' + 'w'+i+'.1').classList.add('w_i1_0'); }
 				break;
 			case 'instance':
-				document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w_l[i], true);
+				document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w_l[i], i == 0 ? 3 : 2, true);
+				document.getElementById('text_' + 'w'+i+'.1').title = thousands(instance.w_l[i], 5, true);
 				break;
 			case 'none':
 				document.getElementById('text_' + 'w'+i).innerHTML = '?';
@@ -198,7 +196,15 @@ function renderUI(atts, globalModel, data) {
 				break;
 		}
 		
-		document.getElementById('text_' + 'y'+i).innerHTML = xaiType == 'none' ? "?" : thousands(instance.yp[i], true);
+		if (hideFactor !== undefined && hideFactor == i) {
+			document.getElementById('text_' + 'w'+i).innerHTML = '?';
+			document.getElementById('text_' + 'w'+i).title = '?';
+			document.getElementById('text_' + 'w'+i+'.1').innerHTML = '?';
+			document.getElementById('text_' + 'w'+i+'.1').title = '?';
+		}
+		
+		document.getElementById('text_' + 'y'+i).innerHTML = xaiType == 'none' || hideFactor == i ? "?" : thousands(instance.yp[i], i == 0 ? 3 : 2, true);
+		document.getElementById('text_' + 'y'+i).title = xaiType == 'none' || hideFactor == i ? "?" : thousands(instance.yp[i], 5, true);
 	}
 	
 	let subspaceName = "";
@@ -208,51 +214,67 @@ function renderUI(atts, globalModel, data) {
 			break;
 		case 'incremental':
 			subspaceName = instance.subspaceId == 0 ? globalModel.i0name : globalModel.i1name;
+			document.getElementById('tutorial3b').innerHTML = '3b';
 			break;
 		case 'instance':
 			subspaceName = globalModel.lname;
+			document.getElementById('tutorial3b').innerHTML = '3';
 			break;
 		case 'none':
 			subspaceName = globalModel.nname;
+			document.getElementById('tutorial3b').innerHTML = '3';
 			break;
 	}
 	const textSubspaceName = document.getElementById('text_' + 'subspaceName')
 	textSubspaceName.innerHTML = subspaceName;
-	if (instance.subspaceId == 1) { textSubspaceName.classList.add('subspace1'); }
+	if ((xaiType == 'subglobal' || xaiType == 'incremental') && instance.subspaceId == 1) { textSubspaceName.classList.add('subspace1'); }
 	else { textSubspaceName.classList.add('subspace0'); }
 	
 	Array.from(document.getElementsByClassName('text_' + 'y_unit')).forEach(el => el.innerHTML = "(" + atts.y_unit + ")");
 	document.getElementById('text_' + 'y_unitName').innerHTML = atts.y_unitName;
-	const ye = round(instance.ye, atts.y_roundNearest, atts.y_toFixed);
-	document.getElementById('text_' + 'ye').innerHTML = xaiType == 'none' ? "?" : thousands(ye, true);
-	const y = round(instance.y, atts.y_roundNearest, atts.y_toFixed);
-	document.getElementById('text_' + 'y').innerHTML = thousands(y, true);
+	document.getElementById('text_' + 'ye').innerHTML = xaiType == 'none' ? "?" : thousands(instance.ye, 3, true);
+	document.getElementById('text_' + 'y').innerHTML = thousands(instance.y, 3, true);
+	document.getElementById('text_' + 'ye').title = xaiType == 'none' ? "?" : thousands(instance.ye, 5, true);
+	document.getElementById('text_' + 'y').title = thousands(instance.y, 5, true);
 	
 	const diffToRed = (diff, threshold) => (1 - diff) * (100 - threshold) + threshold; // calculate redness based on % difference
 	
 	const abs_dy = Math.abs(instance.dy);
-	document.getElementById('text_' + 'dy').innerHTML = xaiType == 'none' ? "?" : round((abs_dy) * 100, 1, 1);
+	document.getElementById('text_' + 'dy').innerHTML = xaiType == 'none' ? "?" : thousands((abs_dy) * 100, 2) + '%';
+	document.getElementById('text_' + 'dy').title = xaiType == 'none' ? "?" : thousands((abs_dy) * 100, 4) + '%';
 	const lightness_dy = diffToRed(abs_dy, 60);
-	document.getElementById('text_' + 'dy').style.background = xaiType == 'none' ? "#eee" : 'hsl(0, 100%, ' + lightness_dy + '%)';
+	document.getElementById('text_' + 'dy_pad').style.background = xaiType == 'none' ? "#eee" : 'hsl(0, 100%, ' + lightness_dy + '%)';
 	
 	const textDyDirection = document.getElementById('text_' + 'dy_direction');
 	const textDyInequality = document.getElementById('text_' + 'dy_inequality');
-	if (instance.dy == 0) {
-		textDyDirection.innerHTML = "<b>Different</b> from";
-		textDyInequality.innerHTML = "&asymp;";
-	}
-	else {
-		textDyDirection.innerHTML = instance.dy > 0 ? "<b>Higher</b> than" : "<b>Lower</b> than";
-		textDyInequality.innerHTML = instance.dy > 0 ? "&gt;" : "&lt;";
-	}
+	textDyDirection.innerHTML = instance.dy > 0 ? "Higher" : (instance.dy < 0 ? "Lower" : "Different");
+	textDyInequality.innerHTML = instance.dy > 0 ? "&gt;" : (instance.dy < 0 ? "&lt;" : "&asymp;");
 	
 	Array.from(document.getElementsByClassName('showAiSystem')).forEach(el => el.style.visibility = showPrediction ? 'visible' : 'hidden');
 	Array.from(document.getElementsByClassName('showGlobal')).forEach(el => el.style.display = showGlobal ? 'revert' : 'none');
 	Array.from(document.getElementsByClassName('showSubspace')).forEach(el => el.style.display = showSubspace ? 'revert' : 'none');
 	Array.from(document.getElementsByClassName('showIncremental')).forEach(el => el.style.display = showIncremental ? 'revert' : 'none');
+	
+	if (0 < tutorial && tutorial < 10) {
+		let tutorialEl = document.getElementById('tutorial' + tutorial);
+		if (tutorialEl.parentElement.style.visibility != 'hidden') { tutorialEl.style.visibility = 'visible'; }
+		
+		if (tutorial == 3) {
+			let tutorialEl = document.getElementById('tutorial3b');
+			if (tutorialEl.parentElement.style.visibility != 'hidden') { tutorialEl.style.visibility = 'visible'; }
+		}
+	}
+	else if (tutorial === undefined || tutorial == 0) { // none
+		Array.from(document.getElementsByClassName('tutorialRow')).forEach(el => el.style.display = 'none');
+	}
+	else if (tutorial == -1) { // all
+		Array.from(document.getElementsByClassName('tutorial')).forEach(el => {
+			if (el.parentElement.style.visibility != 'hidden') { el.style.visibility = 'visible'; }
+		});
+	}
 }
 
-Papa.parse("https://brianlimyl.github.io/transferable-xai/incremental-xai-app-attributes.csv", {
+Papa.parse("./incremental-xai-app-attributes.csv", {
 	download: true,
 	header: true,
 	dynamicTyping: true,
@@ -260,7 +282,7 @@ Papa.parse("https://brianlimyl.github.io/transferable-xai/incremental-xai-app-at
 		//console.log('att_res', att_res);
 		const atts = extractAttributeNames(att_res.data);
 		
-		Papa.parse("https://brianlimyl.github.io/transferable-xai/incremental-xai-models.csv", {
+		Papa.parse("./incremental-xai-models.csv", {
 			download: true,
 			header: true,
 			dynamicTyping: true,
@@ -268,7 +290,7 @@ Papa.parse("https://brianlimyl.github.io/transferable-xai/incremental-xai-app-at
 				//console.log('models_res', models_res);
 				const globalModel = extractGlobalModel(atts, models_res.data);
 		
-				Papa.parse("https://brianlimyl.github.io/transferable-xai/incremental-xai-trials-data.csv", {
+				Papa.parse("./incremental-xai-trials-data.csv", {
 					download: true,
 					header: true,
 					dynamicTyping: true,
@@ -291,29 +313,49 @@ Papa.parse("https://brianlimyl.github.io/transferable-xai/incremental-xai-app-at
 <style type="text/css">
 .tg  {border-collapse:collapse;border-spacing:0}
 .tg td,th{font-family:Arial,sans-serif;font-size:14px;padding:5px 5px;}
-.tg .tg-lboi{border-color:inherit;text-align:left;vertical-align:middle}
-.tg .tg-c4wh{border-color:inherit;color:#656565;text-align:center;}
-.tg .tg-zme7{background-color:#f2f2f2;color:#aeaaaa;border-color:inherit;text-align:center;}
-.tg .tg-c3ot{border-color:inherit;text-align:center;}
-.tg .tg-c3ot2{background-color:#fff;color:#000;border-color:inherit;text-align:center;}
-.tg .tg-c3ot3{background-color:#fff;border-color:inherit;text-align:center;}
-.tg .tg-c3ow0{border-color:inherit;text-align:center;width:50px;}
-.tg .tg-c3ow{border-color:inherit;text-align:center;width:125px;}
-.tg .tg-c3ow2{border-color:inherit;text-align:center;border: 2px #000 solid; width:125px;}
-.tg .tg-3py0{border-color:inherit;color:#9b9b9b;text-align:right;}
-.tg .tg-dvpl{border-color:inherit;text-align:right;}
-.tg .tg-0pky{border-color:inherit;text-align:left;}
-.tg .tg-eqtu{background-color:#C6E0B4;color:#000;border-color:inherit;text-align:center;}
+.tg-lboi{border-color:inherit;text-align:left;vertical-align:middle}
+.tg-c4wh{background-color:#eafce4;border-color:inherit;color:#656565;text-align:center;}
+.tg-zme7{background-color:#eafce4;border-color:inherit;text-align:right;padding-right:10px}
+.tg-c3ot{border-color:inherit;text-align:center;}
+.tg-c3ot2{background-color:#cbf4be;color:#000;border-color:inherit;text-align:center;}
+.tg-c3ot3{background-color:#eafce4;border-color:inherit;text-align:center;}
+.tg-c3ow0{border-color:inherit;text-align:center;width:50px;}
+.tg-c3ow{border-color:inherit;text-align:center;width:105px;}
+.tg-c3ow2{border-color:inherit;text-align:center;border: 2px #000 solid; width:125px;}
+.tg-dvpl{border-color:inherit;text-align:right;}
+.tg-0pky{border-color:inherit;text-align:left;}
+.tg-eqtu{background-color:#cbf4be;color:#000;border-color:inherit;text-align:right;padding-right:10px}
+.tg-eqtu0{background-color:#eafce4;color:#000;border-color:inherit;text-align:right;padding-right:10px}
+.tg-c3ot0{background-color:#eafce4;color:#000;border-color:inherit;text-align:center;}
 th {vertical-align:bottom;font-weight:bold;}
 body {margin:0px; padding:0px}
 .subspaceName {color:#2e8112}
 .subspace1 {color:#ce1101}
-.subspaceFactor {color:#4472c4}
+.subspaceFactor {color:#2e8112}
+.w_i1_0 {color:#a1d590}
+.xaiTop {border-top: solid 2px #2e8112;} .xaiLeft {border-left: solid 2px #2e8112;} .xaiRight {border-right: solid 2px #2e8112;} .xaiBottom {border-bottom: solid 2px #2e8112;}
 meter {width:15px; cursor:pointer;}
+#text_dy_pad {font-weight:bold; padding: 1px 5px;}
+tr.adjustment {opacity:0.50;}
+.tutorial {
+  display:inline-block;border-radius:50%;background:#0070C0;color:#fff; box-shadow: 1px 2px 3px 0px #999; visibility:hidden;
+  padding:.3em; height:1em; aspect-ratio:1/1; line-height:1em;text-align:center;}
 </style>
 
-<table class="tg">
+<table class="tg" border="0">
 <thead>
+  <tr class="tutorialRow">
+    <th class="tg-dvpl"><span class="tutorial" id="tutorial1">1</span></th>
+    <th class="" colspan="2"><span class="tutorial" id="tutorial2">2</span></th>
+    <th class="tg-c3ot"></th>
+    <th class="tg-c3ot showIncremental"></th>
+    <th class="tg-c3ow showGlobal"><span class="tutorial" id="tutorial3">3</span></th>
+    <th class="tg-c3ot showIncremental"></th>
+    <th class="tg-c3ow showSubspace"><span class="tutorial" id="tutorial3b">3b</span></th>
+    <th class="tg-c3ot showIncremental"></th>
+    <th class="tg-c3ot"></th>
+    <th class="tg-c3ow"><span class="tutorial" id="tutorial4">4</span></th>
+  </tr>
   <tr>
     <th class="tg-dvpl">Attributes</th>
     <th class="tg-c3ow0" colspan="2"><br/>Values</th>
@@ -321,15 +363,10 @@ meter {width:15px; cursor:pointer;}
     <th class="tg-c3ot showIncremental"></th>
     <th class="tg-c3ow showGlobal" style="vertical-align:top">Factors<br/>in General</th>
     <th class="tg-c3ot showIncremental"></th>
-    <th class="tg-c3ow showSubspace" style="vertical-align:top">Factors when<br/><span id="text_subspaceName" class="subspaceName">Typical Case</span></th>
+    <th class="tg-c3ow showSubspace" style="vertical-align:top; padding: 5px 0; width:115px"><span class="showIncremental">&Delta;</span>Factors when<br/><span id="text_subspaceName" class="subspaceName">Typical Case</span></th>
     <th class="tg-c3ot showIncremental"></th>
     <th class="tg-c3ot"></th>
-    <th class="tg-c3ow" style="vertical-align:bottom">Partial <span id="text_y_unitName">Score</span></th>
-    <th class="tg-0pky"></th>
-    <th class="tg-0pky"></th>
-    <th class="tg-0pky"></th>
-    <th class="tg-0pky"></th>
-    <th class="tg-0pky"></th>
+    <th class="tg-c3ow" style="vertical-align:bottom;">Partial <span id="text_y_unitName">Score</span> <span class="text_y_unit">y_unit</span></th>
   </tr>
 </thead>
 <tbody>
@@ -337,83 +374,85 @@ meter {width:15px; cursor:pointer;}
     <td class="tg-dvpl"><div id="text_a1">a1</div></td>
     <td class="tg-c3ow0"><div id="text_v1">v1</div></td>
     <td class="tg-c3ot"><meter id="meter_v1" value=".5"></meter></td>
-    <td class="tg-c3ot">&times;</td>
-    <td class="tg-c3ot2 showIncremental">(</td>
-    <td class="tg-eqtu showGlobal"><div id="text_w1">w1</div></td>
-    <td class="tg-c3ot2 showIncremental">+</td>
-    <td class="tg-eqtu showSubspace"><div id="text_w1.1" class="subspaceFactor">w1.1</div></td>
-    <td class="tg-c3ot2 showIncremental">)</td>
-    <td class="tg-c3ot3">=</td>
+    <td class="tg-c3ot3 xaiRight">&times;</td>
+    <td class="tg-c3ot2 showIncremental xaiTop">(</td>
+    <td class="tg-eqtu showGlobal xaiTop"><div id="text_w1">w1</div></td>
+    <td class="tg-c3ot2 showIncremental xaiTop">+</td>
+    <td class="tg-eqtu showSubspace xaiTop"><div id="text_w1.1" class="subspaceFactor">w1.1</div></td>
+    <td class="tg-c3ot2 showIncremental xaiTop">)</td>
+    <td class="tg-c3ot3 xaiLeft">=</td>
     <td class="tg-zme7"><div id="text_y1">y1</div></td>
     <td class="tg-lboi" rowspan="6">}</td>
     <td class="tg-lboi" rowspan="6">+</td>
     <td class="tg-lboi" rowspan="6">&rarr;</td>
     <td class="tg-lboi" rowspan="6">
-	  <table class="tg">
-        <tr><td class="tg-c3ow showAiSystem">&nbsp;<br/>&nbsp;</td></tr>
+	  <table class="tg" border="0">
+	    <tr class="tutorialRow"><th class="tg-c3ow"><span class="tutorial" id="tutorial5">5</span></th></tr>
 	    <tr><th class="tg-c3ow"><span style="color:#2e8112">AI Explainer <span class="text_y_unit">y_unit</span></span></th></tr>
         <tr><td class="tg-c3ow2" style="border-color:#2e8112"><div id="text_ye">ye</div></td></tr>
-        <tr><td class="tg-c3ow showAiSystem">% <span id="text_dy_direction">Difference from</span><br/>AI System</td></tr>
-        <tr><td class="tg-c3ow showAiSystem" id="text_dy">dy</td></tr>
+        <tr><td class="tg-c3ow showAiSystem"><span id="text_dy_pad"><span id="text_dy">dy%</span> <span id="text_dy_direction">different</span></span></tr>
+	    <tr class="tutorialRow"><th class="tg-c3ow"><span class="tutorial" id="tutorial7">7</span></th></tr>
 	  </table></td>
     <td class="tg-lboi showAiSystem" rowspan="6"><span id="text_dy_inequality">&asymp;</span></td>
     <td class="tg-lboi" rowspan="6">
-	  <table class="tg showAiSystem">
+	  <table class="tg showAiSystem" border="0">
+	    <tr class="tutorialRow"><th class="tg-c3ow"><span class="tutorial" id="tutorial6">6</span></th></tr>
 	    <tr><th class="tg-c3ow"><span style="color:#326fff">AI System <span class="text_y_unit">y_unit</span></span></th></tr>
         <tr><td class="tg-c3ow2" style="border-color:#326fff"><div id="text_y">y</div></td></tr>
         <tr><td class="tg-c3ow">&nbsp;</td></tr>
+	    <tr class="tutorialRow"><th class="tg-c3ow" style="visibility:hidden"><span class="tutorial">0</span></th></tr>
 	  </table></td>
   </tr>
   <tr>
     <td class="tg-dvpl"><div id="text_a2">a2</div></td>
     <td class="tg-c3ow0"><div id="text_v2">v2</div></td>
     <td class="tg-c3ot"><meter id="meter_v2" value=".5"></meter></td>
-    <td class="tg-c3ot">&times;</td>
+    <td class="tg-c3ot3 xaiRight">&times;</td>
     <td class="tg-c3ot2 showIncremental">(</td>
     <td class="tg-eqtu showGlobal"><div id="text_w2">w2</div></td>
     <td class="tg-c3ot2 showIncremental">+</td>
     <td class="tg-eqtu showSubspace"><div id="text_w2.1" class="subspaceFactor">w2.1</div></td>
     <td class="tg-c3ot2 showIncremental">)</td>
-    <td class="tg-c3ot3">=</td>
+    <td class="tg-c3ot3 xaiLeft">=</td>
     <td class="tg-zme7"><div id="text_y2">y2</div></td>
   </tr>
   <tr>
     <td class="tg-dvpl"><div id="text_a3">a3</div></td>
     <td class="tg-c3ow0"><div id="text_v3">v3</div></td>
     <td class="tg-c3ot"><meter id="meter_v3" value=".5"></meter></td>
-    <td class="tg-c3ot">&times;</td>
+    <td class="tg-c3ot3 xaiRight">&times;</td>
     <td class="tg-c3ot2 showIncremental">(</td>
     <td class="tg-eqtu showGlobal"><div id="text_w3">w3</div></td>
     <td class="tg-c3ot2 showIncremental">+</td>
     <td class="tg-eqtu showSubspace"><div id="text_w3.1" class="subspaceFactor">w3.1</div></td>
     <td class="tg-c3ot2 showIncremental">)</td>
-    <td class="tg-c3ot3">=</td>
+    <td class="tg-c3ot3 xaiLeft">=</td>
     <td class="tg-zme7"><div id="text_y3">y3</div></td>
   </tr>
   <tr>
     <td class="tg-dvpl"><div id="text_a4">a4</div></td>
     <td class="tg-c3ow0"><div id="text_v4">v4</div></td>
     <td class="tg-c3ot"><meter id="meter_v4" value=".5"></meter></td>
-    <td class="tg-c3ot">&times;</td>
+    <td class="tg-c3ot3 xaiRight">&times;</td>
     <td class="tg-c3ot2 showIncremental">(</td>
     <td class="tg-eqtu showGlobal"><div id="text_w4">w4</div></td>
     <td class="tg-c3ot2 showIncremental">+</td>
     <td class="tg-eqtu showSubspace"><div id="text_w4.1" class="subspaceFactor">w4.1</div></td>
     <td class="tg-c3ot2 showIncremental">)</td>
-    <td class="tg-c3ot3">=</td>
+    <td class="tg-c3ot3 xaiLeft">=</td>
     <td class="tg-zme7"><div id="text_y4">y4</div></td>
   </tr>
-  <tr style="color:#9b9b9b">
-    <td class="tg-3py0"><div id="text_a0">a0</div></td>
+  <tr class="adjustment">
+    <td class="tg-dvpl"><div id="text_a0">a0</div></td>
     <td class="tg-c3ow0"><div id="text_v0" style="display:none">v0</div></td>
     <td class="tg-c3ot"></td>
-    <td class="tg-c4wh" style="color:#9b9b9b">+</td>
-    <td class="tg-c3ot2 showIncremental">(</td>
-    <td class="tg-eqtu showGlobal"><div id="text_w0">w0</div></td>
-    <td class="tg-c3ot2 showIncremental">+</td>
-    <td class="tg-eqtu showSubspace"><div id="text_w0.1" class="subspaceFactor">w0.1</div></td>
-    <td class="tg-c3ot2 showIncremental">)</td>
-    <td class="tg-c3ot3">=</td>
+    <td class="tg-c4wh xaiRight">+</td>
+    <td class="tg-c3ot0 showIncremental xaiBottom">(</td>
+    <td class="tg-eqtu0 showGlobal xaiBottom"><div id="text_w0">w0</div></td>
+    <td class="tg-c3ot0 showIncremental xaiBottom">+</td>
+    <td class="tg-eqtu0 showSubspace xaiBottom"><div id="text_w0.1" class="subspaceFactor">w0.1</div></td>
+    <td class="tg-c3ot0 showIncremental xaiBottom">)</td>
+    <td class="tg-c3ot3 xaiLeft">=</td>
     <td class="tg-zme7"><div id="text_y0">y0</div></td>
   </tr>
 </tbody>
