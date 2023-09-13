@@ -3,6 +3,6 @@ housingprice-kingcounty,global,in General,,0,-1042.872192,17.18966932,152.89559,
 housingprice-kingcounty,subglobal,,Living Area < 2.5,0,-697.4272706,15.86730813,62.94112,120.8011553,2.4735919
 housingprice-kingcounty,subglobal,,Living Area ≥ 2.5,1,-1662.449009,57.37080245,241.79033,158.6141858,4.85980549
 housingprice-kingcounty,incremental,in General,Living Area < 2.5,0,-917.0512198,25.48209128,94.91404,136.483858,3.11294492
-housingprice-kingcounty,incremental,in General,Grade ≥ 9,1,-371.4198553,0,120.78722,0,0.75908897
+housingprice-kingcounty,incremental,in General, Living Area ≥ 2.5,1,-371.4198553,0,120.78722,0,0.75908897
 housingprice-kingcounty,instance,,Similar Case,0,0,0,0,0,0
 housingprice-kingcounty,none,?,Unknown,0,0,0,0,0,0

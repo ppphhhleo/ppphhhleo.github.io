@@ -146,7 +146,8 @@ function renderUI(atts, data) {
 		if (appId.includes('housingprice')) { s_wi = thousands(wi, i == 0 ? 3 : 2); }
 		else if (appId.includes('health')) { s_wi = Number(wi.toFixed(3)).toPrecision(i == 0 ? 3 : 2); s_wi = Math.abs(wi) >= 10 ? Number(s_wi) : s_wi; s_wi = Number(s_wi).toFixed(3); }
 		document.getElementById('text_' + 'w'+i).innerHTML = xaiType == 'none' && !isRef ? "?" : s_wi;
-		document.getElementById('text_' + 'w'+i).title = xaiType == 'none' && !isRef ? "?" : thousands(wi, 5);
+		document.getElementById('text_' + 'w'+i).title = xaiType == 'none' && !isRef ? "?" : i == 0 ? "Price adjusted by " + thousands(wi, 5) :
+																									  "Price changes by " + thousands(wi, 5, 5) + " for each increase in " + atts.a[i];
 		
 		let s_ypi = "?"
 		if (appId.includes('housingprice')) { s_ypi = thousands(instance.yp[i], 3); }
@@ -222,6 +223,18 @@ function renderUI(atts, data) {
 			if (1 <= t && t <= 7 && el.parentElement.style.visibility != 'hidden') { el.style.visibility = 'visible'; }
 		});
 	}
+	else if (tutorial == 27) { // 2, 7
+		Array.from(document.getElementsByClassName('tutorial')).forEach(el => {
+			const t = Number(el.id.replace('tutorial',''));
+			if ((t == 2 || t == 7) && el.parentElement.style.visibility != 'hidden') { el.style.visibility = 'visible'; }
+		});
+	}
+	else if (tutorial == 237) { // 2, 3, 7
+		Array.from(document.getElementsByClassName('tutorial')).forEach(el => {
+			const t = Number(el.id.replace('tutorial',''));
+			if ((t == 2 || t == 3 || t == 7) && el.parentElement.style.visibility != 'hidden') { el.style.visibility = 'visible'; }
+		});
+	}
 	else if (tutorial == 79) { // all similarity 7-9
 		Array.from(document.getElementsByClassName('tutorial')).forEach(el => {
 			const t = Number(el.id.replace('tutorial',''));
@@ -285,6 +298,8 @@ tr.adjustment {opacity:0.50;}
 .tutorial {
   display:inline-block;border-radius:50%;background:#0070C0;color:#fff; box-shadow: 1px 2px 3px 0px #999; visibility:hidden;
   padding:.3em; height:1em; aspect-ratio:1/1; line-height:1em;text-align:center;}
+.hasDefinition {cursor:help;}
+.hasDefinition:hover {text-decoration:underline;}
 </style>
 
 <h3>
@@ -309,13 +324,13 @@ tr.adjustment {opacity:0.50;}
     <th class="tg-0pky"></th>
   </tr>
   <tr>
-    <th class="tg-dvpl">Attributes</th>
-    <th class="tg-c3ow">Values</th>
-    <th class="tg-c3ot2 show_similarity" style="vertical-align:bottom"><span title="Differences from Reference" style="cursor:pointer;">(Diff)</span></th>
+    <th class="tg-dvpl hasDefinition" title="Attributes that affect the prediction on the case">Attributes</th>
+    <th class="tg-c3ow hasDefinition" title="Values of each attribute that characterize the case">Values</th>
+    <th class="tg-c3ot2 show_similarity hasDefinition" title="Differences in attribute values of Test Case from Reference Case" style="vertical-align:bottom"><span>(Diff)</span></th>
     <th class="tg-0pky"></th>
-    <th class="tg-c3ow" style="width:100px"><span class="text_new_xai">New</span> Factors</th>
+    <th class="tg-c3ow hasDefinition" title="Factors to multiply with values to estimate the prediction" style="width:100px"><span class="text_new_xai">New</span> Factors</th>
     <th class="tg-c3ot"></th>
-    <th class="tg-c3ow">Partial <span id="text_y_unitName">Score</span> <span class="text_y_unit">y_unit</span></th>
+    <th class="tg-c3ow hasDefinition" title="Partial contribution due to each attribute, calculated as Value x Factor">Partial <span id="text_y_unitName">Score</span> <span class="text_y_unit">y_unit</span></th>
     <th class="tg-0pky"></th>
     <th class="tg-0pky"></th>
     <th class="tg-0pky"></th>
@@ -338,7 +353,7 @@ tr.adjustment {opacity:0.50;}
     <td class="tg-lboi" rowspan="6">
 	  <table class="tg">
 	    <tr class="tutorialRow"><th class="tg-c3ow"><span class="tutorial" id="tutorial5">5</span></th></tr>
-	    <tr><th class="tg-c3ow">AI Explainer <span class="text_y_unit">y_unit</span></th></tr>
+	    <tr><th class="tg-c3ow hasDefinition" title="Estimated prediction of simplified AI Explainer by adding partial contributions">AI Explainer <span class="text_y_unit">y_unit</span></th></tr>
         <tr><td class="tg-c3ow2"><div id="text_ye">ye</div></td></tr>
         <tr><td class="tg-c3ow">&nbsp;</td></tr>
         <tr class="tutorialRow"><td class="tg-c3ow" style="visibility:hidden"><span class="tutorial">0</span></td></tr>
@@ -347,7 +362,7 @@ tr.adjustment {opacity:0.50;}
     <td class="tg-lboi" rowspan="6">
 	  <table class="tg">
 	    <tr class="tutorialRow"><th class="tg-c3ow"><span class="tutorial" id="tutorial6">6</span></th></tr>
-	    <tr><th class="tg-c3ow">AI System <span class="text_y_unit">y_unit</span></th></tr>
+	    <tr><th class="tg-c3ow hasDefinition" title="Accurate prediction of AI System">AI System <span class="text_y_unit">y_unit</span></th></tr>
         <tr><td class="tg-c3ow2"><div id="text_y">y</div></td></tr>
         <tr><td class="tg-c3ow">&nbsp;</td></tr>
         <tr class="tutorialRow"><td class="tg-c3ow" style="visibility:hidden"><span class="tutorial">0</span></td></tr>
@@ -390,7 +405,7 @@ tr.adjustment {opacity:0.50;}
     <td class="tg-zme7 cell_w0"><div id="text_y5">y5</div></td>
   </tr>
   <tr class="adjustment">
-    <td class="tg-dvpl"><div id="text_a0">a0</div></td>
+    <td class="tg-dvpl hasDefinition" title="Amount to adjust the overall prediction due to other attributes"><div id="text_a0">a0</div></td>
     <td class="tg-c3ow show_similarity"><div id="text_v0" style="display:none">v0</div></td>
     <td class="tg-c3ot2"></td>
     <td class="tg-c4wh cell_w0">+</td>
@@ -401,9 +416,9 @@ tr.adjustment {opacity:0.50;}
   
   <tr>
     <td class="tg-dvpl"></td>
-    <td class="tg-c3ow show_similarity" colspan="2">% Difference<br/>from Reference</td>
+    <td class="tg-c3ow show_similarity hasDefinition" title="Percent difference between the Test and Reference Cases based overall on their attribute values" colspan="2">% Difference<br/>from Reference</td>
     <td class="tg-c3ow" colspan="7"></td>
-    <td class="tg-c3ow show_aisystem" style="width:120px">% <span id="text_dy_direction">Difference from</span><br/>AI System</td>
+    <td class="tg-c3ow show_aisystem hasDefinition" title="Percent difference between AI Explainer estimation and AI System prediction" style="width:120px">% <span id="text_dy_direction">Difference from</span><br/>AI System</td>
   </tr>
   <tr>
     <td class="tg-dvpl"></td>

@@ -5,13 +5,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.4.3/decimal.min.js"></script>
 <script type="text/javascript">
 
-//const thousands = (n, asK) => (asK ? n = n/1000 : n).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',') + (asK ? "k" : ""); // to show comma separation in numbers
 const thousands = (n, precision, asK) => Number(n.toPrecision(precision)).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',') + (asK ? "k" : ""); // to show comma separation in numbers
 
 /**
  * Read URL key-values to get condition and trial
  */
-const queryString = window.location.search; // e.g.: http://localhost:9000/incremental-xai-ui.html?appId=housingprice-kingcounty&xaiType=incremental&id=1&hideFactor=-1&tutorial=0&showPrediction=1
+const queryString = window.location.search; // e.g.: http://localhost:9000/incremental-xai-ui.html?appId=housingprice-kingcounty&xaiType=incremental&id=1&hideFactor=-1&&tutorial=0&showPrediction=1
 const urlParams = new URLSearchParams(queryString);
 
 const appId = urlParams.get('appId');
@@ -23,8 +22,9 @@ const showGlobal = xaiType == 'global' || xaiType == 'incremental';
 const showSubspace = xaiType == 'subglobal' || xaiType == 'incremental' || xaiType == 'instance' || xaiType == 'none';
 const showIncremental = xaiType == 'incremental';
 const s_hideFactor = urlParams.get('hideFactor');
-const hideFactor = s_hideFactor == null ? -1 : Number(s_hideFactor);
 const tutorial = Number(urlParams.get('tutorial'));
+const hideFactor = s_hideFactor == null ? -1 : Number(s_hideFactor);
+const editValues = Number(urlParams.get('editValues'));
 const showPrediction = Number(urlParams.get('showPrediction'));
 
 const vec_sum = (vec) => vec.reduce((sum, el) => sum + el, 0);
@@ -44,9 +44,11 @@ function extractAttributeNames(data) {
 	
 	const v_min = [0, 0, 0, 0, 0];
 	const v_max = [0, 0, 0, 0, 0];
+	const v_step = [1, 1, 1, 1, 1];
 	for (let i = 1; i <= 4; i++) {
 		v_min[i] = data[row]['v'+i+'_min'];
 		v_max[i] = data[row]['v'+i+'_max'];
+		v_step[i] = data[row]['v'+i+'_step'];
 	}
 		
 	const y_max = Number(data[row].y_max);
@@ -55,7 +57,7 @@ function extractAttributeNames(data) {
 	
 	return {
 		a: a,
-		v_min: v_min, v_max: v_max,
+		v_min: v_min, v_max: v_max, v_step,
 		y_unit: y_unit, y_unitName: y_unitName,
 		y_max,
 	};
@@ -99,6 +101,8 @@ function extractGlobalModel(atts, data) {
 	};
 }
 
+let y;
+
 function extractInstance(atts, globalModel, data, id) {
 	const row = data.findIndex(d => d.id == id);
 	
@@ -137,8 +141,9 @@ function extractInstance(atts, globalModel, data, id) {
 	}
 	const ye = vec_sum(yp); // ye = summation(v * w)	
 	
-	const y = data[row]['y'];
-	const dy = xaiType == 'none' ? 0 : (ye - y) / atts.y_max;
+	y = data[row]['y'];
+	//const dy = xaiType == 'none' ? 0 : (ye - y) / atts.y_max;
+	const dy = xaiType == 'none' ? 0 : (ye - y) / y;
 	
 	return {
 		v: v,
@@ -146,6 +151,7 @@ function extractInstance(atts, globalModel, data, id) {
 		w_s: subspaceId == 0 ? globalModel.w_s0 : globalModel.w_s1,
 		w_i0: globalModel.w_i0, w_i1: subspaceId == 0 ? [0, 0, 0, 0, 0] : globalModel.w_i1,
 		w_l: w_l,
+		w: w,
 		yp: yp,
 		ye: ye,
 		y: y, 
@@ -154,57 +160,94 @@ function extractInstance(atts, globalModel, data, id) {
 	};
 }
 
+const inputFactorHTML = function(i, value, title, isB) {
+	value = hideFactor == -2 ? 0 : value;	
+	const placeholder = xaiType == 'none' ? '?' : Number(value.toPrecision(i == 0 ? 3 : 2));
+	title = xaiType == 'none' ? '' : title;
+	
+	return '<input id="input_w' + i + (isB ? '.1' : '') + '" class="inputFactor" type="number" onclick="activateInputs()" onchange="calculateYe(this)" placeholder="'+placeholder+'" value="" title="'+title+'" autocomplete="off" />k';
+}
+const inputValueHTML = function(i, value) {
+	const placeholder = thousands(value, i == 1 ? 3 : 2);
+	const title = value;
+	const min = atts.v_min[i], max = atts.v_max[i], step = atts.v_step[i];	
+	return '<input id="input_v' + i + '" class="inputValue" type="number" onclick="activateInputs()" onchange="calculateYe(this)" placeholder="'+placeholder+'" value="" min="'+min+'" max="'+max+'" step="'+step+'" title="'+title+'" autocomplete="off" />';
+}
+
+let instance;
+
+const titleDesc = function(i, wi) {
+	return i == 0 ? "Price adjusted by " + thousands(wi, 5, true) :
+					"Price changes by " + thousands(wi, 5, true) + " for each increase in " + atts.a[i];
+}
+
 function renderUI(atts, globalModel, data) {	
 	instance = extractInstance(atts, globalModel, data, id);
 	
 	for (let i = 0; i <= 4; i++) {
 		document.getElementById('text_' + 'a'+i).innerHTML = atts.a[i];
-		document.getElementById('text_' + 'v'+i).innerHTML = thousands(instance.v[i], 2);
-		document.getElementById('text_' + 'v'+i).title = instance.v[i];
-		
-		if (i > 0) {
-			const meter = document.getElementById('meter_' + 'v'+i);
-			meter.value = instance.v[i];
-			meter.min = atts.v_min[i];
-			meter.max = atts.v_max[i];
-			meter.title = "min: " + thousands(meter.min) + ", max: " + thousands(meter.max, 2);
+	
+		const vi = instance.v[i];
+		const elTextVi = document.getElementById('text_' + 'v'+i);
+		if (i == 1) { // 2 dp for # Bathrooms (e.g., 1.75) -> 1 3/4			
+			const viDec = vi - Math.floor(vi);
+			let viFrac = '';
+			switch(viDec) { case .25: viFrac = '&frac14;'; break; case .5: viFrac = '&frac12;'; break; case .75: viFrac = '&frac34;'; break; }
+			elTextVi.innerHTML = Math.floor(vi).toString() + ' ' + viFrac;
 		}
+		else { elTextVi.innerHTML = thousands(vi, 2); }
+		elTextVi.title = vi;
+		
+		renderValueMeterUI(i, vi);
+				
+		if (editValues == 1) {
+			elTextVi.innerHTML = inputValueHTML(i, vi); //'?';
+			elTextVi.title = '';//'?'; 
+		}
+		
+		let wi0 = 0, wi1 = 0;
+		const precision = i == 0 ? 3 : 2;
 		
 		switch (xaiType) {
 			case 'global': 
-				document.getElementById('text_' + 'w'+i).innerHTML = thousands(globalModel.w_g[i], i == 0 ? 3 : 2, true);
-				document.getElementById('text_' + 'w'+i).title = thousands(globalModel.w_g[i], 5, true);
+				wi0 = globalModel.w_g[i];
+				document.getElementById('text_' + 'w'+i).innerHTML = thousands(globalModel.w_g[i], precision, true);
 				break;
 			case 'subglobal':
-				document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w_s[i], i == 0 ? 3 : 2, true);
-				document.getElementById('text_' + 'w'+i+'.1').title = thousands(instance.w_s[i], 5, true);
+				wi1 = Number(instance.w_s[i].toPrecision(precision));
+				document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w_s[i], precision, true);
 				break;
 			case 'incremental':
-				document.getElementById('text_' + 'w'+i).innerHTML = thousands(instance.w_i0[i], i == 0 ? 3 : 2, true);
-				document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w_i1[i], i == 0 ? 3 : 2, true);
-				document.getElementById('text_' + 'w'+i).title = thousands(instance.w_i0[i], 5, true);
-				document.getElementById('text_' + 'w'+i+'.1').title = thousands(instance.w_i1[i], 5, true);
-				if (instance.w_i1[i] == 0) { document.getElementById('text_' + 'w'+i+'.1').classList.add('w_i1_0'); }
+				wi0 = instance.w_i0[i];
+				wi1 = instance.w_i1[i];
+				document.getElementById('text_' + 'w'+i).innerHTML = thousands(instance.w_i0[i], precision, true);
+				document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w_i1[i], precision, true);
+				if (!editValues && instance.w_i1[i] == 0) { document.getElementById('text_' + 'w'+i+'.1').classList.add('w_i1_0'); }
 				break;
 			case 'instance':
-				document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w_l[i], i == 0 ? 3 : 2, true);
-				document.getElementById('text_' + 'w'+i+'.1').title = thousands(instance.w_l[i], 5, true);
+				wi1 = instance.w_l[i];
+				document.getElementById('text_' + 'w'+i+'.1').innerHTML = thousands(instance.w_l[i], precision, true);
 				break;
 			case 'none':
-				document.getElementById('text_' + 'w'+i).innerHTML = '?';
-				document.getElementById('text_' + 'w'+i+'.1').innerHTML = '?';
+				document.getElementById('text_' + 'w'+i).innerHTML = inputFactorHTML(i);
+				document.getElementById('text_' + 'w'+i+'.1').innerHTML = inputFactorHTML(i, 0, '', true);
 				break;
 		}
 		
-		if (hideFactor !== undefined && hideFactor == i) {
-			document.getElementById('text_' + 'w'+i).innerHTML = '?';
-			document.getElementById('text_' + 'w'+i).title = '?';
-			document.getElementById('text_' + 'w'+i+'.1').innerHTML = '?';
-			document.getElementById('text_' + 'w'+i+'.1').title = '?';
+		const wi0_title = titleDesc(i, wi0);
+		const wi1_title = titleDesc(i, wi1);
+		document.getElementById('text_' + 'w'+i).title = wi0_title;
+		document.getElementById('text_' + 'w'+i+'.1').title = wi1_title;
+		
+		if (hideFactor !== undefined && hideFactor == i || hideFactor <= -2) {
+			document.getElementById('text_' + 'w'+i).innerHTML = inputFactorHTML(i, wi0, wi0_title);
+			document.getElementById('text_' + 'w'+i).title = '';
+			document.getElementById('text_' + 'w'+i+'.1').innerHTML = inputFactorHTML(i, wi1, wi1_title, true);
+			document.getElementById('text_' + 'w'+i+'.1').title = '';
 		}
 		
-		document.getElementById('text_' + 'y'+i).innerHTML = xaiType == 'none' || hideFactor == i ? "?" : thousands(instance.yp[i], i == 0 ? 3 : 2, true);
-		document.getElementById('text_' + 'y'+i).title = xaiType == 'none' || hideFactor == i ? "?" : thousands(instance.yp[i], 5, true);
+		document.getElementById('text_' + 'y'+i).innerHTML = xaiType == 'none' || hideFactor == i || hideFactor == -2 ? '?' : thousands(instance.yp[i], precision, true);
+		document.getElementById('text_' + 'y'+i).title = xaiType == 'none' || hideFactor == i || hideFactor == -2 ? "?" : thousands(instance.yp[i], 5, true);
 	}
 	
 	let subspaceName = "";
@@ -232,23 +275,15 @@ function renderUI(atts, globalModel, data) {
 	
 	Array.from(document.getElementsByClassName('text_' + 'y_unit')).forEach(el => el.innerHTML = "(" + atts.y_unit + ")");
 	document.getElementById('text_' + 'y_unitName').innerHTML = atts.y_unitName;
-	document.getElementById('text_' + 'ye').innerHTML = xaiType == 'none' ? "?" : thousands(instance.ye, 3, true);
-	document.getElementById('text_' + 'y').innerHTML = thousands(instance.y, 3, true);
-	document.getElementById('text_' + 'ye').title = xaiType == 'none' ? "?" : thousands(instance.ye, 5, true);
-	document.getElementById('text_' + 'y').title = thousands(instance.y, 5, true);
 	
-	const diffToRed = (diff, threshold) => (1 - diff) * (100 - threshold) + threshold; // calculate redness based on % difference
+	const text_ye = document.getElementById('text_' + 'ye');
+	text_ye.innerHTML = xaiType == 'none' || hideFactor == -2 ? '?' : thousands(instance.ye, 3, true);
+	text_ye.title = xaiType == 'none' || hideFactor == -2 ? "?" : thousands(instance.ye, 5, true);
 	
-	const abs_dy = Math.abs(instance.dy);
-	document.getElementById('text_' + 'dy').innerHTML = xaiType == 'none' ? "?" : thousands((abs_dy) * 100, 2) + '%';
-	document.getElementById('text_' + 'dy').title = xaiType == 'none' ? "?" : thousands((abs_dy) * 100, 4) + '%';
-	const lightness_dy = diffToRed(abs_dy, 60);
-	document.getElementById('text_' + 'dy_pad').style.background = xaiType == 'none' ? "#eee" : 'hsl(0, 100%, ' + lightness_dy + '%)';
-	
-	const textDyDirection = document.getElementById('text_' + 'dy_direction');
-	const textDyInequality = document.getElementById('text_' + 'dy_inequality');
-	textDyDirection.innerHTML = instance.dy > 0 ? "Higher" : (instance.dy < 0 ? "Lower" : "Different");
-	textDyInequality.innerHTML = instance.dy > 0 ? "&gt;" : (instance.dy < 0 ? "&lt;" : "&asymp;");
+	document.getElementById('text_' + 'y').innerHTML = showPrediction ? thousands(instance.y, 3, true) : '?';
+	document.getElementById('text_' + 'y').title = showPrediction ? thousands(instance.y, 5, true) : '?';
+		
+	renderDyUI(instance.dy);
 	
 	Array.from(document.getElementsByClassName('showAiSystem')).forEach(el => el.style.visibility = showPrediction ? 'visible' : 'hidden');
 	Array.from(document.getElementsByClassName('showGlobal')).forEach(el => el.style.display = showGlobal ? 'revert' : 'none');
@@ -274,13 +309,118 @@ function renderUI(atts, globalModel, data) {
 	}
 }
 
+function renderValueMeterUI(i, vi) {
+	const meter = document.getElementById('meter_' + 'v'+i);
+	if (i > 0) {
+		meter.value = vi;
+		meter.min = atts.v_min[i];
+		meter.max = atts.v_max[i];
+		meter.title = "min: " + thousands(meter.min, i == 1 ? 3 : 2) + ", max: " + thousands(meter.max, i == 1 ? 3 : 2);
+	}
+}
+
+function renderDyUI(dy) {
+	const abs_dy = Math.abs(dy);
+	document.getElementById('text_' + 'dy').innerHTML = !showPrediction ? "?" : thousands((abs_dy) * 100, 2) + '%';
+	document.getElementById('text_' + 'dy').title = !showPrediction ? "?" : thousands((abs_dy) * 100, 4) + '%';
+	
+	const diffToDark = (diff, threshold) => (1 - diff) * (100 - threshold) + threshold; // calculate redness based on % difference
+	const lightness_dy = diffToDark(abs_dy, 60);
+	const hue = dy > 0 ? 0 : 190; // 0 red, 180 blue
+	
+	document.getElementById('text_' + 'dy_pad').style.background = 'hsl(' + hue + ', 100%, ' + lightness_dy + '%)';
+	
+	const textDyDirection = document.getElementById('text_' + 'dy_direction');
+	const textDyInequality = document.getElementById('text_' + 'dy_inequality');
+	textDyDirection.innerHTML = showPrediction ? (dy > 0 ? "Higher" : (dy < 0 ? "Lower" : "Different")) : 'Different';
+	textDyInequality.innerHTML = showPrediction ? (dy > 0 ? "&gt;" : (dy < 0 ? "&lt;" : "&asymp;")) : '&asymp;';
+}
+
+let ye = 0;
+let wi0 = [0, 0, 0, 0, 0];
+let wi1 = [0, 0, 0, 0, 0];
+
+let inputsActivated = false;
+const activateInputs = function(input_wi) {
+	if (inputsActivated == true) { return; }
+	
+	for (let i = 0; i <= 4; i++) {
+		const input_vi = document.getElementById('input_' + 'v'+i);
+		const input_wi0 = document.getElementById('input_' + 'w'+i);
+		const input_wi1 = document.getElementById('input_' + 'w'+i+'.1');
+		
+		const init = function(input) {
+			if (input == null) { return; }
+			if (input.value == '') {
+				if (hideFactor == -3 || editValues) { input.value = input.placeholder == '?' ? 0 : Number(input.placeholder); }
+				else { input.value = 0; }
+			}
+		}
+		init(input_vi);
+		init(input_wi0);
+		init(input_wi1);
+	}
+	inputsActivated = true;
+	
+	calculateYe();
+}
+const calculateYe = function(el) {
+	if (el) { el.classList.add('inputEdited'); }
+
+	ye = 0;
+	for (let i = 0; i <= 4; i++) {
+		ye += calculateYi(i);
+	}
+	const text_ye = document.getElementById('text_' + 'ye');
+	text_ye.innerHTML = thousands(ye, 3, true);
+	text_ye.title = thousands(ye, 5, true);
+	
+	dy = (ye - y) / y;
+	renderDyUI(dy);
+}
+const calculateYi = function(i) {
+	const input_vi = document.getElementById('input_' + 'v'+i);
+	const input_wi0 = document.getElementById('input_' + 'w'+i);
+	const input_wi1 = document.getElementById('input_' + 'w'+i+'.1');
+	
+	let wi0, wi1;
+	if (hideFactor <= -2) { 
+		wi0 = Number(input_wi0.value);
+		wi1 = Number(input_wi1.value); 
+		input_wi0.title = titleDesc(i, wi0);
+		input_wi1.title = titleDesc(i, wi1);
+	}
+	else { 
+		wi0 = instance.w[i]; 
+		wi1 = 0; 
+	}
+
+	let vi = instance.v[i];
+	if (editValues) { 
+		vi = Number(input_vi.value);
+		input_vi.title = titleDesc(i, vi);
+	}
+	
+	const yi = vi * (wi0 + wi1);	
+	
+	const text_yi = document.getElementById('text_' + 'y'+i);
+	text_yi.innerHTML = thousands(yi, i == 0 ? 3 : 2, true);
+	text_yi.title = thousands(yi, 5, true);
+	
+	renderValueMeterUI(i, vi);
+	
+	return yi;
+}
+
+let atts;
+
 Papa.parse("./incremental-xai-app-attributes.csv", {
 	download: true,
 	header: true,
 	dynamicTyping: true,
 	complete: function(att_res) {
 		//console.log('att_res', att_res);
-		const atts = extractAttributeNames(att_res.data);
+		atts = extractAttributeNames(att_res.data);
 		
 		Papa.parse("./incremental-xai-models.csv", {
 			download: true,
@@ -340,6 +480,12 @@ tr.adjustment {opacity:0.50;}
 .tutorial {
   display:inline-block;border-radius:50%;background:#0070C0;color:#fff; box-shadow: 1px 2px 3px 0px #999; visibility:hidden;
   padding:.3em; height:1em; aspect-ratio:1/1; line-height:1em;text-align:center;}
+.inputFactor {text-align:right;width:88px;}
+.inputValue {text-align:center;width:60px;}
+.inputEdited {background-color:#ff9; border: 1px dashed #000;}
+@media print {
+body {-webkit-print-color-adjust: exact;}
+}
 </style>
 
 <table class="tg" border="0">
@@ -380,12 +526,12 @@ tr.adjustment {opacity:0.50;}
     <td class="tg-c3ot2 showIncremental xaiTop">+</td>
     <td class="tg-eqtu showSubspace xaiTop"><div id="text_w1.1" class="subspaceFactor">w1.1</div></td>
     <td class="tg-c3ot2 showIncremental xaiTop">)</td>
-    <td class="tg-c3ot3 xaiLeft">=</td>
+    <td class="tg-c3ot3 xaiLeft" id="td_calc_y1">=</td>
     <td class="tg-zme7"><div id="text_y1">y1</div></td>
-    <td class="tg-lboi" rowspan="6">}</td>
-    <td class="tg-lboi" rowspan="6">+</td>
-    <td class="tg-lboi" rowspan="6">&rarr;</td>
-    <td class="tg-lboi" rowspan="6">
+    <td class="tg-lboi" rowspan="5">}</td>
+    <td class="tg-lboi" rowspan="5" id="td_calc_ye">+</td>
+    <td class="tg-lboi" rowspan="5">&rarr;</td>
+    <td class="tg-lboi" rowspan="5">
 	  <table class="tg" border="0">
 	    <tr class="tutorialRow"><th class="tg-c3ow"><span class="tutorial" id="tutorial5">5</span></th></tr>
 	    <tr><th class="tg-c3ow"><span style="color:#2e8112">AI Explainer <span class="text_y_unit">y_unit</span></span></th></tr>
@@ -393,9 +539,9 @@ tr.adjustment {opacity:0.50;}
         <tr><td class="tg-c3ow showAiSystem"><span id="text_dy_pad"><span id="text_dy">dy%</span> <span id="text_dy_direction">different</span></span></tr>
 	    <tr class="tutorialRow"><th class="tg-c3ow"><span class="tutorial" id="tutorial7">7</span></th></tr>
 	  </table></td>
-    <td class="tg-lboi showAiSystem" rowspan="6"><span id="text_dy_inequality">&asymp;</span></td>
-    <td class="tg-lboi" rowspan="6">
-	  <table class="tg showAiSystem" border="0">
+    <td class="tg-lboi" rowspan="5"><span id="text_dy_inequality">&asymp;</span></td>
+    <td class="tg-lboi" rowspan="5">
+	  <table class="tg" border="0">
 	    <tr class="tutorialRow"><th class="tg-c3ow"><span class="tutorial" id="tutorial6">6</span></th></tr>
 	    <tr><th class="tg-c3ow"><span style="color:#326fff">AI System <span class="text_y_unit">y_unit</span></span></th></tr>
         <tr><td class="tg-c3ow2" style="border-color:#326fff"><div id="text_y">y</div></td></tr>
@@ -413,7 +559,7 @@ tr.adjustment {opacity:0.50;}
     <td class="tg-c3ot2 showIncremental">+</td>
     <td class="tg-eqtu showSubspace"><div id="text_w2.1" class="subspaceFactor">w2.1</div></td>
     <td class="tg-c3ot2 showIncremental">)</td>
-    <td class="tg-c3ot3 xaiLeft">=</td>
+    <td class="tg-c3ot3 xaiLeft" id="td_calc_y2">=</td>
     <td class="tg-zme7"><div id="text_y2">y2</div></td>
   </tr>
   <tr>
@@ -426,7 +572,7 @@ tr.adjustment {opacity:0.50;}
     <td class="tg-c3ot2 showIncremental">+</td>
     <td class="tg-eqtu showSubspace"><div id="text_w3.1" class="subspaceFactor">w3.1</div></td>
     <td class="tg-c3ot2 showIncremental">)</td>
-    <td class="tg-c3ot3 xaiLeft">=</td>
+    <td class="tg-c3ot3 xaiLeft" id="td_calc_y3">=</td>
     <td class="tg-zme7"><div id="text_y3">y3</div></td>
   </tr>
   <tr>
@@ -439,7 +585,7 @@ tr.adjustment {opacity:0.50;}
     <td class="tg-c3ot2 showIncremental">+</td>
     <td class="tg-eqtu showSubspace"><div id="text_w4.1" class="subspaceFactor">w4.1</div></td>
     <td class="tg-c3ot2 showIncremental">)</td>
-    <td class="tg-c3ot3 xaiLeft">=</td>
+    <td class="tg-c3ot3 xaiLeft" id="td_calc_y4">=</td>
     <td class="tg-zme7"><div id="text_y4">y4</div></td>
   </tr>
   <tr class="adjustment">
@@ -452,8 +598,11 @@ tr.adjustment {opacity:0.50;}
     <td class="tg-c3ot0 showIncremental xaiBottom">+</td>
     <td class="tg-eqtu0 showSubspace xaiBottom"><div id="text_w0.1" class="subspaceFactor">w0.1</div></td>
     <td class="tg-c3ot0 showIncremental xaiBottom">)</td>
-    <td class="tg-c3ot3 xaiLeft">=</td>
+    <td class="tg-c3ot3 xaiLeft" id="td_calc_y0">=</td>
     <td class="tg-zme7"><div id="text_y0">y0</div></td>
+  </tr>
+  <tr>
+    <td class="tg-dvpl"><button onclick="location.reload()">Reset</button></td>
   </tr>
 </tbody>
 </table>

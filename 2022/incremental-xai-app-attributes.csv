@@ -1,2 +1,2 @@
-﻿appId,a0,a1,a2,a3,a4,y_unit,y_unitName,v1_min,v1_max,v1_sd,v2_min,v2_max,v2_sd,v3_min,v3_max,v3_sd,v4_min,v4_max,v4_sd,y_max
-housingprice-kingcounty,Adjustment,# Bathrooms,Living Area (ksqft),Grade,Age (years),$,Price,0,8,0.77014534,290,13540,918.4196494,1,13,1.175431563,0,115,29.37273126,1704
+﻿appId,a0,a1,a2,a3,a4,y_unit,y_unitName,v1_min,v1_max,v1_sd,v1_step,v2_min,v2_max,v2_sd,v2_step,v3_min,v3_max,v3_sd,v3_step,v4_min,v4_max,v4_sd,v4_step,y_max
+housingprice-kingcounty,Adjustment,# Bathrooms,Living Area (ksqft),Grade,Age (years),$,Price,1,4.75,0.674368,0.25,0.95,5.494,0.9264,0.05,6,12,1.2317,1,1,115,29.6,1,1704

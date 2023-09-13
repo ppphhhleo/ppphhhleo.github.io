@@ -3,35 +3,6 @@
 </head>
 
 <body>
-
-<h2>Tutorial Example</h2>
-<h3>Global</h3>
-<iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=global&showPrediction=1" 
-		width="1080px" height="220px"
-		frameBorder="0" scrolling="no"
-		></iframe>
-<h3>Sub-Global</h3>
-<iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=subglobal&showPrediction=1" 
-		width="1080px" height="220px"
-		frameBorder="0" scrolling="no"
-		></iframe>
-<h3>Incremental</h3>
-<iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=incremental&showPrediction=1" 
-		width="1080px" height="220px"
-		frameBorder="0" scrolling="no"
-		></iframe>
-<h3>Instance</h3>
-<iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=instance&showPrediction=1" 
-		width="1080px" height="220px"
-		frameBorder="0" scrolling="no"
-		></iframe>
-<h3>None</h3>
-<iframe src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=none&showPrediction=1" 
-		width="1080px" height="220px"
-		frameBorder="0" scrolling="no"
-		></iframe>
-
-<h2>Interactive</h2>
 <div>
 Application <select id="input_appId">
   <option value="housingprice-kingcounty">Housing Price: King County</option>
@@ -39,20 +10,13 @@ Application <select id="input_appId">
   <option value="health-pima-diabetes">Health: Pima Diabetes</option>
   <option value="health-heart-disease">Health: Heart Disease</option>
 </select> |
-Case <input id="text_id" value="1" size="2" maxlength="2" disabled/> <input id="input_id" type="range" min="1" max="100" value="1" style="width:160px" /><br/>
+Case <input id="input_id" type="number" value="1" min="1" max="102" size="2" maxlength="2"> (1-102), 101(values=0), 102(v2&#x2265;2.5)<br/>
 XAI Type <select id="input_xaiType">
   <option value="global">Global</option>
   <option value="subglobal">Sub-Global</option>
   <option value="incremental" selected>Incremental</option>
   <option value="instance">Instance</option>
   <option value="none">None</option>
-</select> |
-Hide Factor <select id="input_hideFactor">
-  <option value="-1">None</option>
-  <option value="1">1</option>
-  <option value="2">2</option>
-  <option value="3">3</option>
-  <option value="4">4</option>
 </select> |
 Tutorial <select id="input_tutorial">
   <option value="-1">All (-1)</option>
@@ -65,15 +29,26 @@ Tutorial <select id="input_tutorial">
   <option value="6">AI System (6)</option>
   <option value="7">Diff from y (7)</option>
 </select> |
+Hide Factor <select id="input_hideFactor">
+  <option value="-3">Edit (-3)</option>
+  <option value="-2">All (-2)</option>
+  <option value="-1" selected>None (-1)</option>
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+</select> |
+Edit Values <input id="input_editValues" type="checkbox" /> |
 Show Prediction <input id="input_showPrediction" type="checkbox" checked />
 </div>
+
 <div>URL: <a id="text_url" href=""></a> <button onclick="copyIframeHtml()">Copy Iframe</button> <button onclick="copyUrl()">Copy URL</button></div>
 <iframe id="interactiveIframe" 
-		src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=incremental&hideFactor=-1&showPrediction=1" 
+		src="incremental-xai-ui.html?appId=housingprice-kingcounty&id=1&xaiType=incremental&showPrediction=1" 
 		width="1080px" height="256px"
 		frameBorder="0" scrolling="no"
 		></iframe>
-		
+
 <script>
 let url = "";
 const urlRoot = "https://brianlimyl.github.io/transferable-xai/";
@@ -83,17 +58,41 @@ function updateIframeUrl(iframeId) {
 	const appId = document.querySelector("#input_appId").value;
 	const id = document.querySelector("#input_id").value;
 	const xaiType = document.querySelector("#input_xaiType").value;
-	const hideFactor = document.querySelector("#input_hideFactor").value;
 	const tutorial = document.querySelector("#input_tutorial").value;
+	const hideFactor = document.querySelector("#input_hideFactor").value;
+	const editValues = document.querySelector("#input_editValues").checked ? 1 : 0;
 	const showPrediction = document.querySelector("#input_showPrediction").checked ? 1 : 0;
 	
-	url = "incremental-xai-ui.html?appId="+appId+"&id="+id+"&xaiType="+xaiType+"&hideFactor="+hideFactor+"&tutorial="+tutorial+"&showPrediction="+showPrediction;
-	document.querySelector("#interactiveIframe").src = url;
-	
-	document.querySelector("#text_id").value = id;
-	
+	const iframe = document.querySelector("#interactiveIframe");
+	url = "incremental-xai-ui.html?appId="+appId+"&id="+id+"&xaiType="+xaiType+"&tutorial="+tutorial+"&hideFactor="+hideFactor+"&editValues="+editValues+"&showPrediction="+showPrediction;
+	iframe.src = url;
+	if (tutorial != 0) { iframe.height = '262px'; }
+	else if ((hideFactor != 0 || xaiType == 'none') && tutorial == 0) { iframe.height = '228px'; }
+	else { iframe.height = '208px'; }
+		
 	document.querySelector("#text_url").href = url;
 	document.querySelector("#text_url").innerHTML = url;
+}
+
+function updateId() {
+	const input_id = document.querySelector("#input_id");
+	let id = input_id.value;
+	id = id < 1 ? 1 : id;
+	id = id > 102 ? 102 : id;
+	input_id.value = id;
+	updateIframeUrl();
+}
+function updateIdTyping(e) {
+	const input_id = document.querySelector("#input_id");
+	let id = input_id.value;
+	
+	if (e.key == 'Enter') {
+		return;
+	}
+	else if (isNaN(parseInt(e.key)) || id.toString().length >= 3) { // invalid typing to revert to previous number
+		event.preventDefault()
+		input_id.value = id; 
+	} 
 }
 
 function copyIframeHtml() {
@@ -101,7 +100,6 @@ function copyIframeHtml() {
 	html = html.replace("src=\"", "src=\"" + urlRoot);
 	html = html.replaceAll("&amp;", "&");
 	html = html.replaceAll("id=\"interactiveIframe\" ", "");
-	if (tutorial == 0) { html = html.replace("height=\"354px\"", "height=\"300px\""); }
 	navigator.clipboard.writeText(html);
 }
 function copyUrl() {
@@ -109,10 +107,12 @@ function copyUrl() {
 }
 
 document.querySelector("#input_appId").onchange = updateIframeUrl;
-document.querySelector("#input_id").onchange = updateIframeUrl;
+document.querySelector("#input_id").onchange = updateId;
+document.querySelector("#input_id").onkeypress = updateIdTyping;
 document.querySelector("#input_xaiType").onchange = updateIframeUrl;
-document.querySelector("#input_hideFactor").onchange = updateIframeUrl;
 document.querySelector("#input_tutorial").onchange = updateIframeUrl;
+document.querySelector("#input_hideFactor").onchange = updateIframeUrl;
+document.querySelector("#input_editValues").onchange = updateIframeUrl;
 document.querySelector("#input_showPrediction").onchange = updateIframeUrl;
 
 updateIframeUrl();

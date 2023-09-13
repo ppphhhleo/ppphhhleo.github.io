@@ -3,52 +3,6 @@
 </head>
 
 <body>
-
-<h2>Tutorial Example</h2>
-<div>
-showPrediction=0, showSimilarity=(depends on condition)
-</div>
-<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=1&xaiType=ref&showSimilarity=1&showPrediction=1" 
-		width="900px" height="300px"
-		frameBorder="0" scrolling="no"
-		></iframe>
-<br/>
-<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=0&xaiType=ref&showSimilarity=1&showPrediction=0" 
-		width="900px" height="300px"
-		frameBorder="0" scrolling="no"
-		></iframe>
-<br/>
-<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=0&xaiType=new&showSimilarity=1&showPrediction=0" 
-		width="900px" height="300px"
-		frameBorder="0" scrolling="no"
-		></iframe>
-<br/>
-<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=0&xaiType=ref&showSimilarity=1&showPrediction=1" 
-		width="900px" height="300px"
-		frameBorder="0" scrolling="no"
-		></iframe>
-<br/>
-<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=0&xaiType=new&showSimilarity=1&showPrediction=1" 
-		width="900px" height="300px"
-		frameBorder="0" scrolling="no"
-		></iframe>
-
-<h2>Testing Trial Example</h2>
-<div>
-showPrediction=0, showSimilarity=0, iframe height less
-</div>
-<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=1&xaiType=none&showSimilarity=0&showPrediction=0" 
-		width="900px" height="230px"
-		frameBorder="0" scrolling="no"
-		></iframe>
-<br/>
-<iframe src="transferable-xai-ui.html?appId=housingprice-kingcounty&pairId=1&isRef=0&xaiType=none&showSimilarity=0&showPrediction=0" 
-		width="900px" height="230px"
-		frameBorder="0" scrolling="no"
-		></iframe>
-<br/>
-
-<h2>Interactive</h2>
 <div>
 Application <select id="input_appId">
   <option value="housingprice-kingcounty">Housing Price: King County</option>
@@ -56,7 +10,7 @@ Application <select id="input_appId">
   <option value="health-pima-diabetes">Health: Pima Diabetes</option>
   <option value="health-heart-disease">Health: Heart Disease</option>
 </select> |
-Trial <input id="text_pairId" value="1" size="2" maxlength="2" disabled/> <input id="input_pairId" type="range" min="1" max="60" value="1" style="width:250px" /><br/>
+Trial <input id="input_pairId" type="number" value="1" min="1" max="52" size="2" maxlength="2"> (1-52)<br/>
 Explanation Type <select id="input_xaiType">
   <option value="none">None</option>
   <option value="ref" selected>Reference</option>
@@ -75,6 +29,8 @@ Tutorial <select id="input_tutorial">
   <option value="8">Diff from Ref (8)</option>
   <option value="9">(diff) (9)</option>
   <option value="17">All Basic (17)</option>
+  <option value="27"> (27)</option>
+  <option value="237"> (237)</option>
   <option value="79">All Similarity (79)</option>
 </select> |
 Show Similarity <input id="input_showSimilarity" type="checkbox" /> |
@@ -109,12 +65,14 @@ function updateIframeUrl() {
 	const showPrediction = document.querySelector("#input_showPrediction").checked ? 1 : 0;
 	//console.log(refId, rankFromRef, xaiType, showSimilarity, showPrediction);
 	
+	const iframeRef = document.querySelector("#interactiveIframeRef");
+	const iframe = document.querySelector("#interactiveIframe");
 	urlRef = "transferable-xai-ui.html?appId="+appId+"&pairId="+pairId+"&isRef="+1+"&xaiType="+'ref'+"&showSimilarity="+showSimilarity+"&tutorial="+tutorial+"&showPrediction="+showPrediction;
-	document.querySelector("#interactiveIframeRef").src = urlRef;
-	url = "transferable-xai-ui.html?appId="+appId+"&pairId="+pairId+"&isRef="+0+"&xaiType="+xaiType+"&showSimilarity="+showSimilarity+"&tutorial="+tutorial+"&showPrediction="+showPrediction;
-	document.querySelector("#interactiveIframe").src = url;
-	
-	document.querySelector("#text_pairId").value = pairId;
+	url    = "transferable-xai-ui.html?appId="+appId+"&pairId="+pairId+"&isRef="+0+"&xaiType="+xaiType+"&showSimilarity="+showSimilarity+"&tutorial="+tutorial+"&showPrediction="+showPrediction;
+	iframeRef.src = urlRef;
+	iframe.src = url;
+	iframeRef.height = tutorial == 0 ? '300px' : '354px';
+	iframe.height = tutorial == 0 ? '300px' : '354px';
 	
 	document.querySelector("#text_urlRef").href = urlRef;
 	document.querySelector("#text_urlRef").innerHTML = urlRef;
@@ -122,12 +80,31 @@ function updateIframeUrl() {
 	document.querySelector("#text_url").innerHTML = url;
 }
 
+function updatePairId() {
+	const input_pairId = document.querySelector("#input_pairId");
+	let pairId = input_pairId.value;
+	pairId = pairId < 1 ? 1 : pairId;
+	pairId = pairId > 52 ? 52 : pairId;
+	input_pairId.value = pairId;
+	updateIframeUrl();
+}
+function updatePairIdTyping(e) {
+	const input_pairId = document.querySelector("#input_pairId");
+	let pairId = input_pairId.value;
+	if (e.key == 'Enter') {
+		return;
+	}
+	else if (isNaN(parseInt(e.key)) || pairId.toString().length >= 2) { // invalid typing to revert to previous number
+		event.preventDefault()
+		input_pairId.value = pairId; 
+	} 
+}
+
 function copyIframeHtmlRef() {
 	let html = document.querySelector("#interactiveIframeRef").outerHTML
 	html = html.replace("src=\"", "src=\"" + urlRoot);
 	html = html.replaceAll("&amp;", "&");
 	html = html.replaceAll("id=\"interactiveIframeRef\" ", "");
-	if (tutorial == 0) { html = html.replace("height=\"354px\"", "height=\"300px\""); }	
 	navigator.clipboard.writeText(html);
 }
 function copyUrlRef() {
@@ -138,7 +115,6 @@ function copyIframeHtml() {
 	html = html.replace("src=\"", "src=\"" + urlRoot);
 	html = html.replaceAll("&amp;", "&");
 	html = html.replaceAll("id=\"interactiveIframe\" ", "");
-	if (tutorial == 0) { html = html.replace("height=\"354px\"", "height=\"300px\""); }
 	navigator.clipboard.writeText(html);
 }
 function copyUrl() {
@@ -146,7 +122,8 @@ function copyUrl() {
 }
 
 document.querySelector("#input_appId").onchange = updateIframeUrl;
-document.querySelector("#input_pairId").onchange = updateIframeUrl;
+document.querySelector("#input_pairId").onchange = updatePairId;
+document.querySelector("#input_pairId").onkeypress = updatePairIdTyping;
 document.querySelector("#input_xaiType").onchange = updateIframeUrl;
 document.querySelector("#input_tutorial").onchange = updateIframeUrl;
 document.querySelector("#input_showSimilarity").onchange = updateIframeUrl;
