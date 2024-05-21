@@ -1,7 +1,7 @@
 ---
 layout: page
 title: PORTFOLIO
-permalink: /projects/
+permalink: /portfolio/
 description: A growing collection of your cool projects.
 nav: true
 nav_order: 3

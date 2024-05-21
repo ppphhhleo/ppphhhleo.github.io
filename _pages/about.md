@@ -1,6 +1,6 @@
 ---
 layout: about
-title: about
+title: ABOUT
 permalink: /
 subtitle: Hi, I'm Pan Hao 潘昊. 
 
