@@ -1,9 +1,9 @@
-"jessica":
-  - firstname: ["Jessica", "jessica", "Bo", "Jessica Bo"]
+"bo":
+  - firstname: ["Jessica"]
     url: https://jessica-bo.github.io/
 
-"brian":
-  - firstname: ["Brian", "Y.", "Lim", "Brian Lim", "Brian Y. Lim"]
+"lim":
+  - firstname: ["Brian", "Y.", "Brian Y. "]
     url: https://en.wikipedia.org/wiki/Boris_Podolsky
 
 
