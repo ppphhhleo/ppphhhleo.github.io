@@ -10,9 +10,12 @@ layout: default
       {% else %}
         {{ site.title }}
       {% endif %}
+      (潘昊)
     </h1>
     <p class="desc">{{ page.subtitle }}</p>
   </header>
+
+
 
   <article>
     {% if page.profile %}
@@ -22,7 +25,7 @@ layout: default
           {% if page.profile.image_circular %}
             {% assign profile_image_class = 'img-fluid z-depth-1 rounded-circle' %}
           {% else %}
-            {% assign profile_image_class = 'img-fluid z-depth-1
+            {% assign profile_image_class = 'img-fluid z-depth-0
       rounded' %}
           {% endif %}
           {% capture sizes %}(min-width: {{site.max_width}}) {{ site.max_width | minus: 30 | times: 0.3}}px, (min-width: 576px)
@@ -36,6 +39,16 @@ layout: default
           <div class="more-info">{{ page.profile.more_info }}</div>
         {% endif %}
       </div>
+
+      <!-- Social -->
+    {% if page.social %}
+      <div class="social">
+        <div class="contact-icons">{% include social.liquid %}</div>
+
+        <div class="contact-note">{{ site.contact_note }}</div>
+      </div>
+    {% endif %}
+    
     {% endif %}
 
     <div class="clearfix">{{ content }}</div>
@@ -65,13 +78,6 @@ layout: default
       {% include selected_papers.liquid %}
     {% endif %}
 
-    <!-- Social -->
-    {% if page.social %}
-      <div class="social">
-        <div class="contact-icons">{% include social.liquid %}</div>
-
-        <div class="contact-note">{{ site.contact_note }}</div>
-      </div>
-    {% endif %}
+    
   </article>
 </div>
