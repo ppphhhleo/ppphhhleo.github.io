@@ -2,7 +2,7 @@
 layout: default
 ---
 
-    <div class="row"> 
+    <article> 
       <div class="col-md-4 element">
         {% if page.profile %}
         <div class="profile">
@@ -59,12 +59,9 @@ layout: default
       </div>
 
 
-    <p>    </p>
-
-
     <!-- News -->
     {% if page.news and site.announcements.enabled %}
-      <div></div>
+ 
       <h2>
         <a href="{{ '/news/' | relative_url }}" style="color: inherit">Happenings</a>
       </h2>
@@ -88,4 +85,4 @@ layout: default
     {% endif %}
 
     
-</div>
+</article>
