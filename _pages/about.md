@@ -16,7 +16,7 @@ profile:
 
 news: true # includes a list of news items
 selected_papers: false # includes a list of papers marked as "selected={true}"
-social: True # includes social icons at the bottom of the page
+social: true # includes social icons at the bottom of the page
 ---
 
 I am a 1st yest Computer Science PhD student at the `University of Minnesota, Twin Cities` working with [Qianwen Wang](https://qianwen.info/). My current research centers around human-AI collaboration. 
