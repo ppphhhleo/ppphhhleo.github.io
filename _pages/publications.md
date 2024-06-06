@@ -1,8 +1,8 @@
 ---
 layout: page
-permalink: /publications/
-title: PUBS
-description: publications by categories in reversed chronological order.
+permalink: /previous/
+title: PREVIOUS
+description: More on the way.
 nav: true
 nav_order: 2
 ---

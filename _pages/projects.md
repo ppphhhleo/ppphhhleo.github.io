@@ -3,7 +3,7 @@ layout: page
 title: PORTFOLIO
 permalink: /portfolio/
 description: A growing collection of your cool projects.
-nav: true
+nav: false
 nav_order: 3
 display_categories: [Art, Travel]
 horizontal: false

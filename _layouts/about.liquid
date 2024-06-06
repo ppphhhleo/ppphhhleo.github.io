@@ -2,6 +2,8 @@
 layout: default
 ---
 <div class="post">
+  
+
   <header class="post-header">
     <h1 class="post-title">
       {% if site.title == 'blank' %}
@@ -10,7 +12,7 @@ layout: default
       {% else %}
         {{ site.title }}
       {% endif %}
-      （潘昊）
+      (潘昊)
     </h1>
     <p class="desc">{{ page.subtitle }}</p>
   </header>
@@ -44,7 +46,7 @@ layout: default
     <!-- News -->
     {% if page.news and site.announcements.enabled %}
       <h2>
-        <a href="{{ '/news/' | relative_url }}" style="color: inherit">news</a>
+        <a href="{{ '/news/' | relative_url }}" style="color: inherit">Happenings</a>
       </h2>
       {% include news.liquid limit=true %}
     {% endif %}
@@ -74,4 +76,6 @@ layout: default
       </div>
     {% endif %}
   </article>
+
+
 </div>
